@@ -37,7 +37,7 @@ It uses the Gemini API for two bounded tasks: classifying a company from its des
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/YOUR-USERNAME/compliance-tracker.git
+git clone https://github.com/M-N-Hossain/compliance-tracker.git
 cd compliance-tracker
 npm install
 
