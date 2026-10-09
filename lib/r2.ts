@@ -25,7 +25,6 @@ export const r2 = new S3Client({
   // R2 gives each account its own.
   endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
 
-  // The key pair: ID = "username", secret = "password".
   // The SDK uses the secret to sign every request; it is never sent itself.
   credentials: {
     accessKeyId: requireEnv("R2_ACCESS_KEY_ID"),
