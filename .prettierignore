@@ -1,0 +1,10 @@
+.next
+node_modules
+coverage
+out
+build
+package-lock.json
+prisma/migrations
+next-env.d.ts
+.agents
+skills-lock.json
