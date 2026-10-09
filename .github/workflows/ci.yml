@@ -1,0 +1,40 @@
+# Name shown in the "Actions" tab on GitHub
+name: CI
+
+# When to run: on every push to the main branch, and on every pull request
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+
+jobs:
+  check:
+    # The machine type: a fresh Ubuntu Linux server
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Download your repository code onto the machine
+      - uses: actions/checkout@v4
+
+      # 2. Install Node.js. "cache: npm" saves downloaded packages for faster reruns
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # 3. Install exact versions from package-lock.json (stricter than npm install).
+      #    HUSKY=0 skips installing git hooks, which make no sense on a server.
+      - run: npm ci
+        env:
+          HUSKY: 0
+
+      # 4. Build the Prisma client (it is gitignored, so it must be generated here).
+      #    The URL is a dummy: generating code does not connect to any database.
+      - run: npx prisma generate
+        env:
+          DATABASE_URL: "postgresql://user:password@localhost:5432/dummy"
+
+      # 5. Run the same check you run locally: eslint + prettier + typescript
+      - run: npm run check
+        env:
+          DATABASE_URL: "postgresql://user:password@localhost:5432/dummy"
