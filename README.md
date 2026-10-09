@@ -1,5 +1,7 @@
 # Compliance Tracker
 
+[![CI](https://github.com/M-N-Hossain/compliance-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/M-N-Hossain/compliance-tracker/actions/workflows/ci.yml)
+
 A full-stack web app that helps small companies track certification requirements and document expiry dates.
 
 It uses the Gemini API for two bounded tasks: classifying a company from its description, and extracting data from uploaded certificates. **AI never writes directly to canonical data.** Anything it cannot match sits in a pending-review queue until an admin approves it, and role-based access separates users from admins.
