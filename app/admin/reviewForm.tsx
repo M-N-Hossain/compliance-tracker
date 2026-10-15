@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -12,12 +13,9 @@ const RENEWAL_OPTIONS = ["yearly", "every 2 years", "every 3 years", "every 5 ye
 
 export default function ReviewForm({ id, name, categoryLabel }: Props) {
   const router = useRouter();
-
-  // The admin's choices, pre-filled with sensible defaults.
   const [itemName, setItemName] = useState(name);
   const [scope, setScope] = useState<"category" | "general">("category");
   const [renewalPeriod, setRenewalPeriod] = useState("yearly");
-
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -44,51 +42,53 @@ export default function ReviewForm({ id, name, categoryLabel }: Props) {
     }
   }
 
-  function handleApprove(e: React.FormEvent) {
-    e.preventDefault();
-    decide({ action: "approve", name: itemName, scope, renewalPeriod });
-  }
-
   return (
-    <form onSubmit={handleApprove} className="mt-2 space-y-2 border-t pt-2">
-      <label className="block text-sm">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        decide({ action: "approve", name: itemName, scope, renewalPeriod });
+      }}
+      className="flex flex-[1_1_420px] flex-col gap-3.5"
+    >
+      <label className="flex flex-col gap-1.5 text-sm font-medium">
         Checklist item name
         <input
           value={itemName}
           onChange={(e) => setItemName(e.target.value)}
           required
-          className="mt-1 block w-full rounded border p-2 text-sm"
+          className="border-field min-h-11 rounded-lg border px-3 font-normal"
         />
       </label>
 
-      <fieldset className="text-sm">
-        <legend className="mb-1">Applies to</legend>
-        <label className="mr-4">
+      {/* fieldset + legend: the accessible way to label a group of radios */}
+      <fieldset className="flex flex-wrap gap-4 text-sm">
+        <legend className="mb-1.5 font-medium">Applies to</legend>
+        <label className="flex min-h-8 items-center gap-2">
           <input
             type="radio"
             name={`scope-${id}`}
             checked={scope === "category"}
             onChange={() => setScope("category")}
-          />{" "}
+          />
           {categoryLabel} only
         </label>
-        <label>
+        <label className="flex min-h-8 items-center gap-2">
           <input
             type="radio"
             name={`scope-${id}`}
             checked={scope === "general"}
             onChange={() => setScope("general")}
-          />{" "}
+          />
           all businesses
         </label>
       </fieldset>
 
-      <label className="block text-sm">
+      <label className="flex flex-col gap-1.5 text-sm font-medium">
         Renewal period
         <select
           value={renewalPeriod}
           onChange={(e) => setRenewalPeriod(e.target.value)}
-          className="mt-1 block w-full rounded border p-2 text-sm"
+          className="border-field min-h-11 rounded-lg border bg-white px-2.5 font-normal"
         >
           {RENEWAL_OPTIONS.map((r) => (
             <option key={r} value={r}>
@@ -102,7 +102,7 @@ export default function ReviewForm({ id, name, categoryLabel }: Props) {
         <button
           type="submit"
           disabled={busy}
-          className="rounded bg-black px-4 py-2 text-sm text-white disabled:opacity-50"
+          className="bg-brand hover:bg-brand-dark min-h-11 rounded-lg px-5 font-medium text-white disabled:opacity-50"
         >
           Approve
         </button>
@@ -110,13 +110,17 @@ export default function ReviewForm({ id, name, categoryLabel }: Props) {
           type="button"
           disabled={busy}
           onClick={() => decide({ action: "reject" })}
-          className="rounded border px-4 py-2 text-sm disabled:opacity-50"
+          className="border-line text-bad hover:bg-bad-soft min-h-11 rounded-lg border bg-white px-5 font-medium disabled:opacity-50"
         >
           Reject
         </button>
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p role="alert" className="text-bad text-sm">
+          {error}
+        </p>
+      )}
     </form>
   );
 }

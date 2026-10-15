@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+/* 
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -23,4 +23,31 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+} */
+
+/* Design tokens: every colour in the app, named once.
+   Tailwind creates bg-*, text-*, border-* classes from each --color-* name. */
+@theme {
+  /* brand */
+  --color-brand: #0b5d57;
+  --color-brand-dark: #08443f;
+  --color-brand-soft: #e8f2f1;
+  --color-brand-line: #9ccbc6;
+
+  /* neutrals */
+  --color-ink: #16181d; /* main text */
+  --color-body: #3f4652; /* secondary text, nav links */
+  --color-muted: #5b6270; /* captions, hints */
+  --color-line: #e1e4e9; /* card borders */
+  --color-field: #c9ced6; /* input borders */
+  --color-canvas: #f4f5f7; /* page background */
+
+  /* statuses */
+  --color-ok: #1a6b45;
+  --color-ok-soft: #e3f2ea;
+  --color-warn: #8a4b00;
+  --color-warn-soft: #fdf0dc;
+  --color-warn-faint: #fffbf3;
+  --color-bad: #a8261b;
+  --color-bad-soft: #fce9e7;
 }

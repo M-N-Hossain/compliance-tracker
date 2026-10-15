@@ -1,6 +1,6 @@
 import { Type } from "@google/genai";
 import { generateWithRetry, MODELS } from "@/lib/gemini";
-import { parseIsoDate } from "@/utils/parseIsoDate";
+import { parseIsoDate } from "@/utils/date";
 
 const NO_MATCH = "NONE";
 
