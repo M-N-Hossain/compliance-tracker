@@ -17,5 +17,51 @@ services:
       timeout: 5s
       retries: 5
 
+  migrate:
+    # Build it from the same Dockerfile, but stop at the "migrate" stage.
+    build:
+      context: .
+      target: migrate
+    image: compliance-tracker-migrate:local
+    container_name: compliance-tracker-migrate
+    # One-shot job: never restart it. Quoted, because a bare  no  is read by YAML as "false".
+    restart: "no"
+    environment:
+      # Same address as the app uses: host "db", not "localhost".
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    # No ready-made image exists, so build one from the Dockerfile in this folder.
+    # The "." is the build context, so .dockerignore applies here too.
+    build: .
+    # Name for the image that gets built (the same name we tested with).
+    image: compliance-tracker:local
+    container_name: compliance-tracker-app
+    # Restart after a crash, unless you stopped it yourself.
+    restart: unless-stopped
+    ports:
+      # left = your laptop, right = inside the container (server.js listens on 3000)
+      - "3000:3000"
+    env_file:
+      # Compose reads this file on YOUR computer when the container starts and puts
+      # every variable in it into the container. It is never copied into the image.
+      - .env
+    environment:
+      # Auth.js refuses to run in production unless you say you trust the Host header.
+      # Quoted so YAML reads it as the text "true", not as a yes/no value.
+      AUTH_TRUST_HOST: "true"
+      # Same pieces the db service uses, filled in from your .env.
+      # The host is "db" (the service name), not "localhost".
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      db:
+        # Wait for db's healthcheck to pass, not just for the container to start.
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
 volumes:
   postgres_data:
