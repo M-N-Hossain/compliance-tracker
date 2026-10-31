@@ -1,6 +1,65 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "defaultMode": "default",
-    "deny": ["Read(.env)", "Read(.env.*)"]
+    "disableBypassPermissionsMode": "disable",
+    "disableAutoMode": "disable",
+    "deny": [
+      "PowerShell",
+
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(!.env.example)",
+      "Read(!.env.test)",
+
+      "Bash(docker compose *down*-v*)",
+      "Bash(docker volume rm *)",
+      "Bash(docker volume prune*)",
+      "Bash(docker system prune*)",
+
+      "Bash(*prisma migrate reset*)",
+      "Bash(*prisma migrate deploy*)",
+      "Bash(*prisma db push*--force-reset*)",
+      "Bash(*prisma db push*--accept-data-loss*)",
+      "Bash(*prisma db execute*)",
+
+      "Bash(git push *--force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * -f*)",
+      "Bash(git push *--delete*)",
+      "Bash(git push -d*)",
+      "Bash(git push * -d*)",
+      "Bash(git reset *--hard*)",
+      "Bash(git clean*)",
+      "Bash(git branch *-D*)",
+
+      "Bash(git diff *--no-index*)",
+      "Bash(git diff *--output*)",
+      "Bash(git log *--output*)"
+    ],
+    "ask": ["Bash(git push *)", "Bash(gh *)", "Edit(/prisma/migrations/**)"],
+    "allow": [
+      "Bash(npm run check)",
+      "Bash(npm run lint)",
+      "Bash(npm test)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(npx prisma generate)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/block-destructive.mjs"]
+          }
+        ]
+      }
+    ]
   }
 }
