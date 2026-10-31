@@ -17,6 +17,8 @@ export default defineConfig({
     // Tests get the fake values from .env.test only. Do not use Vite's loadEnv here,
     // because it reads the real .env as well. parse() only reads the file it is given.
     env: parse(readFileSync(fromRoot(".env.test"))),
+    // Runs before every test file, in both groups below.
+    setupFiles: ["test/setup/block-network.ts"],
     projects: [
       {
         // Needs no database, so "npm run test:unit" works without Docker.
