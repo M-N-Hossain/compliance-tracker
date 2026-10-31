@@ -7,4 +7,5 @@ package-lock.json
 prisma/migrations
 next-env.d.ts
 .agents
-skills-lock.json
+skills-lock.jsontest-results
+playwright-report

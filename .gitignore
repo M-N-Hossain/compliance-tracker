@@ -45,3 +45,7 @@ next-env.d.ts
 /app/generated/prisma
 
 .claude/settings.local.json
+# Playwright output
+/test-results/
+/playwright-report/
+/e2e/.blocked-network.log
