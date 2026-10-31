@@ -1,0 +1,25 @@
+# The throwaway test database. Start it with: npm run test:db:up
+# Stop it with: npm run test:db:down  (this also deletes all its data)
+
+# Its own compose project, so it never shares anything with the development stack.
+name: compliance-tracker-test
+
+services:
+  db:
+    image: postgres:16
+    # Fake values only. No ${...} in this file, so compose never uses values from the real .env.
+    env_file:
+      - .env.test
+    ports:
+      # left = your laptop, right = inside the container. Your development database uses 5432.
+      # 127.0.0.1 means only this computer can reach it, not your network.
+      - "127.0.0.1:5433:5432"
+    # Keeps the data in memory instead of a volume, so it vanishes when the container stops.
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      # $$ means the variable is read inside the container, from .env.test.
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 2s
+      timeout: 5s
+      retries: 15

@@ -22,7 +22,7 @@ G = generic, move to user settings later. P = specific to this project.
 | `docker compose *down*-v*`                         | Deletes volumes. Also matches `--volumes`       | G    |
 | `docker volume rm`, `volume prune`, `system prune` | Can delete the dev database volume              | G    |
 | `prisma migrate reset`, `db execute`               | Wipes data, or runs raw SQL                     | P    |
-| `prisma migrate deploy`                            | Only the Docker migrate service applies these   | P    |
+| `prisma migrate deploy`                            | Only Docker and the guarded test setup run it   | P    |
 | `prisma db push` with data loss flags              | Can drop data without a migration               | P    |
 | `git push` with force or delete                    | Rewrites or removes remote history              | G    |
 | `git reset --hard`, `git clean`, `git branch -D`   | Destroys local work that cannot be recovered    | G    |
@@ -51,7 +51,7 @@ Exact everyday commands only, and no wildcard after `npx`.
 `hooks/block-destructive.mjs` runs before every Bash command (G, except its Prisma rules, P).
 It rewrites the command into a plain form, blocks the destructive list with exit code 2, and
 makes every `git push` ask, however it is worded. Test it with
-`node .claude/hooks/block-destructive.test.mjs`.
+`node test/hook-test/block-destructive.test.mjs`.
 
 ## Limits
 

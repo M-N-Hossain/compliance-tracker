@@ -27,6 +27,15 @@ Learning project. I want to understand each step, not only get it working.
 - Whole stack (db, migrate, app): docker compose up --build -d
 - Database only (for npm run dev): docker compose up -d db
 - Stop and keep the data: docker compose down
+- Check (lint, format, types): npm run check
+- Unit tests (no Docker): npm run test:unit
+- All Vitest tests: npm test
+- Browser test: npm run test:e2e
+- Hook test: node test/hook-test/block-destructive.test.mjs
+- Start test database (needed by npm test and test:e2e): npm run test:db:up
+- Stop test database and delete its data: npm run test:db:down
+
+Every test goes under test/, in a folder for its kind (util-test, api-test and so on). Helpers that are not tests go in test/support/.
 
 ## Docker
 

@@ -7,10 +7,36 @@ on:
     branches: ["main", "master"]
   pull_request:
 
+# The job can read the repository and nothing else. It uses no secrets:
+# every value the tests need is a fake one from .env.test.
+permissions:
+  contents: read
+
 jobs:
+  # Branch protection on main requires a check with this exact name.
+  # Renaming this job means updating that rule in the same change.
   check:
     # The machine type: a fresh Ubuntu Linux server
     runs-on: ubuntu-latest
+
+    services:
+      # The throwaway test database, like docker-compose.test.yml on your laptop.
+      # These fake values must match .env.test.
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fake-db-user
+          POSTGRES_PASSWORD: fake-db-password
+          POSTGRES_DB: compliance_tracker_test
+        ports:
+          # left = this machine, right = inside the container. The guard requires 5433.
+          - 5433:5432
+        # Wait until the database accepts connections before the steps start.
+        options: >-
+          --health-cmd "pg_isready -U fake-db-user -d compliance_tracker_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       # 1. Download your repository code onto the machine
@@ -38,3 +64,10 @@ jobs:
       - run: npm run check
         env:
           DATABASE_URL: "postgresql://user:password@localhost:5432/dummy"
+
+      # 6. Run every Vitest test. They read .env.test themselves and create the tables.
+      #    The browser test stays on your laptop for now.
+      - run: npm test
+
+      # 7. Prove the hook that guards Claude's commands still works.
+      - run: node test/hook-test/block-destructive.test.mjs

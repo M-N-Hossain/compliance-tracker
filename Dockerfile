@@ -1,6 +1,6 @@
 # stage one: deps
 # "slim" is a smaller Debian Linux. We avoid "alpine" because some packages break on it.
-FROM node:24-slim AS deps
+FROM node:22-slim AS deps
 
 # Make /app the working folder.
 WORKDIR /app
@@ -15,7 +15,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Stage 2: build the app
-FROM node:24-slim AS builder
+FROM node:22-slim AS builder
 
 # Work folder for this stage.
 WORKDIR /app
@@ -65,7 +65,7 @@ CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed"]
 
 # Stage 3: the image that actually runs (and ships)
 # A brand new stage: it inherits NOTHING from the builder, not even the fake ENV values.
-FROM node:24-slim AS runner
+FROM node:22-slim AS runner
 
 # Work folder for this stage.
 WORKDIR /app
