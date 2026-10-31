@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assertTestDatabaseUrl } from "./database-guard";
+import { assertTestDatabaseUrl } from "@/test/support/database-guard";
 
 describe("assertTestDatabaseUrl", () => {
   // The one address that is allowed.

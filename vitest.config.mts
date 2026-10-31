@@ -18,7 +18,7 @@ export default defineConfig({
     // because it reads the real .env as well. parse() only reads the file it is given.
     env: parse(readFileSync(fromRoot(".env.test"))),
     // Runs before every test file, in both groups below.
-    setupFiles: ["test/setup/block-network.ts"],
+    setupFiles: ["test/support/block-network.ts"],
     projects: [
       {
         // Needs no database, so "npm run test:unit" works without Docker.
@@ -26,7 +26,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: "unit",
-          include: ["**/*.test.ts"],
+          include: ["test/**/*.test.ts"],
           exclude: [...configDefaults.exclude, "**/*.db.test.ts"],
         },
       },
@@ -35,8 +35,8 @@ export default defineConfig({
         extends: true,
         test: {
           name: "db",
-          include: ["**/*.db.test.ts"],
-          globalSetup: ["test/global-setup.ts"],
+          include: ["test/**/*.db.test.ts"],
+          globalSetup: ["test/support/vitest-global-setup.ts"],
         },
       },
     ],

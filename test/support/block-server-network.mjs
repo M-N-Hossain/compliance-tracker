@@ -6,7 +6,7 @@ import net from "node:net";
 const LOCAL_HOSTS = ["localhost", "127.0.0.1", "::1"];
 
 // The smoke test reads this file, because the app may catch the error thrown below.
-const LOG_FILE = "e2e/.blocked-network.log";
+const LOG_FILE = "test/support/.blocked-network.log";
 
 // next dev checks this host for newer versions. It is still blocked, but it is not the
 // app's doing, so it does not count as a test failure.

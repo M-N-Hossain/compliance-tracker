@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { Pool } from "pg";
 import { parse } from "dotenv";
-import { assertTestDatabaseUrl } from "../test/database-guard";
+import { assertTestDatabaseUrl } from "../support/database-guard";
 
 // A new made-up user for each run, so runs do not collide. Synthetic data only.
 const email = `smoke-${Date.now()}@example.test`;
@@ -67,7 +67,7 @@ test.afterAll(async () => {
 
 // The app may catch a blocked call, so check the block's log as well.
 test.afterEach(() => {
-  const log = "e2e/.blocked-network.log";
+  const log = "test/support/.blocked-network.log";
   const blocked = existsSync(log) ? readFileSync(log, "utf8").trim() : "";
   expect(blocked, "the app's server tried to reach the network").toBe("");
 });

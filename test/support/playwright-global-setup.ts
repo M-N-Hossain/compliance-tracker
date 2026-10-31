@@ -2,7 +2,7 @@
 import { spawnSync } from "node:child_process";
 import { readFileSync, rmSync } from "node:fs";
 import { parse } from "dotenv";
-import { assertTestDatabaseUrl } from "../test/database-guard";
+import { assertTestDatabaseUrl } from "./database-guard";
 
 export default function globalSetup() {
   const env = parse(readFileSync(".env.test"));
@@ -24,5 +24,5 @@ export default function globalSetup() {
   }
 
   // Start with an empty log, so the smoke test only sees calls made during the test.
-  rmSync("e2e/.blocked-network.log", { force: true });
+  rmSync("test/support/.blocked-network.log", { force: true });
 }

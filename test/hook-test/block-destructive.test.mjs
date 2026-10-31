@@ -1,9 +1,9 @@
-// Tests for block-destructive.mjs. Run with: node .claude/hooks/block-destructive.test.mjs
+// Tests for block-destructive.mjs. Run with: node test/hook-test/block-destructive.test.mjs
 // Commands are only passed to the hook as text. Nothing here ever runs them.
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const HOOK = fileURLToPath(new URL("./block-destructive.mjs", import.meta.url));
+const HOOK = fileURLToPath(new URL("../../.claude/hooks/block-destructive.mjs", import.meta.url));
 
 // Commands the hook must refuse.
 const BLOCK = [

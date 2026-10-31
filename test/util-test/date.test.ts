@@ -1,5 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { parseIsoDate } from "@/utils/date";
+import { formatDate, parseIsoDate, startOfDayUtc } from "@/utils/date";
+
+describe("startOfDayUtc", () => {
+  // Any time of day becomes midnight UTC of the same date.
+  it("moves a time to midnight UTC on the same date", () => {
+    const result = startOfDayUtc(new Date("2027-03-31T23:59:59Z"));
+    expect(result.toISOString()).toBe("2027-03-31T00:00:00.000Z");
+  });
+});
+
+describe("formatDate", () => {
+  // Shown in UTC, so a date never moves to the day before in another time zone.
+  it("shows the UTC date in day, short month, year order", () => {
+    expect(formatDate(new Date("2027-03-01T00:00:00Z"))).toBe("1 Mar 2027");
+  });
+});
 
 describe("parseIsoDate", () => {
   // The normal case: a real date becomes UTC midnight of that day.

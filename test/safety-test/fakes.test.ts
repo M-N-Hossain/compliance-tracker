@@ -4,8 +4,8 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { extractCertificate } from "@/lib/extractCertificate";
 import { r2, R2_BUCKET } from "@/lib/r2";
-import { scriptGeminiAnswer, scriptGeminiFailure } from "./gemini";
-import { useFakeR2 } from "./r2";
+import { scriptGeminiAnswer, scriptGeminiFailure } from "@/test/support/fakes/gemini";
+import { useFakeR2 } from "@/test/support/fakes/r2";
 
 // Keep the real gemini file, and replace only the function that uses the network.
 vi.mock("@/lib/gemini", async (importOriginal) => ({

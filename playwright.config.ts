@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
 import { parse } from "dotenv";
-import { assertTestDatabaseUrl } from "./test/database-guard";
+import { assertTestDatabaseUrl } from "./test/support/database-guard";
 
 // Fake values only. These beat the real .env, because values already set win over the file.
 const env = parse(readFileSync(".env.test"));
@@ -14,9 +14,9 @@ const PORT = 3100;
 const baseURL = `http://localhost:${PORT}`;
 
 export default defineConfig({
-  testDir: "e2e",
+  testDir: "test/e2e-test",
   // Prepares the test database before the first test.
-  globalSetup: "./e2e/global-setup.ts",
+  globalSetup: "./test/support/playwright-global-setup.ts",
   // One browser at a time, against one shared database.
   workers: 1,
   // A smoke test that needs a retry is reporting a real problem.
@@ -43,7 +43,7 @@ export default defineConfig({
       AUTH_TRUST_HOST: "true",
       NEXT_TELEMETRY_DISABLED: "1",
       // Loads the network block inside the app's server too.
-      NODE_OPTIONS: "--import=./e2e/block-server-network.mjs",
+      NODE_OPTIONS: "--import=./test/support/block-server-network.mjs",
     },
   },
 });

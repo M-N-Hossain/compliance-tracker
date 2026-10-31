@@ -2,7 +2,7 @@
 import { readdirSync } from "node:fs";
 import { Pool } from "pg";
 import { afterAll, describe, expect, it } from "vitest";
-import { assertTestDatabaseUrl } from "./database-guard";
+import { assertTestDatabaseUrl } from "@/test/support/database-guard";
 
 // Check the address again here, before this file opens a connection.
 assertTestDatabaseUrl(process.env.DATABASE_URL);

@@ -5,7 +5,7 @@ import { HeadBucketCommand } from "@aws-sdk/client-s3";
 import { describe, expect, it } from "vitest";
 import { generateWithRetry, MODELS } from "@/lib/gemini";
 import { r2, R2_BUCKET } from "@/lib/r2";
-import { takeBlockedCalls } from "./block-network";
+import { takeBlockedCalls } from "@/test/support/block-network";
 
 describe("network block", () => {
   // Each test below empties the list itself, so the check after each test passes.
