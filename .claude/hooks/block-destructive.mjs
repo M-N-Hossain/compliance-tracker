@@ -112,7 +112,7 @@ const RULES = [
     test: (s) => /\bprisma\b.*\bmigrate\s+reset\b/.test(s),
   },
   {
-    why: "prisma migrate deploy is only run by the Docker migrate service",
+    why: "prisma migrate deploy only runs through the Docker service or the guarded test setup",
     test: (s) => /\bprisma\b.*\bmigrate\s+deploy\b/.test(s),
   },
   {

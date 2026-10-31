@@ -22,7 +22,7 @@ G = generic, move to user settings later. P = specific to this project.
 | `docker compose *down*-v*`                         | Deletes volumes. Also matches `--volumes`       | G    |
 | `docker volume rm`, `volume prune`, `system prune` | Can delete the dev database volume              | G    |
 | `prisma migrate reset`, `db execute`               | Wipes data, or runs raw SQL                     | P    |
-| `prisma migrate deploy`                            | Only the Docker migrate service applies these   | P    |
+| `prisma migrate deploy`                            | Only Docker and the guarded test setup run it   | P    |
 | `prisma db push` with data loss flags              | Can drop data without a migration               | P    |
 | `git push` with force or delete                    | Rewrites or removes remote history              | G    |
 | `git reset --hard`, `git clean`, `git branch -D`   | Destroys local work that cannot be recovered    | G    |
