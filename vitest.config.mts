@@ -19,6 +19,8 @@ export default defineConfig({
     env: parse(readFileSync(fromRoot(".env.test"))),
     // Runs before every test file, in both groups below.
     setupFiles: ["test/support/block-network.ts"],
+    // One file at a time, because database tests clear tables that other files could be using.
+    fileParallelism: false,
     projects: [
       {
         // Needs no database, so "npm run test:unit" works without Docker.
