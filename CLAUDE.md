@@ -11,6 +11,12 @@ Learning project. I want to understand each step, not only get it working.
 - Never apply a change I could not explain back to you.
 - No em dashes in anything you write.
 
+## How we build features
+
+Follow docs/workflow.md for the feature and quick-fix paths, the definition of
+done and the git rules. Specs go in docs/specs/ and decisions in docs/decisions/,
+each with a \_template.md to copy.
+
 ## Stack
 
 - Next.js 16 App Router, TypeScript, Tailwind v4 (tokens in globals.css @theme)
