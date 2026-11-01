@@ -1,9 +1,5 @@
 # How we build features
 
-> **Not ready yet:** the review-code subagent used by `/code-review` is built in
-> Phase 5 of the workflow setup. Until then, that review shows as not run. Remove
-> this note when Phase 5 is done.
-
 This file describes the process. It enforces nothing: permission rules, hooks,
 CI and GitHub settings do that. The commands to run are in the "Commands"
 section of CLAUDE.md, so they are not repeated here.
