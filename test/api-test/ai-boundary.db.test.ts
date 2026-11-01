@@ -94,18 +94,26 @@ describe("AI boundary on upload", () => {
     expect(await prisma.pendingRequirement.count()).toBe(0);
   });
 
-  // Only the user's confirmation creates the link.
+  // Only the user's confirmation saves anything, and what is saved is what the user sent.
+  // These values differ from Gemini's on purpose, so Gemini's cannot pass by accident.
   it("links the document once the user confirms", async () => {
     const { id } = await (await uploadPdf()).json();
 
     const request = new Request(`http://localhost/api/documents/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({ requirementTemplateId: template.id }),
+      body: JSON.stringify({
+        certificateType: "Type the user corrected",
+        expiryDate: "2028-06-30",
+        requirementTemplateId: template.id,
+      }),
     });
     const response = await PATCH(request, { params: Promise.resolve({ id: String(id) }) });
+    const document = await storedDocument(id);
 
     expect(response.status).toBe(200);
-    expect((await storedDocument(id)).requirementTemplateId).toBe(template.id);
+    expect(document.requirementTemplateId).toBe(template.id);
+    expect(document.extractedType).toBe("Type the user corrected");
+    expect(document.expiryDate).toEqual(new Date("2028-06-30T00:00:00.000Z"));
   });
 
   // Model output is untrusted, so a name that is not on the checklist must be dropped.

@@ -298,6 +298,7 @@ would be refused by the new route.
 - Tests in `ai-boundary.db.test.ts`: update `links the document once the user confirms`
   to check all three values (AC 4).
 - Commit: `feat: confirm type, date and checklist item together`
+- Done: yes
 
 ### Step 4: Keep a waiting request's name in step
 

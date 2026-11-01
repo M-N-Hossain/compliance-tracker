@@ -2,11 +2,14 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/currentUser";
 import { prisma } from "@/lib/prisma";
 import { checklistCategories } from "@/utils/category";
+import { parseConfirmPayload } from "@/utils/confirmPayload";
 import { syncPendingRequirement } from "@/lib/pendingRequirements";
 
 // PATCH /api/documents/:id
-// Lets the user confirm or change which checklist item a document covers.
-// Body: { requirementTemplateId: number | null }   (null = "not on my checklist")
+// The confirm endpoint: saves the type, expiry date and checklist item the user confirmed.
+// Body: { certificateType: string,
+//         expiryDate: "YYYY-MM-DD" | null,      (null = "no expiry date")
+//         requirementTemplateId: number | null } (null = "not on my checklist")
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
   if (!user) {
@@ -41,15 +44,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: "Expected JSON" }, { status: 400 });
   }
 
-  if (!body || typeof body !== "object" || !("requirementTemplateId" in body)) {
-    return NextResponse.json({ error: "requirementTemplateId is required" }, { status: 400 });
+  // Check the shape of all three values. Nothing the browser sends is trusted.
+  const parsed = parseConfirmPayload(body);
+  if (!parsed.ok) {
+    return NextResponse.json({ error: parsed.error }, { status: 400 });
   }
-  const templateId = (body as { requirementTemplateId: unknown }).requirementTemplateId;
-
-  // Allowed values: null ("not on my checklist") or a whole number.
-  if (templateId !== null && !Number.isInteger(templateId)) {
-    return NextResponse.json({ error: "Invalid template id" }, { status: 400 });
-  }
+  const { certificateType, expiryDate, requirementTemplateId: templateId } = parsed.data;
 
   // If a template was chosen, it must be on THIS company's checklist:
   // its own category or general.
@@ -59,7 +59,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     }
     const template = await prisma.requirementTemplate.findFirst({
       where: {
-        id: templateId as number,
+        id: templateId,
         category: { in: checklistCategories(company.category) },
       },
     });
@@ -68,10 +68,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     }
   }
 
-  // Everything checked: save the user's decision.
+  // Everything checked: save the user's decision, all three values in one write.
   const updated = await prisma.document.update({
     where: { id: document.id },
-    data: { requirementTemplateId: templateId as number | null },
+    data: {
+      extractedType: certificateType,
+      expiryDate,
+      requirementTemplateId: templateId,
+    },
   });
 
   // most provably we remove it.

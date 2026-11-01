@@ -5,7 +5,7 @@ import { checklistCategories } from "@/utils/category";
 import { formatDate } from "@/utils/date";
 import { initialMatchValue, NOT_DECIDED } from "@/utils/match";
 import UploadForm from "@/components/uploadForm";
-import MatchSelect from "@/components/matchSelect";
+import ConfirmForm from "@/components/confirmForm";
 
 export default async function DocumentsPage() {
   const user = await getCurrentUser();
@@ -79,6 +79,8 @@ export default async function DocumentsPage() {
               const name = doc.extractedType ?? "Unreadable document";
               const pending = doc.pendingRequirement?.status;
               const undecided = doc.value === NOT_DECIDED;
+              // The first 10 characters are the UTC date, so no time zone can shift it by a day.
+              const date = doc.expiryDate ? doc.expiryDate.toISOString().slice(0, 10) : "";
 
               return (
                 <li
@@ -117,13 +119,21 @@ export default async function DocumentsPage() {
                   </div>
 
                   <div className="flex flex-wrap items-center justify-end gap-3">
-                    <MatchSelect
-                      key={`${doc.id}-${doc.value}`}
+                    {/* key: a fresh form whenever the database values change after a save. */}
+                    <ConfirmForm
+                      key={`${doc.id}-${doc.value}-${doc.extractedType}-${date}`}
                       documentId={doc.id}
                       templates={templateOptions}
-                      initialValue={doc.value}
-                      initiallySaved={true}
-                      label={`Checklist item for ${name}`}
+                      initialValues={{
+                        type: doc.extractedType ?? "",
+                        date,
+                        // A decided row with no date means the user said so. An undecided one
+                        // means nobody has said anything yet, so the box stays unticked.
+                        noExpiry: !undecided && !doc.expiryDate,
+                        match: doc.value,
+                      }}
+                      initiallySaved={!undecided}
+                      label={`Confirm ${name}`}
                     />
                     <a
                       href={`/api/documents/${doc.id}/file`}

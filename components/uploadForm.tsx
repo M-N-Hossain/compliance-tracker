@@ -2,18 +2,39 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import MatchSelect from "./matchSelect";
-import { NOT_ON_CHECKLIST } from "@/utils/match";
-import { formatDate } from "@/utils/date";
+import ConfirmForm, { type ConfirmFormValues } from "./confirmForm";
+import { NOT_DECIDED, NOT_ON_CHECKLIST } from "@/utils/match";
 
 type TemplateOption = { id: number; name: string };
 
 type UploadedDoc = {
   id: number;
-  certificateType: string | null; // null if the AI couldn't read it
-  expiryDate: string | null; // ISO string from the JSON response
-  suggestion: string; // dropdown value: template id or NOT_ON_CHECKLIST
+  readable: boolean; // false if the AI returned nothing we could use
+  suggestion: ConfirmFormValues; // starting values for the form, not saved until the user does
 };
+
+// Turns the upload response into the form's starting values.
+// "extracted" is null when Gemini failed or its answer was unusable.
+function toSuggestion(
+  extracted: {
+    certificateType: string;
+    expiryDate: string | null; // ISO string from the JSON response
+    matchedTemplateId: number | null;
+  } | null,
+): ConfirmFormValues {
+  // Nothing was read, so nothing is suggested, not even "Not on my checklist".
+  if (!extracted) return { type: "", date: "", noExpiry: false, match: NOT_DECIDED };
+
+  return {
+    type: extracted.certificateType,
+    // The first 10 characters are the UTC date, so no time zone can shift it by a day.
+    date: extracted.expiryDate ? extracted.expiryDate.slice(0, 10) : "",
+    // Never ticked for the user: only they may say there is no expiry date.
+    noExpiry: false,
+    match:
+      extracted.matchedTemplateId !== null ? String(extracted.matchedTemplateId) : NOT_ON_CHECKLIST,
+  };
+}
 
 export default function UploadForm({ templates }: { templates: TemplateOption[] }) {
   const router = useRouter();
@@ -62,12 +83,10 @@ export default function UploadForm({ templates }: { templates: TemplateOption[] 
         return;
       }
 
-      const ex = data.extracted;
       setUploaded({
         id: data.id,
-        certificateType: ex?.certificateType ?? null,
-        expiryDate: ex?.expiryDate ?? null,
-        suggestion: ex?.matchedTemplateId != null ? String(ex.matchedTemplateId) : NOT_ON_CHECKLIST,
+        readable: data.extracted !== null,
+        suggestion: toSuggestion(data.extracted),
       });
 
       form.reset();
@@ -155,27 +174,20 @@ export default function UploadForm({ templates }: { templates: TemplateOption[] 
       {uploaded && (
         <div className="border-brand-line flex flex-[1_1_380px] flex-col gap-3 rounded-xl border bg-white p-5">
           <p className="text-brand font-mono text-xs tracking-wider uppercase">Just uploaded</p>
-          <div>
-            <p className="text-lg font-semibold">
-              {uploaded.certificateType ?? "Unreadable document"}
-            </p>
-            <p className="text-muted text-sm">
-              {uploaded.expiryDate
-                ? `Expires ${formatDate(new Date(uploaded.expiryDate))} (read from the PDF)`
-                : "No expiry date found"}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm font-medium">Which checklist item does this cover?</p>
-            <p className="text-muted text-sm">Suggested by AI. Change it if it is wrong.</p>
-          </div>
-          <MatchSelect
+          {/* Says where the values came from, so the user knows to check them. */}
+          <p className="text-muted text-sm">
+            {uploaded.readable
+              ? "Suggested by AI. Check each value against the PDF and change anything that is wrong. Nothing is saved until you click Save."
+              : "This file could not be read. Fill in the values by hand."}
+          </p>
+          {/* key: a new upload starts a fresh form instead of reusing the old one's values. */}
+          <ConfirmForm
             key={uploaded.id}
             documentId={uploaded.id}
             templates={templates}
-            initialValue={uploaded.suggestion}
+            initialValues={uploaded.suggestion}
             initiallySaved={false}
-            label="Checklist item for the uploaded document"
+            label="Confirm the uploaded document"
           />
         </div>
       )}
