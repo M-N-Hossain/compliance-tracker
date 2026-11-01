@@ -120,32 +120,33 @@ export default async function DocumentsPage() {
                     )}
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-end gap-3">
-                    {/* key: a fresh form whenever the database values change after a save. */}
-                    <ConfirmForm
-                      key={`${doc.id}-${doc.value}-${doc.extractedType}-${date}`}
-                      documentId={doc.id}
-                      templates={templateOptions}
-                      initialValues={{
-                        type: doc.extractedType ?? "",
-                        date,
-                        // A decided row with no date means the user said so. An undecided one
-                        // means nobody has said anything yet, so the box stays unticked.
-                        noExpiry: !undecided && !doc.expiryDate,
-                        match: doc.value,
-                      }}
-                      initiallySaved={!undecided}
-                      label={`Confirm ${name}`}
-                    />
-                    <a
-                      href={`/api/documents/${doc.id}/file`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-brand hover:text-brand-dark text-sm font-medium underline-offset-2 hover:underline"
-                    >
-                      View PDF
-                    </a>
-                  </div>
+                  {/* key: a fresh form whenever the database values change after a save.
+                      It places View PDF beside Edit, and its panel under the row's text. */}
+                  <ConfirmForm
+                    key={`${doc.id}-${doc.value}-${doc.extractedType}-${date}`}
+                    documentId={doc.id}
+                    templates={templateOptions}
+                    initialValues={{
+                      type: doc.extractedType ?? "",
+                      date,
+                      // A decided row with no date means the user said so. An undecided one
+                      // means nobody has said anything yet, so the box stays unticked.
+                      noExpiry: !undecided && !doc.expiryDate,
+                      match: doc.value,
+                    }}
+                    initiallySaved={!undecided}
+                    label={`Confirm ${name}`}
+                    actions={
+                      <a
+                        href={`/api/documents/${doc.id}/file`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-brand hover:text-brand-dark text-sm font-medium underline-offset-2 hover:underline"
+                      >
+                        View PDF
+                      </a>
+                    }
+                  />
                 </li>
               );
             })}

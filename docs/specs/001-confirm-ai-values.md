@@ -317,6 +317,19 @@ would be refused by the new route.
 - Commit: `feat: show read-only confirmed rows with an edit button`
 - Done: yes
 
+### Step 5b: Widen the edit form and rename its field
+
+Added after the developer tried Step 5. The form opens as a full-width panel under
+the row, and the "Checklist item" field is now labelled "Covers". Code and database
+names stay as they are.
+
+- Files: change `components/confirmForm.tsx`, `app/(workspace)/documents/page.tsx`
+  and `utils/confirmPayload.ts`
+- Tests: none new in Vitest, because this is layout and wording. Step 8 uses the new
+  label. `npm run check` and `npm test` must pass.
+- Commit: `feat: open the document form as a wide panel labelled Covers`
+- Done: yes
+
 ### Step 6: Stop saving model output on upload
 
 This comes after the form on purpose, so that every document can already be filled

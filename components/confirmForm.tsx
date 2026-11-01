@@ -22,6 +22,7 @@ type Props = {
   initialValues: ConfirmFormValues;
   initiallySaved: boolean; // true when these values are already in the database
   label: string; // tells screen readers which document this form is for
+  actions?: React.ReactNode; // given by a list row: links beside Edit, and the form becomes a panel
 };
 
 // One document's type, expiry date and checklist item, with one Save button.
@@ -31,6 +32,7 @@ export default function ConfirmForm({
   initialValues,
   initiallySaved,
   label,
+  actions,
 }: Props) {
   const router = useRouter();
 
@@ -111,118 +113,137 @@ export default function ConfirmForm({
     setOpen(false);
   }
 
-  // Closed: the page shows the saved values as text, and this is only the way in.
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label={`Edit: ${label}`}
-        className="text-brand hover:text-brand-dark min-h-11 text-sm font-medium"
-      >
-        Edit
-      </button>
-    );
-  }
-
   return (
-    <form onSubmit={handleSubmit} aria-label={label} className="flex flex-col gap-3">
-      {/* Certificate type. React shows this as plain text, so HTML in it never runs. */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor={`${id}-type`} className="text-sm font-medium">
-          Certificate type
-        </label>
-        <input
-          id={`${id}-type`}
-          type="text"
-          value={values.type}
-          maxLength={MAX_TYPE_LENGTH}
-          onChange={(e) => update({ type: e.target.value })}
-          className="border-field min-h-11 w-72 max-w-full rounded-lg border bg-white px-2.5 text-sm"
-        />
-      </div>
-
-      {/* Expiry date, or an explicit "there is none". Ticking the box clears the date. */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor={`${id}-date`} className="text-sm font-medium">
-          Expiry date
-        </label>
-        <div className="flex flex-wrap items-center gap-3">
-          <input
-            id={`${id}-date`}
-            type="date"
-            value={values.date}
-            disabled={values.noExpiry}
-            onChange={(e) => update({ date: e.target.value })}
-            className="border-field min-h-11 rounded-lg border bg-white px-2.5 text-sm disabled:opacity-50"
-          />
-          <label className="flex min-h-11 items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={values.noExpiry}
-              onChange={(e) =>
-                update({
-                  noExpiry: e.target.checked,
-                  date: e.target.checked ? "" : values.date,
-                })
-              }
-            />
-            No expiry date
-          </label>
+    <>
+      {/* The row's buttons. In a row, this and the form are separate items of its flex layout. */}
+      {(actions || !open) && (
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          {/* Closed: the page shows the saved values as text, and this is the way in. */}
+          {!open && (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-label={`Edit: ${label}`}
+              className="text-brand hover:text-brand-dark min-h-11 text-sm font-medium"
+            >
+              Edit
+            </button>
+          )}
+          {actions}
         </div>
-      </div>
+      )}
 
-      {/* Which checklist item this document covers. */}
-      <div className="flex flex-col gap-1">
-        <label htmlFor={`${id}-match`} className="text-sm font-medium">
-          Checklist item
-        </label>
-        <select
-          id={`${id}-match`}
-          value={values.match}
-          onChange={(e) => update({ match: e.target.value })}
-          className="border-field min-h-11 w-72 max-w-full rounded-lg border bg-white px-2.5 text-sm"
-        >
-          <option value={NOT_DECIDED} disabled>
-            Choose a checklist item...
-          </option>
-          {templates.map((t) => (
-            <option key={t.id} value={String(t.id)}>
-              {t.name}
-            </option>
-          ))}
-          <option value={NOT_ON_CHECKLIST}>Not on my checklist</option>
-        </select>
-      </div>
-
-      {/* The button's look follows the same three states as its text. */}
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="submit"
-          disabled={!canSave}
-          className={`min-h-11 rounded-lg px-4 text-sm ${
-            canSave
-              ? "bg-brand hover:bg-brand-dark font-medium text-white"
-              : "border-line bg-canvas text-muted border"
+      {/* The form. Beside row buttons it becomes a full-width panel under the row's text. */}
+      {open && (
+        <form
+          onSubmit={handleSubmit}
+          aria-label={label}
+          className={`flex flex-col gap-3 ${
+            actions ? "border-line bg-canvas/50 basis-full rounded-lg border p-4" : ""
           }`}
         >
-          {saving ? "Saving..." : isSaved ? "Saved" : "Save"}
-        </button>
+          {/* auto-fit: as many 200px+ columns as fit, so fields sit side by side in a wide row
+            and stack in the narrow upload card or on a phone. */}
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] items-start gap-3">
+            {/* Certificate type. React shows this as plain text, so HTML in it never runs. */}
+            <div className="flex flex-col gap-1">
+              <label htmlFor={`${id}-type`} className="text-sm font-medium">
+                Certificate type
+              </label>
+              <input
+                id={`${id}-type`}
+                type="text"
+                value={values.type}
+                maxLength={MAX_TYPE_LENGTH}
+                onChange={(e) => update({ type: e.target.value })}
+                className="border-field min-h-11 w-full rounded-lg border bg-white px-2.5 text-sm"
+              />
+            </div>
 
-        {/* Only a saved document has something to go back to. */}
-        {initiallySaved && (
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="text-muted hover:text-ink min-h-11 px-2 text-sm"
-          >
-            Cancel
-          </button>
-        )}
-      </div>
+            {/* Expiry date, or an explicit "there is none". Ticking the box clears the date. */}
+            <div className="flex flex-col gap-1">
+              <label htmlFor={`${id}-date`} className="text-sm font-medium">
+                Expiry date
+              </label>
+              <div className="flex flex-wrap items-center gap-3">
+                <input
+                  id={`${id}-date`}
+                  type="date"
+                  value={values.date}
+                  disabled={values.noExpiry}
+                  onChange={(e) => update({ date: e.target.value })}
+                  className="border-field min-h-11 rounded-lg border bg-white px-2.5 text-sm disabled:opacity-50"
+                />
+                <label className="flex min-h-11 items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={values.noExpiry}
+                    onChange={(e) =>
+                      update({
+                        noExpiry: e.target.checked,
+                        date: e.target.checked ? "" : values.date,
+                      })
+                    }
+                  />
+                  No expiry date
+                </label>
+              </div>
+            </div>
 
-      {/* The server's reason, when it refuses. */}
-      {error && <p className="text-bad text-xs">{error}</p>}
-    </form>
+            {/* What this document covers: an item on the company's checklist. */}
+            <div className="flex flex-col gap-1">
+              <label htmlFor={`${id}-match`} className="text-sm font-medium">
+                Covers
+              </label>
+              <select
+                id={`${id}-match`}
+                value={values.match}
+                onChange={(e) => update({ match: e.target.value })}
+                className="border-field min-h-11 w-full rounded-lg border bg-white px-2.5 text-sm"
+              >
+                <option value={NOT_DECIDED} disabled>
+                  Choose what it covers...
+                </option>
+                {templates.map((t) => (
+                  <option key={t.id} value={String(t.id)}>
+                    {t.name}
+                  </option>
+                ))}
+                <option value={NOT_ON_CHECKLIST}>Not on my checklist</option>
+              </select>
+            </div>
+          </div>
+
+          {/* The button's look follows the same three states as its text. */}
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <button
+              type="submit"
+              disabled={!canSave}
+              className={`min-h-11 rounded-lg px-4 text-sm ${
+                canSave
+                  ? "bg-brand hover:bg-brand-dark font-medium text-white"
+                  : "border-line bg-canvas text-muted border"
+              }`}
+            >
+              {saving ? "Saving..." : isSaved ? "Saved" : "Save"}
+            </button>
+
+            {/* Only a saved document has something to go back to. */}
+            {initiallySaved && (
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="text-muted hover:text-ink min-h-11 px-2 text-sm"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+
+          {/* The server's reason, when it refuses. */}
+          {error && <p className="text-bad text-xs">{error}</p>}
+        </form>
+      )}
+    </>
   );
 }

@@ -49,7 +49,7 @@ export function parseConfirmPayload(body: unknown): ConfirmResult {
 
   // The checklist item: null is a decision here too, and anything else must be a whole number.
   if (requirementTemplateId !== null && !Number.isInteger(requirementTemplateId)) {
-    return { ok: false, error: "Invalid checklist item" };
+    return { ok: false, error: "Invalid covers value" };
   }
 
   // Everything passed. The "as" is safe because the line above ruled out everything else.
