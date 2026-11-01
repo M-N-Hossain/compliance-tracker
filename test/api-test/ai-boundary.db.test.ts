@@ -141,18 +141,38 @@ describe("AI boundary on upload", () => {
     expect(response.status).toBe(201);
     expect(body.extracted).toBeNull();
     expect(document.extractedType).toBeNull();
+    expect(document.expiryDate).toBeNull();
+    expect(document.requirementTemplateId).toBeNull();
     expect(storedFiles.has(document.fileUrl)).toBe(true);
   });
 
-  // KNOWN GAP, not fixed during setup: the first feature of the Phase 6 dry run.
-  // The route saves these two AI values before the user confirms them.
-  // it.fails means "this is wrong today". When the gap is fixed this reports a failure,
-  // which is the reminder to change it.fails to it.
-  it.fails("saves no AI values before the user confirms them", async () => {
-    const { id } = await (await uploadPdf()).json();
-    const document = await storedDocument(id);
+  // An answer we cannot use is treated like an outage: keep the file, save nothing.
+  it("keeps the upload and saves no AI values when Gemini's answer is unusable", async () => {
+    scriptGeminiAnswer({ certificateType: "", expiryDate: "2027-03-31", matchedTemplate: "NONE" });
 
+    const response = await uploadPdf();
+    const body = await response.json();
+    const document = await storedDocument(body.id);
+
+    expect(response.status).toBe(201);
+    expect(body.extracted).toBeNull();
     expect(document.extractedType).toBeNull();
     expect(document.expiryDate).toBeNull();
+    expect(document.requirementTemplateId).toBeNull();
+    expect(storedFiles.has(document.fileUrl)).toBe(true);
+  });
+
+  // The rule itself: the suggestion reaches the browser, and none of it reaches the database.
+  it("saves no AI values before the user confirms them", async () => {
+    const response = await uploadPdf();
+    const body = await response.json();
+    const document = await storedDocument(body.id);
+
+    expect(response.status).toBe(201);
+    expect(body.extracted.certificateType).toBe("Food Safety Certificate");
+    expect(body.extracted.expiryDate).toBe("2027-03-31T00:00:00.000Z");
+    expect(document.extractedType).toBeNull();
+    expect(document.expiryDate).toBeNull();
+    expect(document.requirementTemplateId).toBeNull();
   });
 });

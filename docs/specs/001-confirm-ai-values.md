@@ -343,6 +343,7 @@ in by hand when upload stops saving the values.
   fields, and add a test for an unusable Gemini answer (AC 2). Keep
   `creates no pending request by itself` (AC 3).
 - Commit: `fix: save no model output before the user confirms it`
+- Done: yes
 
 ### Step 7: Clear old unconfirmed AI values
 
