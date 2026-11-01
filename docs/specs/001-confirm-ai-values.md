@@ -357,6 +357,7 @@ before it is applied.
   and one pending document, runs the SQL read from the migration file, and checks the
   rows (AC 23).
 - Commit: `feat: clear unconfirmed AI values from existing documents`
+- Done: yes
 
 ### Step 8: Prove the flows in the browser
 
