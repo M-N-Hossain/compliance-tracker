@@ -384,31 +384,31 @@ Date: 2026-11-01. Commit: 51902ad.
 | `npm run test:e2e`                               | 12 passed            |
 | `node test/hook-test/block-destructive.test.mjs` | 64 of 64 passed      |
 
-| Criterion | Result  | Evidence                                                                                                                                                                      |
-| --------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1         | pass    | `saves no AI values before the user confirms them`, `returns the AI's match as a suggestion but does not save it`                                                             |
-| 2         | pass    | `keeps the upload and saves no AI values when Gemini fails`, `keeps the upload and saves no AI values when Gemini's answer is unusable`                                       |
-| 3         | pass    | `creates no pending request by itself`                                                                                                                                        |
-| 4         | pass    | `stores the confirmed type, date and checklist item`, including trimming                                                                                                      |
-| 5         | pass    | `stores no expiry date when the user sends null`                                                                                                                              |
-| 6         | pass    | `names the pending request with the type the user sent`                                                                                                                       |
-| 7         | pass    | `refuses a body with only requirementTemplateId...`, `no type`, `no date`, `no checklist item`, each comparing the whole row                                                  |
-| 8         | pass    | `refuses a type that is not text`, `a blank type`, `a type over 200 characters`                                                                                               |
-| 9         | pass    | `refuses an impossible date`, `refuses a date in the wrong format`                                                                                                            |
-| 10        | pass    | `stores an expiry date in the past`                                                                                                                                           |
-| 11        | pass    | `refuses a template from outside the company's checklist`                                                                                                                     |
-| 12        | pass    | `gives company B a 404 on company A's document and changes nothing`, `creates no pending request when company B sends null`                                                   |
-| 13        | pass    | `answers the same for another company's document and a missing one`                                                                                                           |
-| 14        | pass    | `renames a request that is still waiting when the type is edited`                                                                                                             |
-| 15        | pass    | `keeps the name of a request that is APPROVED...`, `...REJECTED...`                                                                                                           |
-| 16        | pass    | `shows Gemini's suggestion in editable fields, with no date shift`, in the Pacific/Honolulu time zone. The upload response is scripted                                        |
-| 17        | pass    | `leaves the date empty and the box unticked when Gemini found no date`                                                                                                        |
-| 18        | ui-test | `shows empty fields and a message when Gemini returned nothing` proves the fields and "This file could not be read." It does not check the "Fill in the values by hand." part |
-| 19        | pass    | `keeps Save disabled until every question is answered`                                                                                                                        |
-| 20        | pass    | `shows no AI value after a reload before confirming`. No Gemini call: the empty blocked-network log, and `extractCertificate` is only called from the upload route            |
-| 21        | pass    | `no longer says the AI could not read the file`. The text is also absent from app, components, lib and utils                                                                  |
-| 22        | pass    | `shows HTML in a suggestion as plain text and runs nothing`. `dangerouslySetInnerHTML` is absent from app, components, lib and utils                                          |
-| 23        | pass    | The 6 tests in `clear-unconfirmed-ai-values.db.test.ts`, which run the real migration file                                                                                    |
+| Criterion | Result | Evidence                                                                                                                                                                                                       |
+| --------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1         | pass   | `saves no AI values before the user confirms them`, `returns the AI's match as a suggestion but does not save it`                                                                                              |
+| 2         | pass   | `keeps the upload and saves no AI values when Gemini fails`, `keeps the upload and saves no AI values when Gemini's answer is unusable`                                                                        |
+| 3         | pass   | `creates no pending request by itself`                                                                                                                                                                         |
+| 4         | pass   | `stores the confirmed type, date and checklist item`, including trimming                                                                                                                                       |
+| 5         | pass   | `stores no expiry date when the user sends null`                                                                                                                                                               |
+| 6         | pass   | `names the pending request with the type the user sent`                                                                                                                                                        |
+| 7         | pass   | `refuses a body with only requirementTemplateId...`, `no type`, `no date`, `no checklist item`, each comparing the whole row                                                                                   |
+| 8         | pass   | `refuses a type that is not text`, `a blank type`, `a type over 200 characters`                                                                                                                                |
+| 9         | pass   | `refuses an impossible date`, `refuses a date in the wrong format`                                                                                                                                             |
+| 10        | pass   | `stores an expiry date in the past`                                                                                                                                                                            |
+| 11        | pass   | `refuses a template from outside the company's checklist`                                                                                                                                                      |
+| 12        | pass   | `gives company B a 404 on company A's document and changes nothing`, `creates no pending request when company B sends null`                                                                                    |
+| 13        | pass   | `answers the same for another company's document and a missing one`                                                                                                                                            |
+| 14        | pass   | `renames a request that is still waiting when the type is edited`                                                                                                                                              |
+| 15        | pass   | `keeps the name of a request that is APPROVED...`, `...REJECTED...`                                                                                                                                            |
+| 16        | pass   | `shows Gemini's suggestion in editable fields, with no date shift`, in the Pacific/Honolulu time zone. The upload response is scripted                                                                         |
+| 17        | pass   | `leaves the date empty and the box unticked when Gemini found no date`                                                                                                                                         |
+| 18        | pass   | Browser: saw "This file could not be read. Fill in the values by hand.", empty fields and Save disabled. The upload response was faked in the tab, because the real blank PDF returned a value (see finding 1) |
+| 19        | pass   | `keeps Save disabled until every question is answered`                                                                                                                                                         |
+| 20        | pass   | `shows no AI value after a reload before confirming`. No Gemini call: the empty blocked-network log, and `extractCertificate` is only called from the upload route                                             |
+| 21        | pass   | `no longer says the AI could not read the file`. The text is also absent from app, components, lib and utils                                                                                                   |
+| 22        | pass   | `shows HTML in a suggestion as plain text and runs nothing`. `dangerouslySetInnerHTML` is absent from app, components, lib and utils                                                                           |
+| 23        | pass   | The 6 tests in `clear-unconfirmed-ai-values.db.test.ts`, which run the real migration file                                                                                                                     |
 
 | Security test                                                       | Ran | Result |
 | ------------------------------------------------------------------- | --- | ------ |
@@ -419,8 +419,46 @@ Date: 2026-11-01. Commit: 51902ad.
 | `refuses a user with no company and changes nothing`                | yes | pass   |
 | `does not repeat the sent value in the error`                       | yes | pass   |
 
-Not covered by any automated test in this run, for /ui-test:
+### Browser
 
-- A real PDF through real Gemini and R2.
-- The confirmed name appearing in the admin panel.
-- The full-width panel layout, the stacked upload card and the phone width.
+Date: 2026-11-01, on http://localhost:3000 with the development database. Screenshots
+were skipped at the developer's request, so there is no screenshot folder.
+
+| Criterion | Result | What was seen                                                                                                               |
+| --------- | ------ | --------------------------------------------------------------------------------------------------------------------------- |
+| 16        | pass   | Real PDF through real Gemini and R2: type, 31 March 2027 and the matching item were filled in and marked as suggested by AI |
+| 17        | pass   | Real PDF with no date: date empty, box unticked, Save disabled                                                              |
+| 18        | pass   | Faked upload response: full message, empty fields, Save disabled                                                            |
+| 19        | pass   | Save stayed disabled until type, covers and a date or the box were answered, and unticking disabled it again                |
+| 20        | pass   | After a reload: "Not confirmed yet", empty fields, View PDF. The database held no type, date or link for the 3 real uploads |
+| 21        | pass   | Rows with no type say "Unnamed document", and the old message did not appear                                                |
+| 22        | pass   | `<img src=x onerror=...>` saved and shown as plain text, no image added, nothing ran                                        |
+
+Also seen working: the full-width panel, Edit, Cancel throwing away a change, saving an
+edit, "Not on my checklist" showing "Waiting for admin review" with the typed name in
+the database, and the dashboard showing the new date and Covered.
+
+Console errors: none. Failed requests: none. Request tracking started after the first
+upload, so that one request was not recorded.
+
+Not run:
+
+- The confirmed name in the admin panel: the account is not an admin, and the test does
+  not log in.
+- A real View PDF click: it redirects to R2, and this test may only open the app URL.
+- A true phone width: Chrome's window stopped at 502px wide. At that width the fields
+  stacked with no sideways scroll.
+
+Findings:
+
+1. A real blank PDF came back from Gemini with the type `NONE`. The card showed it as
+   "Suggested by AI" with "Not on my checklist" selected, not the "could not be read"
+   message. Nothing is saved unless the user clicks Save, but saving it unchanged would
+   send admins a request named `NONE`.
+2. The upload card shows type and date side by side with Covers below, not fully
+   stacked as proposed for Step 5b.
+3. Documents 15 and 20 have an `APPROVED` request and no checklist link, so their rows
+   show no status line and their form shows "Not on my checklist".
+
+Test data left in the development database for this company: documents 31 (covers Fire
+Safety on the dashboard), 32 (a `PENDING_REVIEW` request) and 33 (unconfirmed).
