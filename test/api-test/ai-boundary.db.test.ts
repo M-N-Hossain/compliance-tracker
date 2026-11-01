@@ -162,6 +162,37 @@ describe("AI boundary on upload", () => {
     expect(storedFiles.has(document.fileUrl)).toBe(true);
   });
 
+  // A real blank PDF came back with the type "NONE". These all mean "nothing was read",
+  // so the user must see the "could not be read" message, not a suggestion.
+  it.each([["NONE"], ["none"], [" None "], [null]])(
+    "treats the type %j as nothing read",
+    async (certificateType) => {
+      scriptGeminiAnswer({ certificateType, expiryDate: null, matchedTemplate: "NONE" });
+
+      const response = await uploadPdf();
+      const body = await response.json();
+      const document = await storedDocument(body.id);
+
+      expect(response.status).toBe(201);
+      expect(body.extracted).toBeNull();
+      expect(document.extractedType).toBeNull();
+      expect(storedFiles.has(document.fileUrl)).toBe(true);
+    },
+  );
+
+  // Only the whole word counts, so a real certificate that contains it still gets through.
+  it("keeps a real type that only contains the word NONE", async () => {
+    scriptGeminiAnswer({
+      certificateType: "Nonexistent Hazard Declaration",
+      expiryDate: null,
+      matchedTemplate: "NONE",
+    });
+
+    const body = await (await uploadPdf()).json();
+
+    expect(body.extracted.certificateType).toBe("Nonexistent Hazard Declaration");
+  });
+
   // The rule itself: the suggestion reaches the browser, and none of it reaches the database.
   it("saves no AI values before the user confirms them", async () => {
     const response = await uploadPdf();
