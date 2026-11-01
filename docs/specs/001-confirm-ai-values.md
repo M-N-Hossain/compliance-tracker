@@ -369,3 +369,4 @@ before it is applied.
   also covers the Edit and Cancel buttons on a confirmed row, which have no acceptance
   criterion of their own.
 - Commit: `test: cover the confirm flow in the browser`
+- Done: yes
