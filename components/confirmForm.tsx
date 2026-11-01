@@ -45,6 +45,8 @@ export default function ConfirmForm({
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  // Saved documents start closed, behind an Edit button. Unsaved ones must be answered, so open.
+  const [open, setOpen] = useState(!initiallySaved);
 
   // Changes one field and clears any old error, because the user is fixing it.
   function update(change: Partial<ConfirmFormValues>) {
@@ -100,6 +102,27 @@ export default function ConfirmForm({
     } finally {
       setSaving(false);
     }
+  }
+
+  // Throws away unsaved edits, so the form never reopens showing values nobody saved.
+  function handleCancel() {
+    setValues(savedValues ?? initialValues);
+    setError("");
+    setOpen(false);
+  }
+
+  // Closed: the page shows the saved values as text, and this is only the way in.
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label={`Edit: ${label}`}
+        className="text-brand hover:text-brand-dark min-h-11 text-sm font-medium"
+      >
+        Edit
+      </button>
+    );
   }
 
   return (
@@ -173,17 +196,30 @@ export default function ConfirmForm({
       </div>
 
       {/* The button's look follows the same three states as its text. */}
-      <button
-        type="submit"
-        disabled={!canSave}
-        className={`min-h-11 self-start rounded-lg px-4 text-sm ${
-          canSave
-            ? "bg-brand hover:bg-brand-dark font-medium text-white"
-            : "border-line bg-canvas text-muted border"
-        }`}
-      >
-        {saving ? "Saving..." : isSaved ? "Saved" : "Save"}
-      </button>
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="submit"
+          disabled={!canSave}
+          className={`min-h-11 rounded-lg px-4 text-sm ${
+            canSave
+              ? "bg-brand hover:bg-brand-dark font-medium text-white"
+              : "border-line bg-canvas text-muted border"
+          }`}
+        >
+          {saving ? "Saving..." : isSaved ? "Saved" : "Save"}
+        </button>
+
+        {/* Only a saved document has something to go back to. */}
+        {initiallySaved && (
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="text-muted hover:text-ink min-h-11 px-2 text-sm"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
 
       {/* The server's reason, when it refuses. */}
       {error && <p className="text-bad text-xs">{error}</p>}

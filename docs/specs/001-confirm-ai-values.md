@@ -315,6 +315,7 @@ would be refused by the new route.
 - Tests: none new in Vitest, because this is page layout. Step 8 proves the row text
   (AC 20, 21). `npm run check` must pass.
 - Commit: `feat: show read-only confirmed rows with an edit button`
+- Done: yes
 
 ### Step 6: Stop saving model output on upload
 
@@ -349,5 +350,7 @@ before it is applied.
 - Tests: `confirm-upload.spec.ts` answers `POST /api/documents` in the browser and
   creates the document row directly in the test database. It covers the prefilled
   card and date (AC 16), no date (AC 17), nothing returned (AC 18), Save disabled
-  (AC 19), the reload (AC 20), the row text (AC 21) and HTML shown as text (AC 22).
+  (AC 19), the reload (AC 20), the row text (AC 21) and HTML shown as text (AC 22). It
+  also covers the Edit and Cancel buttons on a confirmed row, which have no acceptance
+  criterion of their own.
 - Commit: `test: cover the confirm flow in the browser`

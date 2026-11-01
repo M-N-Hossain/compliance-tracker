@@ -49,15 +49,15 @@ export default async function DocumentsPage() {
     ...documents.filter((d) => d.value === NOT_DECIDED),
     ...documents.filter((d) => d.value !== NOT_DECIDED),
   ];
-  const notLinked = documents.filter((d) => d.value === NOT_DECIDED).length;
+  const notConfirmed = documents.filter((d) => d.value === NOT_DECIDED).length;
 
   return (
     <main className="text-ink mx-auto flex max-w-5xl flex-col gap-6 px-6 pt-8 pb-16">
       <div>
         <h1 className="text-3xl font-semibold">Documents</h1>
         <p className="text-muted mt-1.5">
-          Upload a certificate, then confirm which checklist item it covers. Nothing counts until
-          you save.
+          Upload a certificate, then check the details and confirm them. Nothing counts until you
+          save.
         </p>
       </div>
 
@@ -67,7 +67,7 @@ export default async function DocumentsPage() {
         <div className="border-line flex flex-wrap items-baseline justify-between gap-2 border-b px-5 pt-5 pb-3.5">
           <h2 className="text-lg font-semibold">Your documents</h2>
           <p className="text-muted text-sm">
-            {documents.length} documents · {notLinked} not linked
+            {documents.length} documents · {notConfirmed} not confirmed
           </p>
         </div>
 
@@ -76,9 +76,12 @@ export default async function DocumentsPage() {
         ) : (
           <ul>
             {sorted.map((doc) => {
-              const name = doc.extractedType ?? "Unreadable document";
+              // An empty type no longer means the AI failed: it may just not be confirmed yet.
+              const name = doc.extractedType ?? "Unnamed document";
               const pending = doc.pendingRequirement?.status;
               const undecided = doc.value === NOT_DECIDED;
+              // The linked item's name, for the read-only "Covers" line.
+              const covers = templateOptions.find((t) => t.id === doc.requirementTemplateId)?.name;
               // The first 10 characters are the UTC date, so no time zone can shift it by a day.
               const date = doc.expiryDate ? doc.expiryDate.toISOString().slice(0, 10) : "";
 
@@ -92,18 +95,17 @@ export default async function DocumentsPage() {
                   <div className="flex-[1_1_280px]">
                     <p className="font-medium">{name}</p>
                     <p className="text-muted text-sm">
-                      Uploaded {formatDate(doc.createdAt)} ·{" "}
-                      {doc.extractedType === null
-                        ? "The AI could not read this file"
-                        : doc.expiryDate
-                          ? `Expires ${formatDate(doc.expiryDate)}`
-                          : "No expiry date"}
+                      Uploaded {formatDate(doc.createdAt)}
+                      {/* Only a confirmed row has an expiry answer worth stating. */}
+                      {!undecided &&
+                        ` · ${doc.expiryDate ? `Expires ${formatDate(doc.expiryDate)}` : "No expiry date"}`}
                     </p>
 
                     {/* One status line, only when there's something to say */}
                     {undecided && (
-                      <p className="text-warn mt-1 text-sm font-medium">Not linked yet</p>
+                      <p className="text-warn mt-1 text-sm font-medium">Not confirmed yet</p>
                     )}
+                    {covers && <p className="text-muted mt-1 text-sm">Covers: {covers}</p>}
                     {!undecided &&
                       doc.requirementTemplateId === null &&
                       pending === "PENDING_REVIEW" && (
