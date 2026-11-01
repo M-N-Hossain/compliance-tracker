@@ -49,3 +49,7 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /test/support/.blocked-network.log
+# Browser test screenshots, which can show dev data
+/.screenshots/
+# Saved branch diffs for the review stage
+/.review/

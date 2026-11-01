@@ -1,8 +1,8 @@
 # How we build features
 
-> **Not ready yet:** the slash commands below are built in Phase 4 of the
-> workflow setup. Until then, this file describes the plan. Remove this note
-> when Phase 4 is done.
+> **Not ready yet:** the review-code subagent used by `/code-review` is built in
+> Phase 5 of the workflow setup. Until then, that review shows as not run. Remove
+> this note when Phase 5 is done.
 
 This file describes the process. It enforces nothing: permission rules, hooks,
 CI and GitHub settings do that. The commands to run are in the "Commands"
@@ -17,7 +17,7 @@ section of CLAUDE.md, so they are not repeated here.
 ## Feature path
 
 ```text
-/start -> /breakdown -> /build -> /test -> /ui-test -> review -> /pr -> /record
+/start -> /breakdown -> /build -> /test -> /ui-test -> /code-review -> /pr -> /record
 ```
 
 1. **`/start <idea>`:** asks clarifying questions, then writes
@@ -33,10 +33,12 @@ section of CLAUDE.md, so they are not repeated here.
    the acceptance criteria one by one with evidence.
 5. **`/ui-test NNN`:** for any UI change, walks the flows in the browser on
    localhost, including error and empty states. Findings go back to `/build`.
-6. **Review:** saves the branch diff to a file. The review-code subagent checks
-   it against the spec and CLAUDE.md. The built-in `/code-review` and
-   `/security-review` also run. All findings are advice: CI and the developer
-   are the gate.
+6. **`/code-review NNN`:** saves the branch diff to a file. The review-code
+   subagent checks it against the spec and CLAUDE.md. The built-in bug review
+   and `/security-review` also run. This project's skill replaces the built-in
+   `/code-review`, so the built-in bug review is reached through its `/review`
+   alias. All findings are advice: CI and the developer are the gate. The
+   developer decides each finding, and the decisions are saved in the spec.
 7. **`/pr` (only the developer starts it):** writes the PR description from the
    spec, pushes the branch and opens the PR (both ask first), waits for CI, and
    updates the spec status. The developer reviews and merges.
@@ -67,7 +69,7 @@ A feature is done only when all of these are true:
 6. The developer has merged the PR.
 7. The feature record has been written.
 
-A quick fix needs items 2 to 6, plus evidence that the fix works.
+A quick fix needs items 2, 3, 5 and 6, plus evidence that the fix works.
 
 Never say "done" without evidence.
 
