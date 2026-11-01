@@ -279,6 +279,7 @@ showing the confirmed name.
 - Tests: none yet, because nothing shows the form. `npm run check` must pass. Step 8
   proves its behaviour in the browser (AC 17, 19).
 - Commit: `feat: add the document confirm form`
+- Done: yes
 
 ### Step 3: Confirm all three values together
 
