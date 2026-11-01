@@ -39,8 +39,11 @@ jobs:
           --health-retries 10
 
     steps:
-      # 1. Download your repository code onto the machine
+      # 1. Download your repository code onto the machine.
+      #    fetch-depth 0 gets the full history, which step 8 needs to compare with main.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # 2. Install Node.js. "cache: npm" saves downloaded packages for faster reruns
       - uses: actions/setup-node@v4
@@ -71,3 +74,17 @@ jobs:
 
       # 7. Prove the hook that guards Claude's commands still works.
       - run: node test/hook-test/block-destructive.test.mjs
+
+      # 8. On a PR, fail if a migration already on the target branch was changed.
+      #    M = edited, D = deleted, R = renamed. A new migration (A) is fine.
+      - name: Block changes to merged migrations
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          changed=$(git diff --name-status --diff-filter=MDR "origin/$BASE_REF...HEAD" -- prisma/migrations)
+          if [ -n "$changed" ]; then
+            echo "Merged migrations must not change. Write a new migration instead:"
+            echo "$changed"
+            exit 1
+          fi

@@ -27,6 +27,7 @@ each with a \_template.md to copy.
 ## Commands
 
 - Dev server: npm run dev
+- App URL (the only site browser tests may open): http://localhost:3000
 - Lint: npm run lint
 - Prisma client: npx prisma generate
 - New migration (dev): npx prisma migrate dev
