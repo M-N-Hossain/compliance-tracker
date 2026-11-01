@@ -307,6 +307,7 @@ would be refused by the new route.
 - Tests: a new type renames a request in `PENDING_REVIEW` (AC 14), and leaves
   `APPROVED` and `REJECTED` requests unchanged (AC 15).
 - Commit: `feat: update a waiting request when its type is edited`
+- Done: yes
 
 ### Step 5: Show confirmed and unconfirmed rows differently
 

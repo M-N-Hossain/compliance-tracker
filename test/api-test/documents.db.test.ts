@@ -132,6 +132,46 @@ describe("PATCH /api/documents/:id", () => {
     expect(pending.name).toBe(CONFIRMED_TYPE);
   });
 
+  // Nobody has decided yet, so the admin must see the corrected name.
+  it("renames a request that is still waiting when the type is edited", async () => {
+    logInAs(companyA);
+    await patchDocument(documentOfA.id, null, { certificateType: "Food Safty" });
+
+    const response = await patchDocument(documentOfA.id, null, {
+      certificateType: "Food Safety",
+    });
+    const pending = await prisma.pendingRequirement.findUniqueOrThrow({
+      where: { documentId: documentOfA.id },
+    });
+
+    expect(response.status).toBe(200);
+    expect(pending.name).toBe("Food Safety");
+  });
+
+  // The decision is made, so the name stays a record of what the admin decided on.
+  it.each(["APPROVED", "REJECTED"] as const)(
+    "keeps the name of a request that is %s when the type is edited",
+    async (status) => {
+      logInAs(companyA);
+      await patchDocument(documentOfA.id, null, { certificateType: "Name the admin saw" });
+      await prisma.pendingRequirement.update({
+        where: { documentId: documentOfA.id },
+        data: { status },
+      });
+
+      const response = await patchDocument(documentOfA.id, null, {
+        certificateType: "Name typed later",
+      });
+      const pending = await prisma.pendingRequirement.findUniqueOrThrow({
+        where: { documentId: documentOfA.id },
+      });
+
+      expect(response.status).toBe(200);
+      expect(pending.name).toBe("Name the admin saw");
+      expect((await storedDocument()).extractedType).toBe("Name typed later");
+    },
+  );
+
   // Uploading an expired certificate is allowed, and the dashboard then shows Expired.
   it("stores an expiry date in the past", async () => {
     logInAs(companyA);
