@@ -3,6 +3,10 @@ import { parseIsoDate } from "@/utils/date";
 // The longest certificate type we accept, measured after trimming.
 const MAX_TYPE_LENGTH = 200;
 
+// The range of a PostgreSQL "integer" column. A number outside it makes the query crash.
+const MIN_DB_INT = -2147483648;
+const MAX_DB_INT = 2147483647;
+
 // The clean values, in the form the database wants.
 export type ConfirmPayload = {
   certificateType: string;
@@ -36,6 +40,10 @@ export function parseConfirmPayload(body: unknown): ConfirmResult {
   if (type.length > MAX_TYPE_LENGTH) {
     return { ok: false, error: `Certificate type must be ${MAX_TYPE_LENGTH} characters or fewer` };
   }
+  // PostgreSQL text cannot hold a NUL character, so we refuse it before the database does.
+  if (type.includes("\u0000")) {
+    return { ok: false, error: "Certificate type contains a character that is not allowed" };
+  }
 
   // The date: null is a decision, but undefined means the field was left out.
   if (expiryDate === undefined) {
@@ -43,12 +51,19 @@ export function parseConfirmPayload(body: unknown): ConfirmResult {
   }
   // parseIsoDate also answers null for bad input, so only call it when a value was sent.
   const date = expiryDate === null ? null : parseIsoDate(expiryDate);
-  if (expiryDate !== null && date === null) {
+  // PostgreSQL has no year 0, so a date before 0001-01-01 is refused with the same message.
+  if ((expiryDate !== null && date === null) || (date !== null && date.getUTCFullYear() < 1)) {
     return { ok: false, error: "Expiry date must be a real date in YYYY-MM-DD format" };
   }
 
-  // The checklist item: null is a decision here too, and anything else must be a whole number.
-  if (requirementTemplateId !== null && !Number.isInteger(requirementTemplateId)) {
+  // The checklist item: null is a decision here too. Anything else must be a whole number
+  // that fits the database column.
+  if (
+    requirementTemplateId !== null &&
+    (!Number.isInteger(requirementTemplateId) ||
+      (requirementTemplateId as number) < MIN_DB_INT ||
+      (requirementTemplateId as number) > MAX_DB_INT)
+  ) {
     return { ok: false, error: "Invalid covers value" };
   }
 

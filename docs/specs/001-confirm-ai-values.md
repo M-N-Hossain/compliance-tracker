@@ -409,6 +409,7 @@ Added because the developer marked review finding 5 as fix.
 - Tests: a 400 for a checklist id over 32 bits, a NUL character in the type and the year
   0000 (AC 8, 9 and 11)
 - Commit: `fix: refuse confirm values the database cannot store`
+- Done: yes
 
 ## Evidence
 

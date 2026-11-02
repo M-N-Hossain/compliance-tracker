@@ -109,6 +109,11 @@ describe("parseConfirmPayload", () => {
 
       expect(parseConfirmPayload({ ...valid, certificateType }).ok).toBe(true);
     });
+
+    // PostgreSQL text cannot hold a NUL character, so saving it would crash with a 500.
+    it("refuses a NUL character", () => {
+      expect(parseConfirmPayload({ ...valid, certificateType: "Food\u0000Safety" }).ok).toBe(false);
+    });
   });
 
   describe("a bad expiry date", () => {
@@ -121,6 +126,16 @@ describe("parseConfirmPayload", () => {
     ])("refuses %s", (_name, expiryDate) => {
       expect(parseConfirmPayload({ ...valid, expiryDate }).ok).toBe(false);
     });
+
+    // PostgreSQL has no year 0 (1 BC is followed by AD 1), so saving it would crash with a 500.
+    it("refuses the year 0000", () => {
+      expect(parseConfirmPayload({ ...valid, expiryDate: "0000-01-01" }).ok).toBe(false);
+    });
+
+    // The first day PostgreSQL can store must still pass, so the limit is tested from both sides.
+    it("accepts the year 0001", () => {
+      expect(parseConfirmPayload({ ...valid, expiryDate: "0001-01-01" }).ok).toBe(true);
+    });
   });
 
   describe("a bad checklist item", () => {
@@ -130,6 +145,16 @@ describe("parseConfirmPayload", () => {
       ["a boolean", true],
     ])("refuses %s", (_name, requirementTemplateId) => {
       expect(parseConfirmPayload({ ...valid, requirementTemplateId }).ok).toBe(false);
+    });
+
+    // The id column is a 32-bit integer, so a bigger number would crash the query with a 500.
+    it("refuses an id over 32 bits", () => {
+      expect(parseConfirmPayload({ ...valid, requirementTemplateId: 2147483648 }).ok).toBe(false);
+    });
+
+    // The largest id the column can hold must still pass.
+    it("accepts the largest 32-bit id", () => {
+      expect(parseConfirmPayload({ ...valid, requirementTemplateId: 2147483647 }).ok).toBe(true);
     });
   });
 
