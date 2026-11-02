@@ -87,8 +87,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Could not save the document" }, { status: 500 });
   }
 
-  // AI extraction. if it fails (quota, bad answer),
-  // the upload has still succeeded and the AI fields just stay empty.
+  // AI extraction. The answer only goes back to the browser as a suggestion: nothing from
+  // the model is saved here. PATCH /api/documents/:id saves what the user confirms.
+  // If it fails (quota, bad answer), the upload has still succeeded, with no suggestion.
   let extracted = null;
   try {
     // The company's checklist. Only its own category, so Gemini can't
@@ -102,15 +103,6 @@ export async function POST(req: Request) {
       : [];
 
     extracted = await extractCertificate(bytes, templates);
-    if (extracted) {
-      await prisma.document.update({
-        where: { id: document.id },
-        data: {
-          extractedType: extracted.certificateType,
-          expiryDate: extracted.expiryDate,
-        },
-      });
-    }
   } catch (err) {
     console.error("Certificate extraction failed:", err);
   }

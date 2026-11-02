@@ -23,7 +23,17 @@ export async function syncPendingRequirement(documentId: number) {
     return;
   }
 
-  if (pending) return;
+  if (pending) {
+    // Nobody has decided yet, so the admin should see the name the user last confirmed.
+    // Once decided, the name stays a record of what the admin decided on.
+    if (pending.status === "PENDING_REVIEW" && document.extractedType) {
+      await prisma.pendingRequirement.update({
+        where: { id: pending.id },
+        data: { name: document.extractedType },
+      });
+    }
+    return;
+  }
 
   // Nothing to suggest if the AI couldn't read a type,
   // or if the company has no category yet.

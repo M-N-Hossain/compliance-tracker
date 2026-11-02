@@ -94,18 +94,26 @@ describe("AI boundary on upload", () => {
     expect(await prisma.pendingRequirement.count()).toBe(0);
   });
 
-  // Only the user's confirmation creates the link.
+  // Only the user's confirmation saves anything, and what is saved is what the user sent.
+  // These values differ from Gemini's on purpose, so Gemini's cannot pass by accident.
   it("links the document once the user confirms", async () => {
     const { id } = await (await uploadPdf()).json();
 
     const request = new Request(`http://localhost/api/documents/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({ requirementTemplateId: template.id }),
+      body: JSON.stringify({
+        certificateType: "Type the user corrected",
+        expiryDate: "2028-06-30",
+        requirementTemplateId: template.id,
+      }),
     });
     const response = await PATCH(request, { params: Promise.resolve({ id: String(id) }) });
+    const document = await storedDocument(id);
 
     expect(response.status).toBe(200);
-    expect((await storedDocument(id)).requirementTemplateId).toBe(template.id);
+    expect(document.requirementTemplateId).toBe(template.id);
+    expect(document.extractedType).toBe("Type the user corrected");
+    expect(document.expiryDate).toEqual(new Date("2028-06-30T00:00:00.000Z"));
   });
 
   // Model output is untrusted, so a name that is not on the checklist must be dropped.
@@ -133,18 +141,69 @@ describe("AI boundary on upload", () => {
     expect(response.status).toBe(201);
     expect(body.extracted).toBeNull();
     expect(document.extractedType).toBeNull();
+    expect(document.expiryDate).toBeNull();
+    expect(document.requirementTemplateId).toBeNull();
     expect(storedFiles.has(document.fileUrl)).toBe(true);
   });
 
-  // KNOWN GAP, not fixed during setup: the first feature of the Phase 6 dry run.
-  // The route saves these two AI values before the user confirms them.
-  // it.fails means "this is wrong today". When the gap is fixed this reports a failure,
-  // which is the reminder to change it.fails to it.
-  it.fails("saves no AI values before the user confirms them", async () => {
-    const { id } = await (await uploadPdf()).json();
-    const document = await storedDocument(id);
+  // An answer we cannot use is treated like an outage: keep the file, save nothing.
+  it("keeps the upload and saves no AI values when Gemini's answer is unusable", async () => {
+    scriptGeminiAnswer({ certificateType: "", expiryDate: "2027-03-31", matchedTemplate: "NONE" });
 
+    const response = await uploadPdf();
+    const body = await response.json();
+    const document = await storedDocument(body.id);
+
+    expect(response.status).toBe(201);
+    expect(body.extracted).toBeNull();
     expect(document.extractedType).toBeNull();
     expect(document.expiryDate).toBeNull();
+    expect(document.requirementTemplateId).toBeNull();
+    expect(storedFiles.has(document.fileUrl)).toBe(true);
+  });
+
+  // A real blank PDF came back with the type "NONE". These all mean "nothing was read",
+  // so the user must see the "could not be read" message, not a suggestion.
+  it.each([["NONE"], ["none"], [" None "], [null]])(
+    "treats the type %j as nothing read",
+    async (certificateType) => {
+      scriptGeminiAnswer({ certificateType, expiryDate: null, matchedTemplate: "NONE" });
+
+      const response = await uploadPdf();
+      const body = await response.json();
+      const document = await storedDocument(body.id);
+
+      expect(response.status).toBe(201);
+      expect(body.extracted).toBeNull();
+      expect(document.extractedType).toBeNull();
+      expect(storedFiles.has(document.fileUrl)).toBe(true);
+    },
+  );
+
+  // Only the whole word counts, so a real certificate that contains it still gets through.
+  it("keeps a real type that only contains the word NONE", async () => {
+    scriptGeminiAnswer({
+      certificateType: "Nonexistent Hazard Declaration",
+      expiryDate: null,
+      matchedTemplate: "NONE",
+    });
+
+    const body = await (await uploadPdf()).json();
+
+    expect(body.extracted.certificateType).toBe("Nonexistent Hazard Declaration");
+  });
+
+  // The rule itself: the suggestion reaches the browser, and none of it reaches the database.
+  it("saves no AI values before the user confirms them", async () => {
+    const response = await uploadPdf();
+    const body = await response.json();
+    const document = await storedDocument(body.id);
+
+    expect(response.status).toBe(201);
+    expect(body.extracted.certificateType).toBe("Food Safety Certificate");
+    expect(body.extracted.expiryDate).toBe("2027-03-31T00:00:00.000Z");
+    expect(document.extractedType).toBeNull();
+    expect(document.expiryDate).toBeNull();
+    expect(document.requirementTemplateId).toBeNull();
   });
 });
