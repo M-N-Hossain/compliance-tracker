@@ -37,7 +37,9 @@ If no idea was given, ask for one and wait.
 6. Copy the template to that path and fill in every section, following the
    template's own instructions:
    - Keep the status as draft.
-   - Write acceptance criteria that a test or command output can prove.
+   - Write acceptance criteria that a test or command output can prove. Keep to
+     the limit in the workflow file's "How much to test". If the idea needs more,
+     suggest splitting it into two specs instead of writing them all.
    - Answer every security item. If one does not apply, say why.
    - Mark anything you assumed with CHECK, so the developer can correct it.
 7. Show the path, and list every CHECK and open question.

@@ -69,6 +69,22 @@ small findings can share one issue, such as one test cleanup issue.
 
 There is no spec and no feature record.
 
+## How much to test
+
+Test what can hurt users or their data, once, at the cheapest level.
+
+- **One test per acceptance criterion,** at the cheapest level that proves it:
+  a unit test first, then an API or database test, and a browser test only for
+  what only a browser can show.
+- **Always tested:** company ownership (the cross-tenant test), login checks,
+  the AI boundary, data migrations, and anything that can lose or corrupt data.
+- **Skipped or kept light:**
+  - layout and wording, which `/ui-test` checks by eye
+  - a second test of a check already proven at a lower level
+  - both sides of a limit, unless it is a security limit
+- **At most about 10 acceptance criteria per spec.** More than that means the
+  spec should be split.
+
 ## Definition of done
 
 A feature is done only when all of these are true:

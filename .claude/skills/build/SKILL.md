@@ -34,9 +34,10 @@ make the commits, and the developer pushes and merges.
    it. **Stop and wait for "go".** A "go" covers this step only.
 2. Follow any project skill that covers this kind of change, such as a database
    change.
-3. Write the failing test where it makes sense, then run it. Confirm that it fails
-   for the expected reason. If a test does not make sense here, such as for a
-   config or styling change, say so and say why.
+3. Write the failing tests the step lists, and no others, then run them. Confirm
+   that they fail for the expected reason. If a test does not make sense here,
+   such as for a config or styling change, say so and say why. If you think a
+   test is missing, ask before adding it.
 4. Write the code until the test passes, keeping to the files the step lists.
 5. Run the checks listed in CLAUDE.md that cover this change. Report what you ran
    and the result.

@@ -35,7 +35,8 @@ If no number was given, ask for one and wait.
    ### Step 1: Goal in a few words
 
    - Files: the files this step creates or changes
-   - Tests: each test and the acceptance criterion it proves
+   - Tests: each test, its level (unit, API, database or browser) and the
+     acceptance criterion it proves
    - Commit: a conventional commit message
    ```
 
@@ -45,7 +46,8 @@ If no number was given, ask for one and wait.
    - follow the steps before it, so nothing depends on later work
 
 6. Check the plan against the spec:
-   - Every acceptance criterion is covered by at least one step.
+   - Every acceptance criterion is covered by one test, at the level the workflow
+     file's "How much to test" gives. Plan no second test of the same check.
    - Every test in the spec's test plan appears in a step.
    - The security section's tests appear in a step.
 
