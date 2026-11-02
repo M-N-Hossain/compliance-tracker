@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Reviews a saved branch diff against its feature spec and CLAUDE.md. Use when /code-review asks for the spec review, passing the paths of the diff file and the spec.
+description: Reviews a saved branch diff against its feature spec and CLAUDE.md. Use when /review-changes asks for the spec review, passing the paths of the diff file and the spec.
 # Read-only on purpose: it can report problems but cannot change or run anything.
 tools: Read, Grep, Glob
 # scope: generic means this subagent can move to the global setup later.

@@ -65,7 +65,7 @@ If no number was given, ask for one and wait.
    - Anything failed or not proven: the next stage is /build, once the developer
      decides.
    - Anything marked ui-test, or any UI change: the next stage is /ui-test.
-   - Otherwise: the next stage is /code-review.
+   - Otherwise: the next stage is /review-changes.
 
 ## Limits
 

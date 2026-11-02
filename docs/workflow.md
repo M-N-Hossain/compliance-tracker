@@ -13,7 +13,7 @@ section of CLAUDE.md, so they are not repeated here.
 ## Feature path
 
 ```text
-/start -> /breakdown -> /build -> /test -> /ui-test -> /code-review -> /pr -> /record
+/start -> /breakdown -> /build -> /test -> /ui-test -> /review-changes -> /pr -> /record
 ```
 
 1. **`/start <idea>`:** asks clarifying questions, then writes
@@ -28,13 +28,13 @@ section of CLAUDE.md, so they are not repeated here.
 4. **`/test NNN`:** runs every automated check in CLAUDE.md, then goes through
    the acceptance criteria one by one with evidence.
 5. **`/ui-test NNN`:** for any UI change, walks the flows in the browser on
-   localhost, including error and empty states. Findings go back to `/build`.
-6. **`/code-review NNN`:** saves the branch diff to a file. The review-code
-   subagent checks it against the spec and CLAUDE.md. The built-in bug review
-   and `/security-review` also run. This project's skill replaces the built-in
-   `/code-review`, so the built-in bug review is reached through its `/review`
-   alias. All findings are advice: CI and the developer are the gate. The
-   developer decides each finding, and the decisions are saved in the spec.
+   localhost, including error and empty states. A failed criterion goes back to
+   `/build`, and other findings follow the findings rule below.
+6. **`/review-changes NNN`:** saves the branch diff to a file. The review-code
+   subagent checks it against the spec and CLAUDE.md. The built-in
+   `/code-review` (the bug review) and `/security-review` also run. All findings
+   are advice: CI and the developer are the gate. The developer decides each
+   finding, and the decisions are saved in the spec.
 7. **`/pr` (only the developer starts it):** writes the PR description from the
    spec, pushes the branch and opens the PR (both ask first), waits for CI, and
    updates the spec status. The developer reviews and merges.

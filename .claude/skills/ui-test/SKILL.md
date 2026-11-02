@@ -59,4 +59,4 @@ If no number was given, ask for one and wait.
       go on.
     - Anything else you saw is a finding: list it with a recommendation,
       following the findings rule in the workflow file.
-    - Otherwise: the next stage is /code-review.
+    - Otherwise: the next stage is /review-changes.
