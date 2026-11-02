@@ -28,7 +28,7 @@ missing or empty, say so and stop.
 
 1. **Acceptance criteria:** for each criterion in the spec, is it met by the
    change? Name the code that meets it, or report that nothing does.
-2. **Security section:** check every item in the spec's security section against
+2. **Security section:** check every item in the spec's security checklist against
    the change.
    - Every route handler and server action the change adds or edits must check auth
      and company ownership itself, not only in a proxy or middleware.

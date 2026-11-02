@@ -38,7 +38,7 @@ If no number was given, ask for one and wait.
    Read each test you name, to confirm it checks what the criterion says. Evidence
    must come from this run, never from memory or an earlier run.
 
-6. Do the same for the tests the spec's security section requires, and say whether
+6. Do the same for the tests the spec's security checklist requires, and say whether
    each one ran and passed.
 7. Add or replace a "## Evidence" section at the end of the spec:
 

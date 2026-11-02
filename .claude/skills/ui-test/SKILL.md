@@ -39,6 +39,8 @@ If no number was given, ask for one and wait.
    the spec's "## Evidence" section. If there are none, say so and stop.
 6. For each of those criteria, walk the flow it describes:
    - Try the normal path, then the error states and empty states.
+   - If the spec depends on a design spec, check that the screen matches its
+     "Decision". A difference is a finding.
    - On each page, check the console for errors and look for failed network
      requests. Ask only for errors, since full logs are long.
    - Save screenshots of the key states to `.screenshots/NNN/`, using the spec

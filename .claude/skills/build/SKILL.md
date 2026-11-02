@@ -24,7 +24,10 @@ make the commits, and the developer pushes and merges.
    name the stage that comes first (/start or /breakdown).
 3. Check the current branch. If it is not the feature branch named in the workflow
    file, create or switch to it. The spec may still be uncommitted, and it moves to
-   the new branch with the switch. Check the branch again afterwards.
+   the new branch with the switch. Check the branch again afterwards. If the spec
+   depends on a design spec that is not on the main branch yet, bring that file
+   over from its prototype branch with `git checkout proto/NNN-slug -- <path>`,
+   and include it in the first commit.
 4. Find the first step without a "Done: yes" line. If every step is done, say so
    and name the next stage (/test).
 

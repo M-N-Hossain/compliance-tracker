@@ -21,9 +21,15 @@ If no idea was given, ask for one and wait.
 1. Read CLAUDE.md and the workflow file it links to. They say where specs live
    and where the spec template is. If either is missing, stop and tell the
    developer what you could not find.
-2. Read the spec template, and read the code this idea would touch. Only read.
+2. Read the spec templates, and read the code this idea would touch. Only read.
    Never open secret files.
-3. Ask the clarifying questions you need, covering:
+3. Decide the spec type, as the workflow file's "Which path to use" describes,
+   and say why:
+   - **design:** a new or changed screen with no approved design yet.
+   - **slice:** one thin piece that works from end to end. If the idea needs
+     several slices, or a design first, list them and write only the first.
+
+   Then ask the clarifying questions you need, covering:
    - what problem this solves, and for whom
    - what the result should be, including error and empty states
    - what is out of scope
@@ -33,9 +39,11 @@ If no idea was given, ask for one and wait.
 4. **Stop and wait for the answers.** If they raise new questions, ask again.
 5. Find the next free spec number: the highest existing number plus one, written
    with three digits, starting at 001. Choose a short lowercase slug for the
-   name, so the path is `<specs folder>/NNN-slug.md`.
-6. Copy the template to that path and fill in every section, following the
-   template's own instructions:
+   name, so the path is `<specs folder>/NNN-slug.md`, or `NNN-design-slug.md`
+   for a design.
+6. Copy the template for its type to that path and fill in every section,
+   following the template's own instructions. Fill in `Depends on:`. For a
+   design, leave "Versions tried" and "Decision" for after the prototype.
    - Keep the status as draft.
    - Write acceptance criteria that a test or command output can prove. Keep to
      the limit in the workflow file's "How much to test". If the idea needs more,
@@ -43,5 +51,7 @@ If no idea was given, ask for one and wait.
    - Answer every security item. If one does not apply, say why.
    - Mark anything you assumed with CHECK, so the developer can correct it.
 7. Show the path, and list every CHECK and open question.
-8. **Stop.** The developer reviews the spec. The next stage is /breakdown, and it
-   runs only after the developer approves the spec.
+8. **Stop.** The developer reviews the spec. The next stage runs only after the
+   developer approves it:
+   - **slice:** /breakdown.
+   - **design:** the prototype, as the workflow file's "Design path" describes.

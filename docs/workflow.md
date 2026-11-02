@@ -6,9 +6,33 @@ section of CLAUDE.md, so they are not repeated here.
 
 ## Which path to use
 
-- **Feature path:** the normal route for anything new.
+- **Design path:** decides what a screen looks like, before any code is built.
+- **Feature path:** builds one slice. A slice is a thin piece of a feature that
+  works from end to end once merged: its route, its screen and its tests. A
+  bigger feature is several slices, each with its own spec.
 - **Quick-fix path:** small changes only. If a quick fix turns out to touch the
   schema, auth, or more than a few files, stop and use `/start`.
+
+A spec names what it needs first in its `Depends on:` line, such as the design
+spec a slice builds.
+
+## Design path
+
+```text
+/start (design) -> prototype on branch proto/NNN-slug -> developer picks a version -> approved
+```
+
+1. **`/start <idea>`:** for a new or changed screen with no approved design,
+   writes `docs/specs/NNN-design-slug.md` from `_template-design.md`.
+2. **Prototype:** the `prototype` skill builds the versions on branch
+   `proto/NNN-slug`. The prototype code is throwaway and is never merged.
+3. **Decision:** the developer picks a version. The spec records the versions
+   tried and the decision, its status becomes approved, and it is committed on
+   the prototype branch.
+4. **Reaching `main`:** the first slice that builds the design brings the design
+   spec onto its own branch, so it is merged with that slice's PR.
+
+A design spec has no steps, tests, review or PR of its own.
 
 ## Feature path
 
@@ -17,18 +41,20 @@ section of CLAUDE.md, so they are not repeated here.
 ```
 
 1. **`/start <idea>`:** asks clarifying questions, then writes
-   `docs/specs/NNN-slug.md` with status draft. Stops so the developer can review
-   the draft.
+   `docs/specs/NNN-slug.md` from `_template.md` with status draft. Stops so the
+   developer can review the draft.
 2. **`/breakdown NNN`:** adds "## Steps" to the approved spec. Steps are small
    and ordered, each is one commit, each leaves the app working, and each lists
-   its files and tests. Stops when the steps are written.
+   its files and tests. A slice has at most 5 steps: more means two slices.
+   Stops when the steps are written.
 3. **`/build NNN`:** works on branch `feat/NNN-slug`. For each step: failing
    test first where it makes sense, implement, run checks, explain, commit.
    Stops after every step.
 4. **`/test NNN`:** runs every automated check in CLAUDE.md, then goes through
    the acceptance criteria one by one with evidence.
-5. **`/ui-test NNN`:** for any UI change, walks the flows in the browser on
-   localhost, including error and empty states. A failed criterion goes back to
+5. **`/ui-test NNN`:** only for a slice that changes the screen. Walks the flows
+   in the browser on localhost, including error and empty states, and checks
+   them against the design spec's decision. A failed criterion goes back to
    `/build`, and other findings follow the findings rule below.
 6. **`/review-changes NNN`:** saves the branch diff to a file. The review-code
    subagent checks it against the spec and CLAUDE.md. The built-in
@@ -104,8 +130,8 @@ Never say "done" without evidence.
 
 ## Git rules
 
-- **Branches:** `feat/NNN-slug` for features, `fix/slug` for fixes, `chore/slug`
-  for maintenance.
+- **Branches:** `feat/NNN-slug` for slices, `fix/slug` for fixes, `chore/slug`
+  for maintenance, and `proto/NNN-slug` for prototypes, which are never merged.
 - **Commits:** conventional commits, such as `feat: add expiry reminders`. One
   commit per step.
 - **Who runs git:** Claude creates branches and commits, and reports each
@@ -117,5 +143,5 @@ Never say "done" without evidence.
 
 ## Sessions
 
-One feature per session. To continue a feature later, start a new session and
-read its spec.
+One spec per session. To continue a spec later, start a new session and read
+it.
