@@ -413,15 +413,15 @@ Added because the developer marked review finding 5 as fix.
 
 ## Evidence
 
-Date: 2026-11-01. Commit: c37bbf5, with uncommitted changes (Step 9).
+Date: 2026-11-02. Commit: 1244bd4, after Steps 10 and 11.
 
 | Check                                            | Result               |
 | ------------------------------------------------ | -------------------- |
 | `npm run lint`                                   | passed, exit 0       |
 | `npm run check`                                  | passed, exit 0       |
-| `npm run test:unit`                              | 92 passed, 9 files   |
-| `npm test`                                       | 141 passed, 13 files |
-| `npm run test:e2e`                               | 12 passed            |
+| `npm run test:unit`                              | 97 passed, 9 files   |
+| `npm test`                                       | 146 passed, 13 files |
+| `npm run test:e2e`                               | 14 passed            |
 | `node test/hook-test/block-destructive.test.mjs` | 64 of 64 passed      |
 
 | Criterion | Result | Evidence                                                                                                                                                                                                                                                             |
@@ -433,10 +433,10 @@ Date: 2026-11-01. Commit: c37bbf5, with uncommitted changes (Step 9).
 | 5         | pass   | `stores no expiry date when the user sends null`                                                                                                                                                                                                                     |
 | 6         | pass   | `names the pending request with the type the user sent`                                                                                                                                                                                                              |
 | 7         | pass   | `refuses a body with only requirementTemplateId...`, `no type`, `no date`, `no checklist item`, each comparing the whole row                                                                                                                                         |
-| 8         | pass   | `refuses a type that is not text`, `a blank type`, `a type over 200 characters`                                                                                                                                                                                      |
-| 9         | pass   | `refuses an impossible date`, `refuses a date in the wrong format`                                                                                                                                                                                                   |
+| 8         | pass   | `refuses a type that is not text`, `a blank type`, `a type over 200 characters`. Validator test `refuses a NUL character`, and the route answers 400 whenever the validator refuses (`route.ts:49`)                                                                  |
+| 9         | pass   | `refuses an impossible date`, `refuses a date in the wrong format`. Validator test `refuses the year 0000`, and the route answers 400 whenever the validator refuses (`route.ts:49`)                                                                                 |
 | 10        | pass   | `stores an expiry date in the past`                                                                                                                                                                                                                                  |
-| 11        | pass   | `refuses a template from outside the company's checklist`                                                                                                                                                                                                            |
+| 11        | pass   | `refuses a template from outside the company's checklist`. Validator test `refuses an id over 32 bits`, and the route answers 400 whenever the validator refuses (`route.ts:49`)                                                                                     |
 | 12        | pass   | `gives company B a 404 on company A's document and changes nothing`, `creates no pending request when company B sends null`                                                                                                                                          |
 | 13        | pass   | `answers the same for another company's document and a missing one`                                                                                                                                                                                                  |
 | 14        | pass   | `renames a request that is still waiting when the type is edited`                                                                                                                                                                                                    |
@@ -459,6 +459,10 @@ Date: 2026-11-01. Commit: c37bbf5, with uncommitted changes (Step 9).
 | `gives 401 when nobody is logged in and changes nothing`            | yes | pass   |
 | `refuses a user with no company and changes nothing`                | yes | pass   |
 | `does not repeat the sent value in the error`                       | yes | pass   |
+
+Steps 10 and 11 fix review findings 1 and 5 and add no criterion. Step 10 is proven by
+`cannot overwrite values confirmed in the row` and `stops being a form once it has saved`,
+which ran in this run. Nobody has seen it in a real browser yet.
 
 ### Browser
 
