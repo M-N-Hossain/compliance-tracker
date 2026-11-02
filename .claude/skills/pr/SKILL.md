@@ -61,7 +61,8 @@ This skill never merges. The developer reviews and merges.
    ```
 
    Use only facts from the spec, the evidence and the diff. Never include secrets
-   or real personal data.
+   or real personal data. Add no AI attribution line, as the workflow file's git
+   rules say.
 
 7. Show the title and description. **Stop and wait for approval.**
 

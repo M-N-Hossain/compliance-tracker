@@ -134,6 +134,9 @@ Never say "done" without evidence.
   for maintenance, and `proto/NNN-slug` for prototypes, which are never merged.
 - **Commits:** conventional commits, such as `feat: add expiry reminders`. One
   commit per step.
+- **Messages and PR descriptions:** they only explain what the change is about.
+  No `Co-Authored-By` line and no "Generated with" line, or any other AI
+  attribution.
 - **Who runs git:** Claude creates branches and commits, and reports each
   commit's hash and title. It commits only after the step's checks pass, and adds
   files by name, never with `git add -A` or `git add .`. It never amends,
