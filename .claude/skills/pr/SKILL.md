@@ -36,9 +36,9 @@ This skill never merges. The developer reviews and merges.
 
 ## Prepare
 
-5. With a spec, change its status to submitted, then give the commit commands.
-   This comes before the push, so that CI does not have to run again afterwards.
-   **Stop and wait**, then check that the working tree is clean.
+5. With a spec, change its status to submitted and commit the spec. This comes
+   before the push, so that CI does not have to run again afterwards. Then check
+   that the working tree is clean.
 6. Draft a conventional title and this description:
 
    ```markdown
@@ -61,7 +61,8 @@ This skill never merges. The developer reviews and merges.
    ```
 
    Use only facts from the spec, the evidence and the diff. Never include secrets
-   or real personal data.
+   or real personal data. Add no AI attribution line, as the workflow file's git
+   rules say.
 
 7. Show the title and description. **Stop and wait for approval.**
 

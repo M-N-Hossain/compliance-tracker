@@ -43,8 +43,8 @@ every prompt. Only the local development database is ever touched here.
 
 7. Run `npx prisma generate`, then the checks listed in CLAUDE.md that cover this
    change. If one fails, explain the root cause before fixing it.
-8. The schema and the migration folder go in the same commit. Give the commit
-   commands, or return to /build if this is part of a build step.
+8. The schema and the migration folder go in the same commit. Commit them, or
+   return to /build if this is part of a build step.
 
 ## Never
 

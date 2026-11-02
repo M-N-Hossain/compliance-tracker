@@ -21,7 +21,9 @@ If no number was given, ask for one and wait.
 1. Read CLAUDE.md and the workflow file it links to, then find the spec with this
    number. If any of them is missing, stop and tell the developer what you could
    not find. If the spec already has a "## Steps" section, stop and ask whether
-   to replace it.
+   to replace it. If its type is design, stop: a design spec has no steps.
+   If a slice in its `Depends on:` line is not merged into the main branch yet,
+   or a design in it is not approved yet, name it and stop.
 2. If the spec contains any CHECK items, list them. **Stop and wait** until the
    developer has resolved them and the spec is updated.
 3. If the status is draft, ask whether the developer approves the spec. **Stop and
@@ -35,7 +37,8 @@ If no number was given, ask for one and wait.
    ### Step 1: Goal in a few words
 
    - Files: the files this step creates or changes
-   - Tests: each test and the acceptance criterion it proves
+   - Tests: each test, its level (unit, API, database or browser) and the
+     acceptance criterion it proves
    - Commit: a conventional commit message
    ```
 
@@ -44,10 +47,14 @@ If no number was given, ask for one and wait.
    - leave the app working when it is finished
    - follow the steps before it, so nothing depends on later work
 
+   A slice has at most 5 steps. If it needs more, **stop** and suggest how to
+   split it into two slices, each with its own spec.
+
 6. Check the plan against the spec:
-   - Every acceptance criterion is covered by at least one step.
-   - Every test in the spec's test plan appears in a step.
-   - The security section's tests appear in a step.
+   - Every acceptance criterion is covered by one test, at the level the workflow
+     file's "How much to test" gives. Plan no second test of the same check.
+   - The security checklist's tests, such as the cross-tenant test, appear in a
+     step.
 
    Fix any gap by changing the steps. If the gap is in the spec itself, tell the
    developer instead of changing the spec's requirements.

@@ -6,35 +6,61 @@ section of CLAUDE.md, so they are not repeated here.
 
 ## Which path to use
 
-- **Feature path:** the normal route for anything new.
+- **Design path:** decides what a screen looks like, before any code is built.
+- **Feature path:** builds one slice. A slice is a thin piece of a feature that
+  works from end to end once merged: its route, its screen and its tests. A
+  bigger feature is several slices, each with its own spec.
 - **Quick-fix path:** small changes only. If a quick fix turns out to touch the
   schema, auth, or more than a few files, stop and use `/start`.
+
+A spec names what it needs first in its `Depends on:` line, such as the design
+spec a slice builds.
+
+## Design path
+
+```text
+/start (design) -> prototype on branch proto/NNN-slug -> developer picks a version -> approved
+```
+
+1. **`/start <idea>`:** for a new or changed screen with no approved design,
+   writes `docs/specs/NNN-design-slug.md` from `_template-design.md`.
+2. **Prototype:** the `prototype` skill builds the versions on branch
+   `proto/NNN-slug`. The prototype code is throwaway and is never merged.
+3. **Decision:** the developer picks a version. The spec records the versions
+   tried and the decision, its status becomes approved, and it is committed on
+   the prototype branch.
+4. **Reaching `main`:** the first slice that builds the design brings the design
+   spec onto its own branch, so it is merged with that slice's PR.
+
+A design spec has no steps, tests, review or PR of its own.
 
 ## Feature path
 
 ```text
-/start -> /breakdown -> /build -> /test -> /ui-test -> /code-review -> /pr -> /record
+/start -> /breakdown -> /build -> /test -> /ui-test -> /review-changes -> /pr -> /record
 ```
 
 1. **`/start <idea>`:** asks clarifying questions, then writes
-   `docs/specs/NNN-slug.md` with status draft. Stops so the developer can review
-   the draft.
+   `docs/specs/NNN-slug.md` from `_template.md` with status draft. Stops so the
+   developer can review the draft.
 2. **`/breakdown NNN`:** adds "## Steps" to the approved spec. Steps are small
    and ordered, each is one commit, each leaves the app working, and each lists
-   its files and tests. Stops when the steps are written.
+   its files and tests. A slice has at most 5 steps: more means two slices.
+   Stops when the steps are written.
 3. **`/build NNN`:** works on branch `feat/NNN-slug`. For each step: failing
-   test first where it makes sense, implement, run checks, explain, suggest a
-   commit message. Stops after every step.
+   test first where it makes sense, implement, run checks, explain, commit.
+   Stops after every step.
 4. **`/test NNN`:** runs every automated check in CLAUDE.md, then goes through
    the acceptance criteria one by one with evidence.
-5. **`/ui-test NNN`:** for any UI change, walks the flows in the browser on
-   localhost, including error and empty states. Findings go back to `/build`.
-6. **`/code-review NNN`:** saves the branch diff to a file. The review-code
-   subagent checks it against the spec and CLAUDE.md. The built-in bug review
-   and `/security-review` also run. This project's skill replaces the built-in
-   `/code-review`, so the built-in bug review is reached through its `/review`
-   alias. All findings are advice: CI and the developer are the gate. The
-   developer decides each finding, and the decisions are saved in the spec.
+5. **`/ui-test NNN`:** only for a slice that changes the screen. Walks the flows
+   in the browser on localhost, including error and empty states, and checks
+   them against the design spec's decision. A failed criterion goes back to
+   `/build`, and other findings follow the findings rule below.
+6. **`/review-changes NNN`:** saves the branch diff to a file. The review-code
+   subagent checks it against the spec and CLAUDE.md. The built-in
+   `/code-review` (the bug review) and `/security-review` also run. All findings
+   are advice: CI and the developer are the gate. The developer decides each
+   finding, and the decisions are saved in the spec.
 7. **`/pr` (only the developer starts it):** writes the PR description from the
    spec, pushes the branch and opens the PR (both ask first), waits for CI, and
    updates the spec status. The developer reviews and merges.
@@ -45,6 +71,22 @@ section of CLAUDE.md, so they are not repeated here.
 
 The spec file is the memory between sessions.
 
+## Findings during a spec
+
+A running spec stays as it was approved. A finding is anything new that building,
+testing, reviewing or trying the app turns up. Each one goes one of two ways:
+
+- **Fix now:** it breaks the app, loses or corrupts data, opens a security hole,
+  or makes one of the spec's own acceptance criteria fail. It goes back to
+  `/build` in this spec, as a step that names the finding.
+- **Issue:** everything else, such as polish, a UI idea, an edge case or a
+  cleanup. It becomes a GitHub issue of one or two lines that links to the spec.
+  Later, an issue becomes a new spec or a `/quick-fix`.
+
+Claude recommends one of the two for each finding, and the developer decides.
+Claude then opens the issues with `gh`, which asks the developer first. Related
+small findings can share one issue, such as one test cleanup issue.
+
 ## Quick-fix path
 
 ```text
@@ -53,6 +95,22 @@ The spec file is the memory between sessions.
 
 There is no spec and no feature record.
 
+## How much to test
+
+Test what can hurt users or their data, once, at the cheapest level.
+
+- **One test per acceptance criterion,** at the cheapest level that proves it:
+  a unit test first, then an API or database test, and a browser test only for
+  what only a browser can show.
+- **Always tested:** company ownership (the cross-tenant test), login checks,
+  the AI boundary, data migrations, and anything that can lose or corrupt data.
+- **Skipped or kept light:**
+  - layout and wording, which `/ui-test` checks by eye
+  - a second test of a check already proven at a lower level
+  - both sides of a limit, unless it is a security limit
+- **At most about 10 acceptance criteria per spec.** More than that means the
+  spec should be split.
+
 ## Definition of done
 
 A feature is done only when all of these are true:
@@ -60,7 +118,8 @@ A feature is done only when all of these are true:
 1. Every acceptance criterion has evidence: a test name or command output.
 2. Every automated check in CLAUDE.md passes.
 3. Any UI change has been tested in the browser.
-4. Review findings have been fixed or knowingly declined.
+4. Every review finding has been fixed, sent to an issue, or declined with a
+   reason.
 5. CI is green on the PR.
 6. The developer has merged the PR.
 7. The feature record has been written.
@@ -71,14 +130,21 @@ Never say "done" without evidence.
 
 ## Git rules
 
-- **Branches:** `feat/NNN-slug` for features, `fix/slug` for fixes, `chore/slug`
-  for maintenance.
+- **Branches:** `feat/NNN-slug` for slices, `fix/slug` for fixes, `chore/slug`
+  for maintenance, and `proto/NNN-slug` for prototypes, which are never merged.
 - **Commits:** conventional commits, such as `feat: add expiry reminders`. One
   commit per step.
+- **Messages and PR descriptions:** they only explain what the change is about.
+  No `Co-Authored-By` line and no "Generated with" line, or any other AI
+  attribution.
+- **Who runs git:** Claude creates branches and commits, and reports each
+  commit's hash and title. It commits only after the step's checks pass, and adds
+  files by name, never with `git add -A` or `git add .`. It never amends,
+  rebases or resets a commit. Pushing asks the developer first.
 - **Merging:** every change reaches `main` through a PR. Only the developer
   merges.
 
 ## Sessions
 
-One feature per session. To continue a feature later, start a new session and
-read its spec.
+One spec per session. To continue a spec later, start a new session and read
+it.

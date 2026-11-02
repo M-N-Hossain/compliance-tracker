@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Reviews a saved branch diff against its feature spec and CLAUDE.md. Use when /code-review asks for the spec review, passing the paths of the diff file and the spec.
+description: Reviews a saved branch diff against its feature spec and CLAUDE.md. Use when /review-changes asks for the spec review, passing the paths of the diff file and the spec.
 # Read-only on purpose: it can report problems but cannot change or run anything.
 tools: Read, Grep, Glob
 # scope: generic means this subagent can move to the global setup later.
@@ -28,7 +28,7 @@ missing or empty, say so and stop.
 
 1. **Acceptance criteria:** for each criterion in the spec, is it met by the
    change? Name the code that meets it, or report that nothing does.
-2. **Security section:** check every item in the spec's security section against
+2. **Security section:** check every item in the spec's security checklist against
    the change.
    - Every route handler and server action the change adds or edits must check auth
      and company ownership itself, not only in a proxy or middleware.

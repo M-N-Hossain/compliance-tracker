@@ -13,8 +13,8 @@ The problem: $ARGUMENTS
 
 If no problem was given, ask for one and wait.
 
-The developer runs every git command that changes something. Give the commands
-in the developer's shell, then check the result with read-only git commands.
+Follow the "Who runs git" rule in the workflow file: you create the branch and
+make the commit, and the developer pushes and merges.
 
 ## When to stop and use /start
 
@@ -34,8 +34,7 @@ with a smaller version of the fix unless the developer asks for it.
 2. Find the root cause. Only read. Never open secret files.
 3. Explain the root cause and the fix in simple words, with what changes and what
    happens without it. **Stop and wait for "go".**
-4. Give the commands to create the branch, named as the workflow file says.
-   **Stop and wait**, then check the branch.
+4. Create the branch, named as the workflow file says, then check it.
 5. Write a failing test where it makes sense, then run it. Confirm that it fails
    for the expected reason. If a test does not make sense here, say so and say
    why.
@@ -49,8 +48,8 @@ with a smaller version of the fix unless the developer asks for it.
    - Walk that flow, and check the console and failed network requests.
 9. Show the evidence: each command with its result, and what you saw in the
    browser.
-10. Give the commit commands with a conventional commit message. **Stop.** The
-    developer commits. The next stage is /pr, and only the developer starts it.
+10. Commit the fix with a conventional commit message, and report its hash and
+    title. **Stop.** The next stage is /pr, and only the developer starts it.
 
 ## Limits
 

@@ -1,15 +1,21 @@
-# NNN: Short title of the feature
+# NNN: Short title of the slice
 
 <!--
 How to use this template:
 - Copy this file to docs/specs/NNN-slug.md, using the next free number.
-- Fill in every section. Never delete a security item: if one does not apply,
-  write "Not applicable, because..." with the reason.
+- A slice is a thin piece of a feature that works from end to end once merged.
+- Keep to about 10 acceptance criteria. More means two slices.
+- Answer every line of the security checklist. If one does not apply, write
+  "Not applicable, because..." with the reason.
 - Do not add a Steps section. /breakdown adds it after the spec is approved.
 - Delete this comment and the hints below when you fill it in.
 -->
 
 **Status:** draft
+
+**Type:** slice
+
+**Depends on:** none, or the specs that must be merged first, such as 003 (design)
 
 ## Problem
 
@@ -26,52 +32,29 @@ output.
 
 1. Given (starting state), when (action), then (result anyone can check).
 
-## Data model and migrations
+## Data changes
 
 What changes in the database? Does any change risk existing data (data loss,
-defaults, renames)? If nothing changes, say so.
+defaults, renames)? If nothing changes, delete this section.
 
-## Security
+## Security checklist
 
-### Auth and company ownership
-
-Which route handlers and server actions does this add or change? How does each
-one check auth and company ownership itself, not only in proxy.ts?
-
-### Cross-tenant test
-
-Mandatory. Name the test showing that company B gets a 404 on company A's record.
-
-### AI boundary
-
-Does this save or show model output? The confirm endpoint must check that the
-record belongs to the caller's company and re-validate the edited payload with a
-schema. Model output is never saved before the user confirms it, and never
-rendered as HTML.
-
-### R2 files
-
-Does this store or serve files? The bucket stays private, presigned URLs are
-short-lived, keys are prefixed by company and checked on download, and size and
-type limits apply.
-
-### Roles
-
-Which roles can do this? How is that checked?
-
-### Rate limits
-
-Does any call here cost money, such as Gemini? What limits it?
-
-### Personal data
-
-What personal data does this touch? Tests and fixtures use synthetic data only.
-
-## Test plan
-
-List each test and its folder under test/, such as test/api-test/ or
-test/e2e-test/. Say which acceptance criterion each one covers.
+- **Auth and ownership:** which route handlers and server actions change, and
+  how each checks login and company ownership itself, not only in proxy.ts.
+- **Cross-tenant test:** the name of the test showing that company B gets a 404
+  on company A's record. Mandatory unless this touches no company data.
+- **AI boundary:** does this save or show model output? It is never saved before
+  the user confirms it, the confirm endpoint checks ownership and re-validates
+  the payload, and it is never rendered as HTML.
+- **R2 files:** does this store or serve files? The bucket stays private,
+  presigned URLs are short-lived, keys are prefixed by company and checked on
+  download, and size and type limits apply.
+- **Roles:** which roles can do this, and how that is checked.
+- **Rate limits:** does any call here cost money, such as Gemini, and what limits
+  it.
+- **Personal data:** what personal data this touches. Tests and fixtures use
+  synthetic data only.
 
 ## Out of scope
 
-What are we deliberately not doing in this feature?
+What are we deliberately not doing in this slice?

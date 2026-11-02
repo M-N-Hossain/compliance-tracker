@@ -38,7 +38,7 @@ If no number was given, ask for one and wait.
    Read each test you name, to confirm it checks what the criterion says. Evidence
    must come from this run, never from memory or an earlier run.
 
-6. Do the same for the tests the spec's security section requires, and say whether
+6. Do the same for the tests the spec's security checklist requires, and say whether
    each one ran and passed.
 7. Add or replace a "## Evidence" section at the end of the spec:
 
@@ -51,18 +51,26 @@ If no number was given, ask for one and wait.
    | ------- | ------ |
    | command | result |
 
-   | Criterion | Result | Evidence           |
-   | --------- | ------ | ------------------ |
-   | 1         | pass   | test name or quote |
+   | Criterion | Result | Evidence  |
+   | --------- | ------ | --------- |
+   | 1         | pass   | test name |
+
+   Notes: one line for each result that is not a plain pass.
    ```
 
-8. Show the tables. Say plainly whether anything failed, was not run, or is not
-   proven. Say if a test service is still running, and how to stop it.
+   Keep the Evidence column to the test name or a short quote. Put any
+   explanation in the notes, not in the table.
+
+8. Commit the spec, so the next stage starts from a clean tree. Show the tables
+   and the commit's hash. Say plainly whether anything failed, was not run, or is
+   not proven. Say if a test service is still running, and how to stop it.
+   Anything else you noticed that is not a criterion is a finding: list it with a
+   recommendation, following the findings rule in the workflow file.
 9. **Stop.** Never say "done" unless every criterion passes or waits for /ui-test.
    - Anything failed or not proven: the next stage is /build, once the developer
      decides.
    - Anything marked ui-test, or any UI change: the next stage is /ui-test.
-   - Otherwise: the next stage is /code-review.
+   - Otherwise: the next stage is /review-changes.
 
 ## Limits
 
