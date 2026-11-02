@@ -45,6 +45,22 @@ section of CLAUDE.md, so they are not repeated here.
 
 The spec file is the memory between sessions.
 
+## Findings during a spec
+
+A running spec stays as it was approved. A finding is anything new that building,
+testing, reviewing or trying the app turns up. Each one goes one of two ways:
+
+- **Fix now:** it breaks the app, loses or corrupts data, opens a security hole,
+  or makes one of the spec's own acceptance criteria fail. It goes back to
+  `/build` in this spec, as a step that names the finding.
+- **Issue:** everything else, such as polish, a UI idea, an edge case or a
+  cleanup. It becomes a GitHub issue of one or two lines that links to the spec.
+  Later, an issue becomes a new spec or a `/quick-fix`.
+
+Claude recommends one of the two for each finding, and the developer decides.
+Claude then opens the issues with `gh`, which asks the developer first. Related
+small findings can share one issue, such as one test cleanup issue.
+
 ## Quick-fix path
 
 ```text
@@ -60,7 +76,8 @@ A feature is done only when all of these are true:
 1. Every acceptance criterion has evidence: a test name or command output.
 2. Every automated check in CLAUDE.md passes.
 3. Any UI change has been tested in the browser.
-4. Review findings have been fixed or knowingly declined.
+4. Every review finding has been fixed, sent to an issue, or declined with a
+   reason.
 5. CI is green on the PR.
 6. The developer has merged the PR.
 7. The feature record has been written.

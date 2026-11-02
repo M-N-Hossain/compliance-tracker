@@ -40,7 +40,8 @@ make the commits, and the developer pushes and merges.
 4. Write the code until the test passes, keeping to the files the step lists.
 5. Run the checks listed in CLAUDE.md that cover this change. Report what you ran
    and the result.
-6. Add a "Done: yes" line to the step in the spec.
+6. Add a "Done: yes" line to the step in the spec. If the step fixes a review
+   finding, change that finding's decision to "fixed in Step N".
 7. Explain what changed, so the developer could explain it back.
 8. Commit the step's files with the step's commit message. The first commit also
    includes the spec. Report the commit's hash and title. **Stop.** The developer

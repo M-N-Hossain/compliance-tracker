@@ -54,6 +54,9 @@ If no number was given, ask for one and wait.
 9. Commit the spec. Show the results and the commit's hash. Say plainly whether
    anything failed or was not run.
 10. **Stop.** Do not fix anything here.
-    - Anything failed or not run: findings go back to /build, once the developer
-      decides.
+    - A criterion failed: it goes back to /build.
+    - A criterion was not run: the developer decides whether to run it again or
+      go on.
+    - Anything else you saw is a finding: list it with a recommendation,
+      following the findings rule in the workflow file.
     - Otherwise: the next stage is /code-review.

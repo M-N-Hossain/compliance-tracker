@@ -60,17 +60,21 @@ If no number was given, ask for one and wait.
    | blocker  | path:line     | what is wrong | Spec   | open     |
    ```
 
-8. Show the list. Say plainly if any review did not run. **Stop and ask** the
-   developer to decide each finding:
-   - **fix:** it goes back to /build.
-   - **declined:** it needs a reason, written in the Decision column.
-9. Update the Decision column with the answers, then commit the spec and report
-   the commit's hash and title.
+8. Show the list. Say plainly if any review did not run. For each finding,
+   recommend one decision, following the findings rule in the workflow file.
+   **Stop and ask** the developer to decide each finding:
+   - **fix:** it meets the rule's "fix now" test. Name which part. It goes back
+     to /build.
+   - **issue:** it goes to a GitHub issue.
+   - **declined:** it is not a real problem. It needs a reason.
+9. Open the issues with `gh issue create`, which asks the developer first.
+   Related small findings can share one issue. Write each decision in the
+   Decision column, with the issue number for an issue. Then commit the spec and
+   report the commit's hash and title.
 10. **Stop.**
     - Anything marked fix: the next stage is /build, then /test, then this skill
       again, because the code has changed.
-    - Everything declined, or no findings: the next stage is /pr, and only the
-      developer starts it.
+    - Otherwise: the next stage is /pr, and only the developer starts it.
 
 ## Limits
 
