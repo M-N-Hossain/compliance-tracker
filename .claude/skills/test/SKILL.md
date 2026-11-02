@@ -51,10 +51,15 @@ If no number was given, ask for one and wait.
    | ------- | ------ |
    | command | result |
 
-   | Criterion | Result | Evidence           |
-   | --------- | ------ | ------------------ |
-   | 1         | pass   | test name or quote |
+   | Criterion | Result | Evidence  |
+   | --------- | ------ | --------- |
+   | 1         | pass   | test name |
+
+   Notes: one line for each result that is not a plain pass.
    ```
+
+   Keep the Evidence column to the test name or a short quote. Put any
+   explanation in the notes, not in the table.
 
 8. Commit the spec, so the next stage starts from a clean tree. Show the tables
    and the commit's hash. Say plainly whether anything failed, was not run, or is
