@@ -56,8 +56,9 @@ If no number was given, ask for one and wait.
    | 1         | pass   | test name or quote |
    ```
 
-8. Show the tables. Say plainly whether anything failed, was not run, or is not
-   proven. Say if a test service is still running, and how to stop it.
+8. Commit the spec, so the next stage starts from a clean tree. Show the tables
+   and the commit's hash. Say plainly whether anything failed, was not run, or is
+   not proven. Say if a test service is still running, and how to stop it.
 9. **Stop.** Never say "done" unless every criterion passes or waits for /ui-test.
    - Anything failed or not proven: the next stage is /build, once the developer
      decides.

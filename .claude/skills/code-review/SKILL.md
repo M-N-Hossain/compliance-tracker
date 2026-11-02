@@ -64,8 +64,8 @@ If no number was given, ask for one and wait.
    developer to decide each finding:
    - **fix:** it goes back to /build.
    - **declined:** it needs a reason, written in the Decision column.
-9. Update the Decision column with the answers, then give the commit commands for
-   the spec.
+9. Update the Decision column with the answers, then commit the spec and report
+   the commit's hash and title.
 10. **Stop.**
     - Anything marked fix: the next stage is /build, then /test, then this skill
       again, because the code has changed.

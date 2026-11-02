@@ -51,7 +51,8 @@ If no number was given, ask for one and wait.
    each ui-test result with the new result, and add a "Browser" note with the date
    and the screenshot folder. Record console errors and failed requests, even if
    they look unrelated.
-9. Show the results. Say plainly whether anything failed or was not run.
+9. Commit the spec. Show the results and the commit's hash. Say plainly whether
+   anything failed or was not run.
 10. **Stop.** Do not fix anything here.
     - Anything failed or not run: findings go back to /build, once the developer
       decides.

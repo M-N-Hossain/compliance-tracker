@@ -13,8 +13,8 @@ The spec number: $ARGUMENTS
 
 If no number was given, ask for one and wait.
 
-The developer runs every git command that changes something. Give the commands
-in the developer's shell, then check the result with read-only git commands.
+Follow the "Who runs git" rule in the workflow file: you create the branch and
+make the commits, and the developer pushes and merges.
 
 ## Before the first step
 
@@ -23,9 +23,8 @@ in the developer's shell, then check the result with read-only git commands.
 2. If the status is not approved, or the spec has no "## Steps" section, stop and
    name the stage that comes first (/start or /breakdown).
 3. Check the current branch. If it is not the feature branch named in the workflow
-   file, give the commands to create or switch to it. The spec may still be
-   uncommitted, and it moves to the new branch with the switch. **Stop and wait**,
-   then check the branch again.
+   file, create or switch to it. The spec may still be uncommitted, and it moves to
+   the new branch with the switch. Check the branch again afterwards.
 4. Find the first step without a "Done: yes" line. If every step is done, say so
    and name the next stage (/test).
 
@@ -43,8 +42,9 @@ in the developer's shell, then check the result with read-only git commands.
    and the result.
 6. Add a "Done: yes" line to the step in the spec.
 7. Explain what changed, so the developer could explain it back.
-8. Give the commit commands with the step's commit message. The first commit also
-   includes the spec. **Stop.** The developer commits, then says when to continue.
+8. Commit the step's files with the step's commit message. The first commit also
+   includes the spec. Report the commit's hash and title. **Stop.** The developer
+   says when to continue.
 
 ## When something goes wrong
 

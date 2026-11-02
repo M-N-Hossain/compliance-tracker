@@ -23,8 +23,8 @@ section of CLAUDE.md, so they are not repeated here.
    and ordered, each is one commit, each leaves the app working, and each lists
    its files and tests. Stops when the steps are written.
 3. **`/build NNN`:** works on branch `feat/NNN-slug`. For each step: failing
-   test first where it makes sense, implement, run checks, explain, suggest a
-   commit message. Stops after every step.
+   test first where it makes sense, implement, run checks, explain, commit.
+   Stops after every step.
 4. **`/test NNN`:** runs every automated check in CLAUDE.md, then goes through
    the acceptance criteria one by one with evidence.
 5. **`/ui-test NNN`:** for any UI change, walks the flows in the browser on
@@ -75,6 +75,10 @@ Never say "done" without evidence.
   for maintenance.
 - **Commits:** conventional commits, such as `feat: add expiry reminders`. One
   commit per step.
+- **Who runs git:** Claude creates branches and commits, and reports each
+  commit's hash and title. It commits only after the step's checks pass, and adds
+  files by name, never with `git add -A` or `git add .`. It never amends,
+  rebases or resets a commit. Pushing asks the developer first.
 - **Merging:** every change reaches `main` through a PR. Only the developer
   merges.
 
