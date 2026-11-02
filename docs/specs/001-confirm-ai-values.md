@@ -396,8 +396,8 @@ Added because the developer marked review finding 1 as fix.
 
 - Files: change `components/uploadForm.tsx`, `app/(workspace)/documents/page.tsx` and
   `test/e2e-test/confirm-upload.spec.ts`
-- Tests: `cannot overwrite values confirmed in the row` and `stops being a form once it
-has saved`
+- Tests: `cannot overwrite values confirmed in the row` and
+  `stops being a form once it has saved`
 - Commit: `fix: stop the upload card overwriting confirmed values`
 - Done: yes
 
@@ -552,3 +552,29 @@ A clean result from any review does not prove the code is safe. These reviews re
 | 15  | low      | `test/e2e-test/confirm-upload.spec.ts:168`                                                   | The AC 18 test does not check "Fill in the values by hand"                                                                                                                                                                  | Spec      | declined: real, but outside this spec. Goes to a new issue, as one test cleanup                                            |
 | 16  | nit      | `test/api-test/documents.db.test.ts:218`, `:222`, `test/e2e-test/confirm-upload.spec.ts:232` | Weak or missing test checks: a request count that cannot fail, ownership before body reading, and the box after a reload                                                                                                    | Spec      | declined: real, but outside this spec. Goes to a new issue, as one test cleanup                                            |
 | 17  | nit      | `utils/match.ts:1`, `lib/pendingRequirements.ts:38`, `components/confirmForm.tsx:8`          | Stale comments, and the 200 limit declared in two files                                                                                                                                                                     | Spec, Bug | declined: real, but outside this spec. Goes to a new issue, as one cleanup                                                 |
+
+### Second review
+
+Date: 2026-11-02. Commit: 522fbcd, after Steps 10 and 11.
+
+| Review   | Result                                                                                                             |
+| -------- | ------------------------------------------------------------------------------------------------------------------ |
+| Spec     | ran, review-code subagent                                                                                          |
+| Bug      | ran, from the developer's `/code-review` command, because the `/review` alias could not be started from this skill |
+| Security | ran, no finding reached the reporting threshold                                                                    |
+
+Spec review: Steps 10 and 11 fix findings 1 and 5. The bug review repeated findings 3 and 17, which are not listed again. None of the findings below fails an acceptance criterion. The 500 results are inferred from the code, not run.
+
+| #   | Severity | File and line                                                            | Finding                                                                                                                                                                      | Source    | Decision                                                                                        |
+| --- | -------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------- |
+| 18  | medium   | `components/uploadForm.tsx:29`                                           | A Gemini type over 200 characters fills the card with Save enabled, and every save gets a 400, so the user must cut it by hand                                               | Bug       | declined: real, but outside this spec. Goes to a new issue                                      |
+| 19  | medium   | `components/confirmForm.tsx:184`                                         | Ticking "No expiry date" wipes the date, so unticking it does not bring the suggested or saved date back                                                                     | Bug       | declined: real, but outside this spec. Goes to a new issue                                      |
+| 20  | low      | `components/uploadForm.tsx:185`                                          | The card and the row are still two forms for one undecided document. Unsaved card edits vanish when the row saves, and a second tab or a failed refresh still shows the card | Spec, Bug | declined: real, but outside this spec. Goes with finding 2 in the out-of-date tabs issue        |
+| 21  | low      | `app/api/documents/[id]/route.ts:26`                                     | A document id in the URL over 32 bits likely gives a 500, not a 404. The check is unchanged from main                                                                        | Spec, Bug | declined: older than this branch. Goes to a new issue, as the same kind of problem as finding 5 |
+| 22  | low      | `lib/pendingRequirements.ts:29`                                          | After a request is REJECTED, a corrected type never reaches an admin again. AC 15 asks for the name to stay, and main behaves the same                                       | Bug       | declined: this is what AC 15 asks for, and main behaves the same. Goes to a new issue           |
+| 23  | low      | `test/util-test/confirm-payload.test.ts:114`, `:131`, `:151`             | Step 11's tests check the validator, not a 400 from the route with the document unchanged                                                                                    | Spec      | declined: real, but outside this spec. Goes into the test cleanup issue                         |
+| 24  | nit      | `test/util-test/confirm-payload.test.ts:150`                             | The lower 32-bit limit has no test                                                                                                                                           | Spec      | declined: real, but outside this spec. Goes into the test cleanup issue                         |
+| 25  | nit      | `test/e2e-test/confirm-upload.spec.ts:190`                               | `cannot overwrite values confirmed in the row` never checks the stored checklist item                                                                                        | Spec      | declined: real, but outside this spec. Goes into the test cleanup issue                         |
+| 26  | nit      | `lib/pendingRequirements.ts:30`, `app/(workspace)/documents/page.tsx:37` | An unchanged name is still written, and the decided or undecided split is worked out four times                                                                              | Bug       | declined: real, but outside this spec. Goes into the code cleanup issue                         |
+| 27  | nit      | `lib/extractCertificate.ts:50`                                           | Two prompt sentences are joined with no space between them                                                                                                                   | Bug       | declined: real, but outside this spec. Goes into the code cleanup issue                         |
+| 28  | nit      | `docs/specs/001-confirm-ai-values.md:399`                                | The Step 10 Tests line breaks a code span over two lines                                                                                                                     | Spec      | fixed in this spec commit, no code change                                                       |
