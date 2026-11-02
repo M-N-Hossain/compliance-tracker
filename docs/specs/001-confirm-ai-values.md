@@ -257,8 +257,9 @@ showing the confirmed name.
 
 - A confirmed row shows its values as read-only text with an Edit button, and an
   unconfirmed row shows its form open. The developer wants to try this layout.
-- The "Just uploaded" card stays visible after saving and shows "Saved", as it does
-  today.
+- The "Just uploaded" card stays visible after its document is confirmed, in the card or
+  the row, and shows "Saved. You can edit it in the list below." instead of a form. Changed
+  in Step 10.
 - A linked document with no stored type, from an earlier Gemini failure, is shown as
   "Unnamed document" until the user edits it.
 - The validator ignores extra fields in the body instead of refusing them.
@@ -389,6 +390,26 @@ answers, so only a real upload can show what Gemini now does with a blank PDF.
 - Commit: `fix: treat a NONE certificate type as nothing read`
 - Done: yes
 
+### Step 10: Stop the upload card overwriting confirmed values
+
+Added because the developer marked review finding 1 as fix.
+
+- Files: change `components/uploadForm.tsx`, `app/(workspace)/documents/page.tsx` and
+  `test/e2e-test/confirm-upload.spec.ts`
+- Tests: `cannot overwrite values confirmed in the row` and `stops being a form once it
+has saved`
+- Commit: `fix: stop the upload card overwriting confirmed values`
+- Done: yes
+
+### Step 11: Refuse values the database cannot store
+
+Added because the developer marked review finding 5 as fix.
+
+- Files: change `utils/confirmPayload.ts` and `test/util-test/confirm-payload.test.ts`
+- Tests: a 400 for a checklist id over 32 bits, a NUL character in the type and the year
+  0000 (AC 8, 9 and 11)
+- Commit: `fix: refuse confirm values the database cannot store`
+
 ## Evidence
 
 Date: 2026-11-01. Commit: c37bbf5, with uncommitted changes (Step 9).
@@ -494,3 +515,35 @@ Findings:
 
 Test data left in the development database for this company: documents 31 (covers Fire
 Safety on the dashboard), 32 (a `PENDING_REVIEW` request) and 33 (unconfirmed).
+
+## Review
+
+Date: 2026-11-01. Commit: 8b634f2.
+
+| Review   | Result                                                                                                             |
+| -------- | ------------------------------------------------------------------------------------------------------------------ |
+| Spec     | ran, review-code subagent                                                                                          |
+| Bug      | ran, from the developer's `/code-review` command, because the `/review` alias could not be started from this skill |
+| Security | ran, no finding reached the reporting threshold                                                                    |
+
+A clean result from any review does not prove the code is safe. These reviews read the code, and most 500 responses below are inferred, not run.
+
+| #   | Severity | File and line                                                                                | Finding                                                                                                                                                                                                                     | Source    | Decision                                                                                                                   |
+| --- | -------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 1   | high     | `components/uploadForm.tsx:184`                                                              | The upload card and the row are separate forms for one document. After a save in the row, the card still offers Save with the AI's values, and one click overwrites the confirmed values                                    | Bug, Spec | fix: breaks the spec's goal that confirmed values are what get saved                                                       |
+| 2   | high     | `components/confirmForm.tsx:92`                                                              | Every save resends the checklist item from the form's state. In a tab loaded before an admin approved, fixing a typo sends null, clears the link and drops the item to Missing                                              | Bug       | declined: real, but outside this spec. Goes to a new issue, first in line. Needs a design for out-of-date tabs             |
+| 3   | medium   | `app/api/documents/[id]/route.ts:82`                                                         | The document update and the request sync are separate writes, and a sync failure still returns 200, so a save can report success with no request or an old name                                                             | Bug, Spec | declined: real, but outside this spec. Goes to a new issue. The try/catch predates this branch                             |
+| 4   | medium   | `components/confirmForm.tsx:62`                                                              | A partly typed year such as `0027-03-31` passes the form and the validator, and is stored as a real date, so the dashboard shows Expired                                                                                    | Bug       | declined: real, but outside this spec. Goes to a new issue. Needs a date-range rule the spec does not have                 |
+| 5   | medium   | `utils/confirmPayload.ts:51`                                                                 | A checklist id over 32 bits, a NUL character in the type, or the year 0000 passes the validator and likely gives a 500, not the 400 of AC 8, 9 and 11                                                                       | Bug, Spec | fix: AC 8, 9 and 11 require a 400                                                                                          |
+| 6   | medium   | `lib/pendingRequirements.ts:32`                                                              | A user can rename a waiting request to match another company's, and an admin's bulk approval then links their document unseen. Security review rated exploitation low, because a company can already link its own documents | Bug       | declined: real, but outside this spec. Goes to a new issue. Low risk, because a company can already link its own documents |
+| 7   | medium   | `app/(workspace)/documents/page.tsx:134`                                                     | An older linked document with no date opens with "No expiry date" ticked, though nobody chose that, and its save confirms it                                                                                                | Bug, Spec | declined: real, but outside this spec. Goes to a new issue. Only affects older data                                        |
+| 8   | medium   | `lib/extractCertificate.ts:94`                                                               | A null or `NONE` type discards a date and match Gemini did read. This is the behaviour AC 24 specifies                                                                                                                      | Bug       | declined: this is the behaviour AC 24 specifies                                                                            |
+| 9   | medium   | `lib/extractCertificate.ts:99`                                                               | Only the word `NONE` is caught, so "Unknown" or "N/A" would still appear as AI suggestions. The new prompt and schema have never run against real Gemini                                                                    | Bug, Spec | declined: real, but outside this spec. Goes to a new issue. Already on the follow-up list                                  |
+| 10  | low      | `lib/pendingRequirements.ts:30`                                                              | The rename checks status on an earlier read, so it could rename a request an admin decided a moment before                                                                                                                  | Bug       | declined: real, but outside this spec. Goes to a new issue. Very narrow timing, and it grants no access                    |
+| 11  | low      | `prisma/migrations/20261101164303_clear_unconfirmed_ai_values/migration.sql:7`               | A request with a NULL `documentId` would not protect its document from being cleared. Checked in the development database: 6 requests, 0 with a NULL `documentId`, so nothing was wrongly cleared                           | Bug       | declined: 0 affected rows in the development database, and the migration is applied                                        |
+| 12  | low      | `docs/specs/001-confirm-ai-values.md:240`                                                    | The test plan's admin queue check in `/ui-test` was not run                                                                                                                                                                 | Spec      | declined: real, but outside this spec. Goes to a new issue                                                                 |
+| 13  | low      | `test/api-test/documents.db.test.ts:272`                                                     | The 401 and no-company tests check only the checklist item, though the route now writes three fields                                                                                                                        | Spec      | declined: real, but outside this spec. Goes to a new issue, as one test cleanup                                            |
+| 14  | low      | `test/util-test/confirm-payload.test.ts:69`                                                  | The extra fields test would still pass if the validator refused the body                                                                                                                                                    | Spec      | declined: real, but outside this spec. Goes to a new issue, as one test cleanup                                            |
+| 15  | low      | `test/e2e-test/confirm-upload.spec.ts:168`                                                   | The AC 18 test does not check "Fill in the values by hand"                                                                                                                                                                  | Spec      | declined: real, but outside this spec. Goes to a new issue, as one test cleanup                                            |
+| 16  | nit      | `test/api-test/documents.db.test.ts:218`, `:222`, `test/e2e-test/confirm-upload.spec.ts:232` | Weak or missing test checks: a request count that cannot fail, ownership before body reading, and the box after a reload                                                                                                    | Spec      | declined: real, but outside this spec. Goes to a new issue, as one test cleanup                                            |
+| 17  | nit      | `utils/match.ts:1`, `lib/pendingRequirements.ts:38`, `components/confirmForm.tsx:8`          | Stale comments, and the 200 limit declared in two files                                                                                                                                                                     | Spec, Bug | declined: real, but outside this spec. Goes to a new issue, as one cleanup                                                 |

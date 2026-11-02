@@ -61,7 +61,11 @@ export default async function DocumentsPage() {
         </p>
       </div>
 
-      <UploadForm templates={templateOptions} />
+      {/* The card needs to know when its document stops being undecided. */}
+      <UploadForm
+        templates={templateOptions}
+        confirmedIds={documents.filter((d) => d.value !== NOT_DECIDED).map((d) => d.id)}
+      />
 
       <section className="border-line overflow-hidden rounded-xl border bg-white">
         <div className="border-line flex flex-wrap items-baseline justify-between gap-2 border-b px-5 pt-5 pb-3.5">

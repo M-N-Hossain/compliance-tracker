@@ -36,7 +36,13 @@ function toSuggestion(
   };
 }
 
-export default function UploadForm({ templates }: { templates: TemplateOption[] }) {
+export default function UploadForm({
+  templates,
+  confirmedIds,
+}: {
+  templates: TemplateOption[];
+  confirmedIds: number[]; // from the database, and updated by router.refresh() after any save
+}) {
   const router = useRouter();
   // needed to put a dropped file into it.
   const inputRef = useRef<HTMLInputElement>(null);
@@ -174,21 +180,29 @@ export default function UploadForm({ templates }: { templates: TemplateOption[] 
       {uploaded && (
         <div className="border-brand-line flex flex-[1_1_380px] flex-col gap-3 rounded-xl border bg-white p-5">
           <p className="text-brand font-mono text-xs tracking-wider uppercase">Just uploaded</p>
-          {/* Says where the values came from, so the user knows to check them. */}
-          <p className="text-muted text-sm">
-            {uploaded.readable
-              ? "Suggested by AI. Check each value against the PDF and change anything that is wrong. Nothing is saved until you click Save."
-              : "This file could not be read. Fill in the values by hand."}
-          </p>
-          {/* key: a new upload starts a fresh form instead of reusing the old one's values. */}
-          <ConfirmForm
-            key={uploaded.id}
-            documentId={uploaded.id}
-            templates={templates}
-            initialValues={uploaded.suggestion}
-            initiallySaved={false}
-            label="Confirm the uploaded document"
-          />
+          {/* Once confirmed, in the card or the row, the row is the only place to edit.
+              A second form here could overwrite the confirmed values with the AI's. */}
+          {confirmedIds.includes(uploaded.id) ? (
+            <p className="text-muted text-sm">Saved. You can edit it in the list below.</p>
+          ) : (
+            <>
+              {/* Says where the values came from, so the user knows to check them. */}
+              <p className="text-muted text-sm">
+                {uploaded.readable
+                  ? "Suggested by AI. Check each value against the PDF and change anything that is wrong. Nothing is saved until you click Save."
+                  : "This file could not be read. Fill in the values by hand."}
+              </p>
+              {/* key: a new upload starts a fresh form instead of reusing the old one's values. */}
+              <ConfirmForm
+                key={uploaded.id}
+                documentId={uploaded.id}
+                templates={templates}
+                initialValues={uploaded.suggestion}
+                initiallySaved={false}
+                label="Confirm the uploaded document"
+              />
+            </>
+          )}
         </div>
       )}
     </section>

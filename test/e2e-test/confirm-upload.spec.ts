@@ -173,6 +173,51 @@ test.describe("the upload card", () => {
     await expect(card.save).toBeDisabled();
   });
 
+  // The card and the row are two views of one document, so a save in the row must end the card's
+  // form. Otherwise one click on the card would replace the confirmed values with the AI's.
+  test("cannot overwrite values confirmed in the row", async ({ page }) => {
+    const companyId = await setUpCompany(page);
+    const id = await createDocument(companyId);
+    await upload(page, id, {
+      certificateType: "Type from the AI",
+      expiryDate: "2027-03-31T00:00:00.000Z",
+      matchedTemplateId: await itemId(),
+    });
+
+    const row = fields(page, NEW_ROW);
+    await row.type.fill("Type the user confirmed");
+    await row.date.fill("2028-01-01");
+    await row.covers.selectOption({ label: ITEM_NAME });
+    await row.save.click();
+
+    await expect(page.getByText("Saved. You can edit it in the list below.")).toBeVisible();
+    await expect(page.getByRole("form", { name: CARD })).toHaveCount(0);
+
+    const stored = await storedDocument(id);
+    expect(stored.extractedType).toBe("Type the user confirmed");
+    expect(stored.expiryDate).toBe("2028-01-01 00:00:00");
+  });
+
+  // Saving from the card leaves one place to edit too: the row.
+  test("stops being a form once it has saved", async ({ page }) => {
+    const companyId = await setUpCompany(page);
+    const id = await createDocument(companyId);
+    await upload(page, id, {
+      certificateType: "Type from the AI",
+      expiryDate: "2027-03-31T00:00:00.000Z",
+      matchedTemplateId: await itemId(),
+    });
+
+    await fields(page, CARD).save.click();
+
+    await expect(page.getByText("Saved. You can edit it in the list below.")).toBeVisible();
+    await expect(page.getByRole("form", { name: CARD })).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: "Edit: Confirm Type from the AI" }),
+    ).toBeVisible();
+    expect((await storedDocument(id)).extractedType).toBe("Type from the AI");
+  });
+
   // Saving proves the stored value is plain text too, because the row then shows it.
   test("shows HTML in a suggestion as plain text and runs nothing", async ({ page }) => {
     const html = "<img src=x onerror=alert(1)>";
