@@ -61,7 +61,8 @@ A design spec has no steps, tests, review or PR of its own.
    subagent checks it against the spec and CLAUDE.md. The built-in
    `/code-review` (the bug review) and `/security-review` also run. All findings
    are advice: CI and the developer are the gate. The developer decides each
-   finding, and the findings and decisions are saved in the evidence file.
+   finding, and the findings and decisions are saved in the evidence file. A slice
+   gets at most two rounds, see "Findings during a spec".
 7. **`/pr` (only the developer starts it):** writes the PR description from the
    spec, pushes the branch and opens the PR (both ask first), waits for CI, and
    sets the spec status to submitted. The developer reviews and merges.
@@ -123,6 +124,12 @@ testing, reviewing or trying the app turns up. Each one goes one of two ways:
 Claude recommends one of the two for each finding, and the developer decides.
 Claude then opens the issues with `gh`, which asks the developer first. Related
 small findings can share one issue, such as one test cleanup issue.
+
+**Review rounds.** A slice gets at most two review rounds. Round 1 looks at the
+whole branch. Round 2 looks only at what changed since round 1, which is the fixes,
+and never repeats an earlier finding. Blockers, majors and minors are decided one
+by one. Nits are listed and count as declined unless the developer names one. A
+third round runs only if the developer asks for it.
 
 ## Quick-fix path
 
