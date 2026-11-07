@@ -4,6 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { SERVER_ERROR_MESSAGE } from "@/utils/authMessages";
+
+const ACCOUNT_CREATED_MESSAGE =
+  "Your account was created, but we could not log you in. Please log in.";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -24,8 +28,9 @@ export default function RegisterPage() {
     });
 
     if (!res.ok) {
-      const data = await res.json();
-      setError(data.error ?? "Something went wrong.");
+      // A server that fell over may send no body, and then res.json() throws.
+      const data = await res.json().catch(() => null);
+      setError(data?.error ?? SERVER_ERROR_MESSAGE);
       setLoading(false);
       return;
     }
@@ -33,7 +38,8 @@ export default function RegisterPage() {
     // sign in with the same credentials, so the user goes straight to step 2.
     const result = await signIn("credentials", { email, password, redirect: false });
     if (result?.error) {
-      router.push("/login");
+      setError(ACCOUNT_CREATED_MESSAGE);
+      setLoading(false);
       return;
     }
 
