@@ -81,11 +81,10 @@ If no number was given, ask for one and wait.
    finding: list it with a recommendation, following the findings rule in the
    workflow file.
 10. **Stop.** Never say "done" unless every criterion passes or waits for /ui-test.
-
-- Anything failed or not proven: the next stage is /build, once the developer
-  decides.
-- Anything marked ui-test, or any UI change: the next stage is /ui-test.
-- Otherwise: the next stage is /review-changes.
+    - Anything failed or not proven: the next stage is /build, once the developer
+      decides.
+    - Anything marked ui-test, or any UI change: the next stage is /ui-test.
+    - Otherwise: the next stage is /review-changes.
 
 ## Limits
 
