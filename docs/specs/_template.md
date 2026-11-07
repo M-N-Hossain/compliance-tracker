@@ -8,6 +8,8 @@ How to use this template:
 - Answer every line of the security checklist. If one does not apply, write
   "Not applicable, because..." with the reason.
 - Do not add a Steps section. /breakdown adds it after the spec is approved.
+- Do not change the status by hand. The stages set it: draft, approved, building,
+  tested, reviewed, submitted.
 - Do not fill in "Evidence and review". /test, /ui-test and /review-changes keep
   it up to date, and the full tables go in docs/evidence/NNN-slug.md.
 - Delete this comment and the hints below when you fill it in.

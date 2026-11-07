@@ -4,6 +4,19 @@ This file describes the process. It enforces nothing: permission rules, hooks,
 CI and GitHub settings do that. The commands to run are in the "Commands"
 section of CLAUDE.md, so they are not repeated here.
 
+## Words used here
+
+- **Feature:** the whole goal, such as "login and sign-up handle failures well".
+  It has no file. It is made of one or more slices.
+- **Slice:** one thin piece of a feature that works from end to end once merged.
+  It has one spec (`Type: slice`) and one PR.
+- **Design:** a spec for how a screen looks, decided before any code
+  (`Type: design`). It has no steps, tests or PR.
+- **Step:** one commit inside a slice. `/breakdown` writes the steps and `/build`
+  does them one at a time.
+- **Issue:** a GitHub issue for work that is not part of the running spec, such as
+  a deferred finding. Later it becomes a new spec or a `/quick-fix`.
+
 ## Which path to use
 
 - **Design path:** decides what a screen looks like, before any code is built.
@@ -15,6 +28,23 @@ section of CLAUDE.md, so they are not repeated here.
 
 A spec names what it needs first in its `Depends on:` line, such as the design
 spec a slice builds.
+
+## Which stages a slice needs
+
+Not every slice needs every stage. Pick by what the slice touches:
+
+| The slice                                                            | What it needs                                                                                 |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Changes a screen (a page or a component)                             | Every stage, including `/ui-test`.                                                            |
+| No screen change (API, logic, data)                                  | Every stage except `/ui-test`. Write "no screen change" in the spec's limits line.            |
+| Touches auth, the schema or a migration, the AI boundary or R2 files | Never `/quick-fix`, and the security tests always run. `/ui-test` follows the two rows above. |
+| Small and safe: no auth, no schema, a few files                      | `/quick-fix`, with no spec.                                                                   |
+| Only docs, workflow text or config                                   | A `chore/` branch and a PR, with no spec.                                                     |
+
+Only `/ui-test` can be skipped, and only when no screen file changed and no
+criterion waits for the browser. `/test`, `/review-changes` and `/pr` always run
+for a slice. A skipped stage is named in the spec's "Evidence and review" limits
+line, with the reason, so nobody has to guess whether it was forgotten.
 
 ## Design path
 
@@ -61,16 +91,39 @@ A design spec has no steps, tests, review or PR of its own.
    subagent checks it against the spec and CLAUDE.md. The built-in
    `/code-review` (the bug review) and `/security-review` also run. All findings
    are advice: CI and the developer are the gate. The developer decides each
-   finding, and the findings and decisions are saved in the evidence file.
+   finding, and the findings and decisions are saved in the evidence file. A slice
+   gets at most two rounds, see "Findings during a spec".
 7. **`/pr` (only the developer starts it):** writes the PR description from the
    spec, pushes the branch and opens the PR (both ask first), waits for CI, and
-   updates the spec status. The developer reviews and merges.
+   sets the spec status to submitted. The developer reviews and merges.
 8. **`/record NNN` (only the developer starts it):** after the merge, writes the
    feature record into the brain repo. It waits for the merge because review
    can still change things. The developer approves the draft and commits it in
    the brain.
 
 The spec and its evidence file are the memory between sessions.
+
+## Statuses
+
+The spec's status line says where the slice is, so the file answers "what is
+next" without asking anyone. Each stage sets its own status:
+
+| Status    | Set by                                            | Meaning                        |
+| --------- | ------------------------------------------------- | ------------------------------ |
+| draft     | `/start`                                          | being written and reviewed     |
+| approved  | `/breakdown`                                      | approved, with its steps       |
+| building  | `/build`, in each step's commit                   | steps are being built or fixed |
+| tested    | `/test`, when no criterion fails or is unproven   | automated checks pass          |
+| reviewed  | `/review-changes`, when no finding is open or fix | every finding is decided       |
+| submitted | `/pr`                                             | the PR is open                 |
+
+If code changes after `tested` or `reviewed`, `/build` sets the status back to
+`building`, and the later stages run again. Nothing in the repo records the
+merge, because no skill edits a spec after it. To see whether a PR is merged, ask
+`gh`. A design spec only uses draft and approved.
+
+`/next NNN` reads the status, the steps, the evidence file and the PR, and says
+which stage comes next. It only reads and never starts the stage.
 
 ## Where evidence lives
 
@@ -101,6 +154,12 @@ testing, reviewing or trying the app turns up. Each one goes one of two ways:
 Claude recommends one of the two for each finding, and the developer decides.
 Claude then opens the issues with `gh`, which asks the developer first. Related
 small findings can share one issue, such as one test cleanup issue.
+
+**Review rounds.** A slice gets at most two review rounds. Round 1 looks at the
+whole branch. Round 2 looks only at what changed since round 1, which is the fixes,
+and never repeats an earlier finding. Blockers, majors and minors are decided one
+by one. Nits are listed and count as declined unless the developer names one. A
+third round runs only if the developer asks for it.
 
 ## Quick-fix path
 

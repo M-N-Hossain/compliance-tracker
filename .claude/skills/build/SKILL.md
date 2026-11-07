@@ -20,8 +20,10 @@ make the commits, and the developer pushes and merges.
 
 1. Read CLAUDE.md, the workflow file it links to, and the spec. If any of them is
    missing, stop and tell the developer what you could not find.
-2. If the status is not approved, or the spec has no "## Steps" section, stop and
-   name the stage that comes first (/start or /breakdown).
+2. If the status is draft or submitted, or the spec has no "## Steps" section,
+   stop and name the stage that comes first (/start or /breakdown). Any other
+   status can build: approved and building continue the steps, and tested or
+   reviewed means a finding sent the work back here.
 3. Check the current branch. If it is not the feature branch named in the workflow
    file, create or switch to it. The spec may still be uncommitted, and it moves to
    the new branch with the switch. Check the branch again afterwards. If the spec
@@ -44,8 +46,9 @@ make the commits, and the developer pushes and merges.
 4. Write the code until the test passes, keeping to the files the step lists.
 5. Run the checks listed in CLAUDE.md that cover this change. Report what you ran
    and the result.
-6. Add a "Done: yes" line to the step in the spec. If the step fixes a review
-   finding, change that finding's decision to "fixed in Step N".
+6. Add a "Done: yes" line to the step in the spec, and set the spec's status to
+   building. If the step fixes a review finding, change that finding's decision to
+   "fixed in Step N" in the evidence file, `docs/evidence/NNN-slug.md`.
 7. Explain what changed, so the developer could explain it back.
 8. Commit the step's files with the step's commit message. The first commit also
    includes the spec. Report the commit's hash and title. **Stop.** The developer

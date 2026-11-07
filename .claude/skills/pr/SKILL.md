@@ -38,7 +38,9 @@ This skill never merges. The developer reviews and merges.
 
 ## Prepare
 
-5. With a spec, change its status to submitted and commit the spec. This comes
+5. With a spec, check that its status is reviewed. If it is not, name the stage
+   that comes first and **stop**. Then change the status to submitted and commit
+   the spec. This comes
    before the push, so that CI does not have to run again afterwards. Then check
    that the working tree is clean.
 6. Draft a conventional title and this description:

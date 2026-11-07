@@ -68,11 +68,15 @@ If no number was given, ask for one and wait.
 8. Update the "## Evidence and review" section at the end of the spec. Add it if
    it is missing, using the spec template's wording. Keep it to a few lines:
    - the tests: date, commit, the check results and how many criteria pass
-   - the limits: each result that is not a plain pass, and any proof that is
-     weaker than it looks, such as a staged failure or a fake error
+   - the limits: each result that is not a plain pass, any proof that is weaker
+     than it looks, such as a staged failure or a fake error, and any stage the
+     workflow lets this slice skip, such as /ui-test with "no screen change"
    - a link to the evidence file
 
    Leave the review line as it is. Do not copy the tables into the spec.
+   If no criterion is FAIL or not proven, set the spec's status to tested. A
+   criterion that waits for /ui-test does not block it, and the limits line says
+   so. Otherwise leave the status as it is.
 
 9. Commit the evidence file and the spec, so the next stage starts from a clean
    tree. Show the tables and the commit's hash. Say plainly whether anything
