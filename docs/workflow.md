@@ -64,13 +64,32 @@ A design spec has no steps, tests, review or PR of its own.
    finding, and the findings and decisions are saved in the evidence file.
 7. **`/pr` (only the developer starts it):** writes the PR description from the
    spec, pushes the branch and opens the PR (both ask first), waits for CI, and
-   updates the spec status. The developer reviews and merges.
+   sets the spec status to submitted. The developer reviews and merges.
 8. **`/record NNN` (only the developer starts it):** after the merge, writes the
    feature record into the brain repo. It waits for the merge because review
    can still change things. The developer approves the draft and commits it in
    the brain.
 
 The spec and its evidence file are the memory between sessions.
+
+## Statuses
+
+The spec's status line says where the slice is, so the file answers "what is
+next" without asking anyone. Each stage sets its own status:
+
+| Status    | Set by                                            | Meaning                        |
+| --------- | ------------------------------------------------- | ------------------------------ |
+| draft     | `/start`                                          | being written and reviewed     |
+| approved  | `/breakdown`                                      | approved, with its steps       |
+| building  | `/build`, in each step's commit                   | steps are being built or fixed |
+| tested    | `/test`, when no criterion fails or is unproven   | automated checks pass          |
+| reviewed  | `/review-changes`, when no finding is open or fix | every finding is decided       |
+| submitted | `/pr`                                             | the PR is open                 |
+
+If code changes after `tested` or `reviewed`, `/build` sets the status back to
+`building`, and the later stages run again. Nothing in the repo records the
+merge, because no skill edits a spec after it. To see whether a PR is merged, ask
+`gh`. A design spec only uses draft and approved.
 
 ## Where evidence lives
 

@@ -73,6 +73,9 @@ If no number was given, ask for one and wait.
    - a link to the evidence file
 
    Leave the review line as it is. Do not copy the tables into the spec.
+   If no criterion is FAIL or not proven, set the spec's status to tested. A
+   criterion that waits for /ui-test does not block it, and the limits line says
+   so. Otherwise leave the status as it is.
 
 9. Commit the evidence file and the spec, so the next stage starts from a clean
    tree. Show the tables and the commit's hash. Say plainly whether anything

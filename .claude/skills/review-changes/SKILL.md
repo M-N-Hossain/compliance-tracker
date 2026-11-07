@@ -78,8 +78,10 @@ If no number was given, ask for one and wait.
    Decision column, with the issue number for an issue. Then update the review
    line in the spec's "Evidence and review" section: the number of rounds, and how
    many findings were fixed, sent to an issue and declined, with the issue
-   numbers. Do not copy the findings into the spec. Commit the evidence file and
-   the spec, and report the commit's hash and title.
+   numbers. Do not copy the findings into the spec. If no finding is open or
+   marked fix, set the spec's status to reviewed. If one is marked fix, leave the
+   status alone, because /build sets it back to building. Commit the evidence
+   file and the spec, and report the commit's hash and title.
 10. **Stop.**
     - Anything marked fix: the next stage is /build, then /test, then this skill
       again, because the code has changed.
