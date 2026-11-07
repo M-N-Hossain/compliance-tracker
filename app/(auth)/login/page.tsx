@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { loginErrorMessage } from "@/lib/authMessages";
+import { loginErrorMessage } from "@/utils/authMessages";
 
 export default function LoginPage() {
   const router = useRouter();

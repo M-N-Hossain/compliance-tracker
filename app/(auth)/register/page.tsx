@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { SERVER_ERROR_MESSAGE } from "@/lib/authMessages";
+import { SERVER_ERROR_MESSAGE } from "@/utils/authMessages";
 
 const ACCOUNT_CREATED_MESSAGE =
   "Your account was created, but we could not log you in. Please log in.";

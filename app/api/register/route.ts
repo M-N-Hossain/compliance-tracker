@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { SERVER_ERROR_MESSAGE } from "@/lib/authMessages";
+import { SERVER_ERROR_MESSAGE } from "@/utils/authMessages";
 
 export async function POST(request: Request) {
   const { email, password } = await request.json();

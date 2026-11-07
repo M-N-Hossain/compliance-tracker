@@ -131,7 +131,7 @@ it throws. Confirm this with a real run before relying on it.
 
 ### Step 2: Login page shows the right message
 
-- Files: `lib/authMessages.ts` (new, the two messages and a function that turns
+- Files: `utils/authMessages.ts` (new, the two messages and a function that turns
   a sign-in error into one of them), `app/(auth)/login/page.tsx`,
   `test/e2e-test/auth-errors.spec.ts` (new)
 - Tests: unit, `test/util-test/authMessages.test.ts`, proves criterion 3. Browser,
@@ -239,7 +239,7 @@ Date: 2026-11-07. Commit: 082b81f.
 | 4   | minor    | `login/page.tsx:21`, `register/page.tsx:22`  | `signIn` and `fetch` are not in a try/catch, so a network failure leaves the button stuck.                                                        | Bug                 | issue #12                                                                         |
 | 5   | minor    | `app/api/register/route.ts:35`               | Two sign-ups with the same email at once give a 500 "try again" instead of 409, because the unique-constraint error is caught.                    | Bug                 | issue #14                                                                         |
 | 6   | minor    | `test/e2e-test/auth-errors.spec.ts`          | No automated test links a real `authorize` throw to `Configuration`. The browser tests stub it, and the port 3100 and message text are hardcoded. | Bug, Spec           | issue #13                                                                         |
-| 7   | minor    | `lib/authMessages.ts:11`                     | Every error other than `CredentialsSignin` is shown as a server failure.                                                                          | Bug                 | declined: the Credentials provider only gives CredentialsSignin or a thrown error |
+| 7   | minor    | `utils/authMessages.ts:11`                   | Every error other than `CredentialsSignin` is shown as a server failure.                                                                          | Bug                 | declined: the Credentials provider only gives CredentialsSignin or a thrown error |
 | 8   | minor    | `lib/verifyCredentials.ts:18`                | A database failure is logged twice, once by us and once by Auth.js.                                                                               | Bug                 | declined: criterion 2 needs our own log line                                      |
 | 9   | minor    | `register/page.tsx:42`                       | After a failed automatic login the form stays filled in, and pressing Create account again shows a 409.                                           | Bug                 | declined: the developer chose to stay on the page (criterion 7)                   |
 | 10  | nit      | `app/api/register/route.ts:16-25`            | The re-indented lines inside the `try` have no comments (CLAUDE.md asks for one on every part).                                                   | Spec                | declined: moved lines, not new code                                               |

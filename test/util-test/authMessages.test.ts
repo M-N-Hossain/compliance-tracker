@@ -3,7 +3,7 @@ import {
   BAD_CREDENTIALS_MESSAGE,
   SERVER_ERROR_MESSAGE,
   loginErrorMessage,
-} from "@/lib/authMessages";
+} from "@/utils/authMessages";
 
 describe("loginErrorMessage", () => {
   it("says wrong email or password for a bad login", () => {

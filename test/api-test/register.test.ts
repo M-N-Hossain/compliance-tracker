@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/register/route";
 import { prisma } from "@/lib/prisma";
-import { SERVER_ERROR_MESSAGE } from "@/lib/authMessages";
+import { SERVER_ERROR_MESSAGE } from "@/utils/authMessages";
 
 vi.mock("@/lib/prisma", () => ({
   prisma: { user: { findUnique: vi.fn(), create: vi.fn() } },
