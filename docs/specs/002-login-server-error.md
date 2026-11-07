@@ -1,6 +1,6 @@
 # 002: Tell users when the server fails, not that their password is wrong
 
-**Status:** approved
+**Status:** submitted
 
 **Type:** slice
 
