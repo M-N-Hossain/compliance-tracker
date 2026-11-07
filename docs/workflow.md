@@ -4,6 +4,19 @@ This file describes the process. It enforces nothing: permission rules, hooks,
 CI and GitHub settings do that. The commands to run are in the "Commands"
 section of CLAUDE.md, so they are not repeated here.
 
+## Words used here
+
+- **Feature:** the whole goal, such as "login and sign-up handle failures well".
+  It has no file. It is made of one or more slices.
+- **Slice:** one thin piece of a feature that works from end to end once merged.
+  It has one spec (`Type: slice`) and one PR.
+- **Design:** a spec for how a screen looks, decided before any code
+  (`Type: design`). It has no steps, tests or PR.
+- **Step:** one commit inside a slice. `/breakdown` writes the steps and `/build`
+  does them one at a time.
+- **Issue:** a GitHub issue for work that is not part of the running spec, such as
+  a deferred finding. Later it becomes a new spec or a `/quick-fix`.
+
 ## Which path to use
 
 - **Design path:** decides what a screen looks like, before any code is built.
