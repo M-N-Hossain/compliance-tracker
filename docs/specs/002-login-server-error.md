@@ -269,3 +269,26 @@ Date: 2026-11-07. Commit: a54c8b4.
 Repeats of round 1, already decided and not listed again: the duplicate sign-up race (issue #14), `request.json()` outside the `try` and the missing try/catch around `fetch` and `signIn` (issue #12), the stubbed browser tests and port 3100 (issue #13), the form staying live after a failed automatic login (declined), and the mapping of every non-`CredentialsSignin` error to the server message (declined).
 
 The spec reviewer marked criteria 8 and 9 "unsure" only because it did not run the tests. `/test` proved them in its own run (see Evidence).
+
+### Round 3
+
+Date: 2026-11-07. Commit: f011b98.
+
+| Review   | Result                                              |
+| -------- | --------------------------------------------------- |
+| Spec     | ran (review-code subagent), no blockers             |
+| Bug      | ran (`code-review`)                                 |
+| Security | ran (`security-review`), no finding at confidence 8 |
+
+| #   | Severity | File and line                                     | Finding                                                                                                                               | Source | Decision                                                                 |
+| --- | -------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------ |
+| 18  | minor    | `lib/verifyCredentials.ts:25`                     | The thrown message is built from `name` and `code` without checking them. A driver error could in theory carry input in either value. | Spec   | declined: both values come from the database driver, not from user input |
+| 19  | minor    | `test/util-test/verifyCredentials.test.ts`        | No test asserts directly that the thrown error is not a `CredentialsSignin`. It follows from the exact message check.                 | Spec   | issue #13 (comment)                                                      |
+| 20  | minor    | `test/util-test/verifyCredentials.test.ts`        | No test fails if a `cause` is added to the thrown error later, although Auth.js can print causes.                                     | Spec   | issue #13 (comment)                                                      |
+| 21  | minor    | `docs/specs/002-login-server-error.md` (Step 1)   | Step 1 still says the database error is "rethrown", while Step 6 changed it to a new error.                                           | Spec   | declined: a running spec stays as written, Step 6 records the change     |
+| 22  | nit      | `docs/specs/002-login-server-error.md` (Evidence) | The Evidence names commit 8590fdd, and the branch head is f011b98, a docs-only commit.                                                | Spec   | declined: f011b98 is docs only, 8590fdd is the last code commit          |
+| 23  | nit      | `test/util-test/authMessages.test.ts`             | The test includes an empty error string, which the login page never passes (it only calls the function inside `if (result?.error)`).  | Bug    | declined: a harmless extra case for unknown input                        |
+
+Repeats of rounds 1 and 2, already decided and not listed again: no try/catch around `fetch` and `signIn` and `request.json()` outside the `try` (issue #12), the duplicate sign-up race (issue #14), name and code that can be undefined and the stubbed browser tests with port 3100 (issue #13), the copied log block, the form staying live after a failed automatic login and the mapping of every non-`CredentialsSignin` error (all declined).
+
+The spec reviewer marked criteria 8 and 9 "unsure" only because it did not run the tests. `/test` proved them in its own run (see Evidence).
