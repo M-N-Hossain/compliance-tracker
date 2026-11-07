@@ -14,8 +14,9 @@ Learning project. I want to understand each step, not only get it working.
 ## How we build features
 
 Follow docs/workflow.md for the feature and quick-fix paths, the definition of
-done and the git rules. Specs go in docs/specs/ and decisions in docs/decisions/,
-each with a \_template.md to copy.
+done and the git rules. Specs go in docs/specs/, test evidence and review findings
+in docs/evidence/, and decisions in docs/decisions/, each with a \_template.md to
+copy.
 
 ## Stack
 

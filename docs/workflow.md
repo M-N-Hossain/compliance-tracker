@@ -51,7 +51,8 @@ A design spec has no steps, tests, review or PR of its own.
    test first where it makes sense, implement, run checks, explain, commit.
    Stops after every step.
 4. **`/test NNN`:** runs every automated check in CLAUDE.md, then goes through
-   the acceptance criteria one by one with evidence.
+   the acceptance criteria one by one with evidence. The results go in the
+   evidence file, and the spec gets a short summary and a link.
 5. **`/ui-test NNN`:** only for a slice that changes the screen. Walks the flows
    in the browser on localhost, including error and empty states, and checks
    them against the design spec's decision. A failed criterion goes back to
@@ -60,7 +61,7 @@ A design spec has no steps, tests, review or PR of its own.
    subagent checks it against the spec and CLAUDE.md. The built-in
    `/code-review` (the bug review) and `/security-review` also run. All findings
    are advice: CI and the developer are the gate. The developer decides each
-   finding, and the decisions are saved in the spec.
+   finding, and the findings and decisions are saved in the evidence file.
 7. **`/pr` (only the developer starts it):** writes the PR description from the
    spec, pushes the branch and opens the PR (both ask first), waits for CI, and
    updates the spec status. The developer reviews and merges.
@@ -69,7 +70,21 @@ A design spec has no steps, tests, review or PR of its own.
    can still change things. The developer approves the draft and commits it in
    the brain.
 
-The spec file is the memory between sessions.
+The spec and its evidence file are the memory between sessions.
+
+## Where evidence lives
+
+A spec holds the plan: problem, criteria, security checklist, steps. The proof
+goes in a second file, `docs/evidence/NNN-slug.md`, with the same name as the
+spec and made from `docs/evidence/_template.md`. It has two parts: "Evidence"
+(checks, one result per criterion, notes on what is not proven) and "Review"
+(each round's findings and their decisions).
+
+The spec ends with a short "Evidence and review" section: the result in a few
+lines, the limits that matter, the finding counts and a link to the evidence
+file. `/test`, `/ui-test` and `/review-changes` keep it up to date. This keeps
+the spec short, so a new session can read the plan first and open the proof only
+when it needs it.
 
 ## Findings during a spec
 
@@ -115,11 +130,12 @@ Test what can hurt users or their data, once, at the cheapest level.
 
 A feature is done only when all of these are true:
 
-1. Every acceptance criterion has evidence: a test name or command output.
+1. Every acceptance criterion has evidence in the evidence file: a test name or
+   command output.
 2. Every automated check in CLAUDE.md passes.
 3. Any UI change has been tested in the browser.
-4. Every review finding has been fixed, sent to an issue, or declined with a
-   reason.
+4. Every review finding in the evidence file has been fixed, sent to an issue,
+   or declined with a reason.
 5. CI is green on the PR.
 6. The developer has merged the PR.
 7. The feature record has been written.

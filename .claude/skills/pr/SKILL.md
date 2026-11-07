@@ -19,20 +19,22 @@ This skill never merges. The developer reviews and merges.
 
 ## Check it is ready
 
-1. Read CLAUDE.md and the workflow file it links to, plus the spec if there is
-   one. If any of them is missing, stop and tell the developer what you could not
-   find.
+1. Read CLAUDE.md and the workflow file it links to, plus the spec and its
+   evidence file, `docs/evidence/NNN-slug.md`, if there is a spec. If any of them
+   is missing, stop and tell the developer what you could not find.
 2. Check the branch and the working tree with read-only git commands. If this is
    the main branch, or anything is uncommitted, say so and **stop**.
 3. Check the evidence:
-   - **With a spec:** read its "## Evidence" section. If it is missing, or any
-     result is FAIL, not run, not proven or ui-test, name each one and **stop**.
-     The developer decides what happens next.
+   - **With a spec:** read the "## Evidence" part of the evidence file. If it is
+     missing, or any result is FAIL, not run, not proven or ui-test, name each one
+     and **stop**. The developer decides what happens next.
    - **Quick fix:** use the evidence from this conversation. If it is gone, run
      the checks listed in CLAUDE.md again.
-4. With a spec, read its "## Review" section. If it is missing, if any review
-   shows as not run, or if any finding's decision is open or fix, name each one
-   and **stop**. The developer decides what happens next.
+4. With a spec, read the "## Review" part of the evidence file, every round. If it
+   is missing, if any review shows as not run, or if any finding's decision is
+   open or fix, name each one and **stop**. The developer decides what happens
+   next. The spec's "Evidence and review" section is only a summary, so check
+   that it agrees with the evidence file, and say if it does not.
 
 ## Prepare
 
