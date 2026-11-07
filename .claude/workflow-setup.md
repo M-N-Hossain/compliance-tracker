@@ -37,19 +37,21 @@ layer, not just an instruction.
    section (see Phase 3), test plan, out of scope. Status: draft. Stop.
 2. /breakdown NNN: after I approve the spec, add "## Steps" to it: small,
    ordered steps, each one commit and each leaving the app working, listing
-   files and tests. Stop. The spec file is the memory between sessions.
+   files and tests. Stop. The spec and its evidence file are the memory between
+   sessions.
 3. /build NNN: branch feat/NNN-slug. Per step: failing test first where it
    makes sense, implement, run checks, explain, suggest a conventional
    commit message. Stop after each step.
 4. /test NNN: run every automated check listed in CLAUDE.md, then go through
    the acceptance criteria one by one with evidence (test name, command
-   output). Never say "done" without evidence.
+   output), saved in docs/evidence/NNN-slug.md, with a short summary in the
+   spec. Never say "done" without evidence.
 5. /ui-test NNN: for any UI change, test it in the browser (details in
    Phase 4).
 6. Review: save the branch diff to a file, then the review-code subagent
    checks it against the spec and CLAUDE.md. Also run the built-in
    /code-review and /security-review. All findings are advice; CI and I are
-   the gate.
+   the gate. The findings and my decisions go in the evidence file.
 7. /pr (only I start it): write the PR description from the spec (summary,
    acceptance criteria with evidence, screenshots, how to test), push the
    branch and open the PR (both ask me first), wait for CI, update the spec
@@ -166,8 +168,9 @@ In .claude/settings.json:
   - Sections: what the feature is (user view), how it works (key technical
     approach), decisions and why (from the spec and docs/decisions/), the
     steps we took (condensed from "## Steps"), how it was tested (evidence
-    from /test and /ui-test), problems hit and root causes, what I learned,
-    an interview angle (a short STAR outline), links (PR URL, spec path).
+    from /test and /ui-test, in the evidence file), problems hit and root
+    causes, what I learned, an interview angle (a short STAR outline), links
+    (PR URL, spec path, evidence path).
   - Then update the status line in <brain>/projects/<repo-name>/ overview
     file if one exists.
   - Show me the draft before saving. Mark anything you are unsure of with
