@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { SERVER_ERROR_MESSAGE } from "@/lib/authMessages";
 
-// Shown when sign-up worked but the automatic login right after it did not.
 const ACCOUNT_CREATED_MESSAGE =
   "Your account was created, but we could not log you in. Please log in.";
 
@@ -29,8 +28,7 @@ export default function RegisterPage() {
     });
 
     if (!res.ok) {
-      // A server that fell over may send no body at all, so reading the JSON can throw.
-      // In that case there is no message to show, so use the server-failure one.
+      // A server that fell over may send no body, and then res.json() throws.
       const data = await res.json().catch(() => null);
       setError(data?.error ?? SERVER_ERROR_MESSAGE);
       setLoading(false);
@@ -40,7 +38,6 @@ export default function RegisterPage() {
     // sign in with the same credentials, so the user goes straight to step 2.
     const result = await signIn("credentials", { email, password, redirect: false });
     if (result?.error) {
-      // The account exists now, so say so and stay here. The "Log in" link is below.
       setError(ACCOUNT_CREATED_MESSAGE);
       setLoading(false);
       return;

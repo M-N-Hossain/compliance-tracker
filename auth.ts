@@ -14,7 +14,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        // The check lives in lib/verifyCredentials.ts, so it can be tested alone.
         return verifyCredentials(credentials.email as string, credentials.password as string);
       },
     }),

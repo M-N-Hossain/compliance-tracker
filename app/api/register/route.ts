@@ -13,7 +13,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // Everything below talks to the database, so a failure here is a server problem.
   try {
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
@@ -31,11 +30,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ id: user.id, email: user.email });
   } catch (error) {
-    // Log only the kind of error (its name and code). The message is left out on purpose:
-    // a Prisma error can quote the query, which would put the email in the log.
+    // Log only name and code: a Prisma error message can quote the query, and so the email.
     const { name, code } = (error ?? {}) as { name?: string; code?: string };
     console.error("Sign-up failed because of a server error:", name, code);
-    // A calm answer the page can read, with no internal details in it.
     return NextResponse.json({ error: SERVER_ERROR_MESSAGE }, { status: 500 });
   }
 }

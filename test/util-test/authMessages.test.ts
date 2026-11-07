@@ -1,4 +1,3 @@
-// The waiter's two sentences: which one the user hears depends on what the kitchen reported.
 import { describe, expect, it } from "vitest";
 import {
   BAD_CREDENTIALS_MESSAGE,
@@ -7,7 +6,6 @@ import {
 } from "@/lib/authMessages";
 
 describe("loginErrorMessage", () => {
-  // Auth.js reports a wrong password or unknown email as "CredentialsSignin".
   it("says wrong email or password for a bad login", () => {
     expect(loginErrorMessage("CredentialsSignin")).toBe("Wrong email or password.");
     expect(loginErrorMessage("CredentialsSignin")).toBe(BAD_CREDENTIALS_MESSAGE);
