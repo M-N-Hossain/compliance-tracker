@@ -39,8 +39,9 @@ function register() {
 
 describe("POST /api/register when the database fails", () => {
   // Criterion 5 and the sign-up half of criterion 10.
-  it("answers 500 with the server message, logs the error, and keeps the email and password out of the log", async () => {
-    const dbError = new Error("connection refused");
+  it("answers 500 with the server message, logs the error's name and code, and keeps the email and password out of the log", async () => {
+    // A connection error like the ones the pg driver raises: it has a name and a code.
+    const dbError = Object.assign(new Error("connection refused"), { code: "ECONNREFUSED" });
     findUnique.mockRejectedValue(dbError);
 
     const response = await register();
@@ -49,11 +50,31 @@ describe("POST /api/register when the database fails", () => {
     expect(response.status).toBe(500);
     expect(await response.json()).toEqual({ error: SERVER_ERROR_MESSAGE });
 
-    // The real error is logged...
+    // The kind of error is logged: its name and its code...
     expect(logSpy).toHaveBeenCalledTimes(1);
-    expect(logSpy.mock.calls[0]).toContain(dbError);
+    expect(logSpy.mock.calls[0]).toContain("Error");
+    expect(logSpy.mock.calls[0]).toContain("ECONNREFUSED");
 
     // ...and nothing logged contains the email or the password.
+    const logged = JSON.stringify(logSpy.mock.calls.flat().map(String));
+    expect(logged).not.toContain(EMAIL);
+    expect(logged).not.toContain(PASSWORD);
+  });
+
+  // Review finding 1: a Prisma error can quote the query, so the message must never be logged.
+  it("keeps the email out of the log even when the error message quotes it", async () => {
+    const leaky = Object.assign(
+      new Error(`Invalid findUnique invocation: where: { email: "${EMAIL}" }`),
+      { name: "PrismaClientValidationError" },
+    );
+    findUnique.mockRejectedValue(leaky);
+
+    const response = await register();
+
+    expect(response.status).toBe(500);
+
+    // The kind of error is still logged, and the quoted email is not.
+    expect(logSpy.mock.calls[0]).toContain("PrismaClientValidationError");
     const logged = JSON.stringify(logSpy.mock.calls.flat().map(String));
     expect(logged).not.toContain(EMAIL);
     expect(logged).not.toContain(PASSWORD);

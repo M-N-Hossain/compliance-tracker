@@ -29,8 +29,8 @@ The same mix-up exists in the sign-up flow:
   that I know to retype it.
 - As a new user, I want sign-up to show a message and let me try again when the
   server fails, so that the page does not hang.
-- As the developer, I want the real error written to the server log, so that I can
-  find out why it failed.
+- As the developer, I want the kind of error (its name and code) written to the server
+  log, so that I can find out why it failed.
 
 ## Acceptance criteria
 
@@ -44,7 +44,7 @@ Login:
 1. Given a wrong password or an unknown email, when `authorize` runs, then it
    returns `null` and nothing is logged as an error.
 2. Given the database throws, when `authorize` runs, then the sign-in result is
-   not the bad-credentials error, and the real error is logged.
+   not the bad-credentials error, and the error's name and code are logged.
 3. Given a sign-in result, when the login page turns it into a message, then the
    bad-credentials error gives "Wrong email or password." and any other error
    gives the server-failure message (a small pure function, so a unit test proves
@@ -55,8 +55,8 @@ Login:
 Sign-up:
 
 5. Given the database throws, when `POST /api/register` runs, then the response is
-   500 with JSON `{ error: "<server-failure message>" }`, and the real error is
-   logged.
+   500 with JSON `{ error: "<server-failure message>" }`, and the error's name and
+   code are logged.
 6. Given `/api/register` answers with an error that has no JSON body, when the
    register page handles it, then it shows the server-failure message and the
    button is enabled again.
@@ -174,6 +174,7 @@ Criteria 8 and 9 (login and sign-up still work) are proven by the existing
   must not contain the email or the password. It proves criterion 10 for real
   Prisma-style errors.
 - Commit: `fix: keep query arguments out of error logs`
+- Done: yes
 
 ## Evidence
 
@@ -219,7 +220,7 @@ Date: 2026-11-07. Commit: 082b81f.
 
 | #   | Severity | File and line                                | Finding                                                                                                                                           | Source              | Decision                                                                          |
 | --- | -------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | --------------------------------------------------------------------------------- |
-| 1   | major    | `lib/verifyCredentials.ts:20`, `route.ts:36` | The raw error object is logged. Prisma errors can contain the query arguments, which could put the email in the log.                              | Spec, Bug, Security | fix, Step 5                                                                       |
+| 1   | major    | `lib/verifyCredentials.ts:20`, `route.ts:36` | The raw error object is logged. Prisma errors can contain the query arguments, which could put the email in the log.                              | Spec, Bug, Security | fixed in Step 5                                                                   |
 | 2   | major    | `test/api-test/register.test.ts`             | The 409 and success returns moved inside the `try`, and no unit test covers them (only the smoke test covers success).                            | Spec                | issue #13                                                                         |
 | 3   | minor    | `app/api/register/route.ts:8`                | `await request.json()` is outside the `try`, so a malformed body still gives an empty 500.                                                        | Bug, Spec           | issue #12                                                                         |
 | 4   | minor    | `login/page.tsx:21`, `register/page.tsx:22`  | `signIn` and `fetch` are not in a try/catch, so a network failure leaves the button stuck.                                                        | Bug                 | issue #12                                                                         |

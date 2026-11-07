@@ -59,18 +59,37 @@ describe("verifyCredentials", () => {
   });
 
   // Criterion 2 and the login half of criterion 10.
-  it("rethrows a database error and logs it without the email or password", async () => {
-    const dbError = new Error("connection refused");
+  it("rethrows a database error and logs its name and code without the email or password", async () => {
+    // A connection error like the ones the pg driver raises: it has a name and a code.
+    const dbError = Object.assign(new Error("connection refused"), { code: "ECONNREFUSED" });
     findUnique.mockRejectedValue(dbError);
 
     // Not null: a server failure must not look like a wrong password.
     await expect(verifyCredentials(EMAIL, PASSWORD)).rejects.toBe(dbError);
 
-    // The real error is logged...
+    // The kind of error is logged: its name and its code...
     expect(logSpy).toHaveBeenCalledTimes(1);
-    expect(logSpy.mock.calls[0]).toContain(dbError);
+    expect(logSpy.mock.calls[0]).toContain("Error");
+    expect(logSpy.mock.calls[0]).toContain("ECONNREFUSED");
 
     // ...and nothing logged contains the email or the password.
+    const logged = JSON.stringify(logSpy.mock.calls.flat().map(String));
+    expect(logged).not.toContain(EMAIL);
+    expect(logged).not.toContain(PASSWORD);
+  });
+
+  // Review finding 1: a Prisma error can quote the query, so the message must never be logged.
+  it("keeps the email out of the log even when the error message quotes it", async () => {
+    const leaky = Object.assign(
+      new Error(`Invalid findUnique invocation: where: { email: "${EMAIL}" }`),
+      { name: "PrismaClientValidationError" },
+    );
+    findUnique.mockRejectedValue(leaky);
+
+    await expect(verifyCredentials(EMAIL, PASSWORD)).rejects.toBe(leaky);
+
+    // The kind of error is still logged, and the quoted email is not.
+    expect(logSpy.mock.calls[0]).toContain("PrismaClientValidationError");
     const logged = JSON.stringify(logSpy.mock.calls.flat().map(String));
     expect(logged).not.toContain(EMAIL);
     expect(logged).not.toContain(PASSWORD);

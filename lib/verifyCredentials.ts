@@ -17,8 +17,10 @@ export async function verifyCredentials(email: string, password: string) {
     // The shape Auth.js expects for a logged-in user.
     return { id: String(user.id), email: user.email, isAdmin: user.isAdmin };
   } catch (error) {
-    // Log the real error for the developer. Only the error itself: never the email or password.
-    console.error("Login check failed because of a server error:", error);
+    // Log only the kind of error (its name and code). The message is left out on purpose:
+    // a Prisma error can quote the query, which would put the email in the log.
+    const { name, code } = (error ?? {}) as { name?: string; code?: string };
+    console.error("Login check failed because of a server error:", name, code);
     // Rethrow, so the result is an error and not a "wrong password" null.
     throw error;
   }

@@ -31,8 +31,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ id: user.id, email: user.email });
   } catch (error) {
-    // Log the real error for the developer. Only the error itself: never the email or password.
-    console.error("Sign-up failed because of a server error:", error);
+    // Log only the kind of error (its name and code). The message is left out on purpose:
+    // a Prisma error can quote the query, which would put the email in the log.
+    const { name, code } = (error ?? {}) as { name?: string; code?: string };
+    console.error("Sign-up failed because of a server error:", name, code);
     // A calm answer the page can read, with no internal details in it.
     return NextResponse.json({ error: SERVER_ERROR_MESSAGE }, { status: 500 });
   }
