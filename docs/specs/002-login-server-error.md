@@ -176,6 +176,17 @@ Criteria 8 and 9 (login and sign-up still work) are proven by the existing
 - Commit: `fix: keep query arguments out of error logs`
 - Done: yes
 
+### Step 6: Stop Auth.js from logging the original error (review finding 12)
+
+- Files: `lib/verifyCredentials.ts`, `test/util-test/verifyCredentials.test.ts`
+- Tests: the existing database-error tests change from "rethrows the same error"
+  to "throws a new error". The new error's message and stack must not contain the
+  email or the password, even when the original message quoted the email (the
+  "leaky" case), and it is still not a `CredentialsSignin`. This covers what
+  Auth.js prints, because it logs the thrown error's stack. It proves criterion 10
+  for the login path.
+- Commit: `fix: rethrow a plain error so Auth.js does not log the query`
+
 ## Evidence
 
 Date: 2026-11-07. Commit: e1bd601.
@@ -234,3 +245,26 @@ Date: 2026-11-07. Commit: 082b81f.
 | 11  | nit      | `docs/specs/002-login-server-error.md:3`     | The status still says approved although all steps are done.                                                                                       | Spec                | declined: /pr updates the status                                                  |
 
 Notes: the spec reviewer marked criteria 8, 9 and 10 "unsure" only because it did not run the tests. `/test` proved them in its own run (see Evidence).
+
+### Round 2
+
+Date: 2026-11-07. Commit: a54c8b4.
+
+| Review   | Result                                              |
+| -------- | --------------------------------------------------- |
+| Spec     | ran (review-code subagent), no blockers             |
+| Bug      | ran (`code-review`)                                 |
+| Security | ran (`security-review`), no finding at confidence 8 |
+
+| #   | Severity | File and line                                      | Finding                                                                                                                                                     | Source | Decision                                                        |
+| --- | -------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --------------------------------------------------------------- |
+| 12  | major    | `lib/verifyCredentials.ts:24`                      | The original error is rethrown, and Auth.js logs its stack, which starts with the message. A Prisma error quoting the email still reaches the log at login. | Bug    | fix, Step 6                                                     |
+| 13  | minor    | `lib/verifyCredentials.ts:21`, `route.ts:35`       | Some real errors have no `code` or a generic name, so the log could read "Error undefined". No test shows what a real database outage logs.                 | Spec   | issue #13 (comment)                                             |
+| 14  | minor    | `test/api-test/register.test.ts`                   | `beforeEach` resets `findUnique` but not `create`, which will leak between tests once success tests are added.                                              | Spec   | issue #13 (comment)                                             |
+| 15  | minor    | `verifyCredentials.test.ts`, `auth-errors.spec.ts` | A few tests have no comment of their own (CLAUDE.md asks for one on every part).                                                                            | Spec   | issue #13 (comment)                                             |
+| 16  | minor    | `lib/verifyCredentials.ts:21`, `route.ts:35`       | The "log only name and code" block is copied into two files.                                                                                                | Bug    | declined: two small copies, and the fix for 12 changes only one |
+| 17  | nit      | `docs/specs/002-login-server-error.md`             | The Review section named an older commit and did not say that Step 5 got a second review.                                                                   | Spec   | declined: round 2 records the right commit                      |
+
+Repeats of round 1, already decided and not listed again: the duplicate sign-up race (issue #14), `request.json()` outside the `try` and the missing try/catch around `fetch` and `signIn` (issue #12), the stubbed browser tests and port 3100 (issue #13), the form staying live after a failed automatic login (declined), and the mapping of every non-`CredentialsSignin` error to the server message (declined).
+
+The spec reviewer marked criteria 8 and 9 "unsure" only because it did not run the tests. `/test` proved them in its own run (see Evidence).
