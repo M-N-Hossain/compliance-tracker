@@ -68,8 +68,9 @@ If no number was given, ask for one and wait.
 8. Update the "## Evidence and review" section at the end of the spec. Add it if
    it is missing, using the spec template's wording. Keep it to a few lines:
    - the tests: date, commit, the check results and how many criteria pass
-   - the limits: each result that is not a plain pass, and any proof that is
-     weaker than it looks, such as a staged failure or a fake error
+   - the limits: each result that is not a plain pass, any proof that is weaker
+     than it looks, such as a staged failure or a fake error, and any stage the
+     workflow lets this slice skip, such as /ui-test with "no screen change"
    - a link to the evidence file
 
    Leave the review line as it is. Do not copy the tables into the spec.

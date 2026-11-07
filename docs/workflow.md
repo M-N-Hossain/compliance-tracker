@@ -16,6 +16,23 @@ section of CLAUDE.md, so they are not repeated here.
 A spec names what it needs first in its `Depends on:` line, such as the design
 spec a slice builds.
 
+## Which stages a slice needs
+
+Not every slice needs every stage. Pick by what the slice touches:
+
+| The slice                                                            | What it needs                                                                                 |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Changes a screen (a page or a component)                             | Every stage, including `/ui-test`.                                                            |
+| No screen change (API, logic, data)                                  | Every stage except `/ui-test`. Write "no screen change" in the spec's limits line.            |
+| Touches auth, the schema or a migration, the AI boundary or R2 files | Never `/quick-fix`, and the security tests always run. `/ui-test` follows the two rows above. |
+| Small and safe: no auth, no schema, a few files                      | `/quick-fix`, with no spec.                                                                   |
+| Only docs, workflow text or config                                   | A `chore/` branch and a PR, with no spec.                                                     |
+
+Only `/ui-test` can be skipped, and only when no screen file changed and no
+criterion waits for the browser. `/test`, `/review-changes` and `/pr` always run
+for a slice. A skipped stage is named in the spec's "Evidence and review" limits
+line, with the reason, so nobody has to guess whether it was forgotten.
+
 ## Design path
 
 ```text
