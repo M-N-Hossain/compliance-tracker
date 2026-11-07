@@ -165,6 +165,16 @@ it throws. Confirm this with a real run before relying on it.
 Criteria 8 and 9 (login and sign-up still work) are proven by the existing
 `smoke.spec.ts`, which `/test` runs. No new test is needed.
 
+### Step 5: Keep query arguments out of the error logs (review finding 1)
+
+- Files: `lib/verifyCredentials.ts`, `app/api/register/route.ts`,
+  `test/util-test/verifyCredentials.test.ts`, `test/api-test/register.test.ts`
+- Tests: one added case in each existing test file. The fake database throws an
+  error whose message contains the email, as a Prisma error can. The logged text
+  must not contain the email or the password. It proves criterion 10 for real
+  Prisma-style errors.
+- Commit: `fix: keep query arguments out of error logs`
+
 ## Evidence
 
 Date: 2026-11-07. Commit: e33365f.
@@ -196,3 +206,29 @@ Notes:
 
 - Criterion 8: the spec says `/dashboard`. A user with no company is sent on to `/company/setup`, and the smoke test reaches the dashboard after company setup. Login itself is proven.
 - Criteria 4, 6 and 7 stage the failure in the browser. The real error value for a database outage (`error=Configuration`) was seen once on a live app in Step 1, and is not rerun here.
+
+## Review
+
+Date: 2026-11-07. Commit: 082b81f.
+
+| Review   | Result                                              |
+| -------- | --------------------------------------------------- |
+| Spec     | ran (review-code subagent), no blockers             |
+| Bug      | ran (`code-review`)                                 |
+| Security | ran (`security-review`), no finding at confidence 8 |
+
+| #   | Severity | File and line                                | Finding                                                                                                                                           | Source              | Decision                                                                          |
+| --- | -------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | --------------------------------------------------------------------------------- |
+| 1   | major    | `lib/verifyCredentials.ts:20`, `route.ts:36` | The raw error object is logged. Prisma errors can contain the query arguments, which could put the email in the log.                              | Spec, Bug, Security | fix, Step 5                                                                       |
+| 2   | major    | `test/api-test/register.test.ts`             | The 409 and success returns moved inside the `try`, and no unit test covers them (only the smoke test covers success).                            | Spec                | issue #13                                                                         |
+| 3   | minor    | `app/api/register/route.ts:8`                | `await request.json()` is outside the `try`, so a malformed body still gives an empty 500.                                                        | Bug, Spec           | issue #12                                                                         |
+| 4   | minor    | `login/page.tsx:21`, `register/page.tsx:22`  | `signIn` and `fetch` are not in a try/catch, so a network failure leaves the button stuck.                                                        | Bug                 | issue #12                                                                         |
+| 5   | minor    | `app/api/register/route.ts:35`               | Two sign-ups with the same email at once give a 500 "try again" instead of 409, because the unique-constraint error is caught.                    | Bug                 | issue #14                                                                         |
+| 6   | minor    | `test/e2e-test/auth-errors.spec.ts`          | No automated test links a real `authorize` throw to `Configuration`. The browser tests stub it, and the port 3100 and message text are hardcoded. | Bug, Spec           | issue #13                                                                         |
+| 7   | minor    | `lib/authMessages.ts:11`                     | Every error other than `CredentialsSignin` is shown as a server failure.                                                                          | Bug                 | declined: the Credentials provider only gives CredentialsSignin or a thrown error |
+| 8   | minor    | `lib/verifyCredentials.ts:18`                | A database failure is logged twice, once by us and once by Auth.js.                                                                               | Bug                 | declined: criterion 2 needs our own log line                                      |
+| 9   | minor    | `register/page.tsx:42`                       | After a failed automatic login the form stays filled in, and pressing Create account again shows a 409.                                           | Bug                 | declined: the developer chose to stay on the page (criterion 7)                   |
+| 10  | nit      | `app/api/register/route.ts:16-25`            | The re-indented lines inside the `try` have no comments (CLAUDE.md asks for one on every part).                                                   | Spec                | declined: moved lines, not new code                                               |
+| 11  | nit      | `docs/specs/002-login-server-error.md:3`     | The status still says approved although all steps are done.                                                                                       | Spec                | declined: /pr updates the status                                                  |
+
+Notes: the spec reviewer marked criteria 8, 9 and 10 "unsure" only because it did not run the tests. `/test` proved them in its own run (see Evidence).
