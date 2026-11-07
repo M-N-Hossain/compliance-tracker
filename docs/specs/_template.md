@@ -8,6 +8,8 @@ How to use this template:
 - Answer every line of the security checklist. If one does not apply, write
   "Not applicable, because..." with the reason.
 - Do not add a Steps section. /breakdown adds it after the spec is approved.
+- Do not fill in "Evidence and review". /test, /ui-test and /review-changes keep
+  it up to date, and the full tables go in docs/evidence/NNN-slug.md.
 - Delete this comment and the hints below when you fill it in.
 -->
 
@@ -58,3 +60,7 @@ defaults, renames)? If nothing changes, delete this section.
 ## Out of scope
 
 What are we deliberately not doing in this slice?
+
+## Evidence and review
+
+Not run yet. Full tables and findings: docs/evidence/NNN-slug.md.
