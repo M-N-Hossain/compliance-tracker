@@ -149,6 +149,7 @@ it throws. Confirm this with a real run before relying on it.
   message, error logged) and the sign-up half of criterion 10 (no email or
   password in the log).
 - Commit: `fix: return a JSON error when sign-up hits a database failure`
+- Done: yes
 
 ### Step 4: Register page handles both failures
 
