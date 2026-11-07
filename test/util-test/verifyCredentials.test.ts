@@ -59,13 +59,16 @@ describe("verifyCredentials", () => {
   });
 
   // Criterion 2 and the login half of criterion 10.
-  it("rethrows a database error and logs its name and code without the email or password", async () => {
+  it("throws on a database error and logs its name and code without the email or password", async () => {
     // A connection error like the ones the pg driver raises: it has a name and a code.
     const dbError = Object.assign(new Error("connection refused"), { code: "ECONNREFUSED" });
     findUnique.mockRejectedValue(dbError);
 
-    // Not null: a server failure must not look like a wrong password.
-    await expect(verifyCredentials(EMAIL, PASSWORD)).rejects.toBe(dbError);
+    // Not null: a server failure must not look like a wrong password. It is a new, plain error.
+    const thrown = await verifyCredentials(EMAIL, PASSWORD).catch((e: unknown) => e);
+    expect(thrown).toBeInstanceOf(Error);
+    expect(thrown).not.toBe(dbError);
+    expect((thrown as Error).message).toBe("Login check failed (Error ECONNREFUSED)");
 
     // The kind of error is logged: its name and its code...
     expect(logSpy).toHaveBeenCalledTimes(1);
@@ -86,12 +89,19 @@ describe("verifyCredentials", () => {
     );
     findUnique.mockRejectedValue(leaky);
 
-    await expect(verifyCredentials(EMAIL, PASSWORD)).rejects.toBe(leaky);
+    const thrown = await verifyCredentials(EMAIL, PASSWORD).catch((e: unknown) => e);
 
     // The kind of error is still logged, and the quoted email is not.
     expect(logSpy.mock.calls[0]).toContain("PrismaClientValidationError");
     const logged = JSON.stringify(logSpy.mock.calls.flat().map(String));
     expect(logged).not.toContain(EMAIL);
     expect(logged).not.toContain(PASSWORD);
+
+    // Review finding 12: Auth.js prints the thrown error's stack, which starts with its message.
+    // So the thrown error must not carry the quoted email either.
+    expect(thrown).toBeInstanceOf(Error);
+    expect((thrown as Error).message).not.toContain(EMAIL);
+    expect((thrown as Error).stack).not.toContain(EMAIL);
+    expect((thrown as Error).stack).not.toContain(PASSWORD);
   });
 });

@@ -21,7 +21,9 @@ export async function verifyCredentials(email: string, password: string) {
     // a Prisma error can quote the query, which would put the email in the log.
     const { name, code } = (error ?? {}) as { name?: string; code?: string };
     console.error("Login check failed because of a server error:", name, code);
-    // Rethrow, so the result is an error and not a "wrong password" null.
-    throw error;
+    // Throw, so the result is an error and not a "wrong password" null. It is a new, plain error,
+    // not the original: Auth.js prints the thrown error's stack, which starts with its message,
+    // and the original message may quote the email.
+    throw new Error(`Login check failed (${name} ${code})`);
   }
 }

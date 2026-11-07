@@ -186,6 +186,7 @@ Criteria 8 and 9 (login and sign-up still work) are proven by the existing
   Auth.js prints, because it logs the thrown error's stack. It proves criterion 10
   for the login path.
 - Commit: `fix: rethrow a plain error so Auth.js does not log the query`
+- Done: yes
 
 ## Evidence
 
@@ -258,7 +259,7 @@ Date: 2026-11-07. Commit: a54c8b4.
 
 | #   | Severity | File and line                                      | Finding                                                                                                                                                     | Source | Decision                                                        |
 | --- | -------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --------------------------------------------------------------- |
-| 12  | major    | `lib/verifyCredentials.ts:24`                      | The original error is rethrown, and Auth.js logs its stack, which starts with the message. A Prisma error quoting the email still reaches the log at login. | Bug    | fix, Step 6                                                     |
+| 12  | major    | `lib/verifyCredentials.ts:24`                      | The original error is rethrown, and Auth.js logs its stack, which starts with the message. A Prisma error quoting the email still reaches the log at login. | Bug    | fixed in Step 6                                                 |
 | 13  | minor    | `lib/verifyCredentials.ts:21`, `route.ts:35`       | Some real errors have no `code` or a generic name, so the log could read "Error undefined". No test shows what a real database outage logs.                 | Spec   | issue #13 (comment)                                             |
 | 14  | minor    | `test/api-test/register.test.ts`                   | `beforeEach` resets `findUnique` but not `create`, which will leak between tests once success tests are added.                                              | Spec   | issue #13 (comment)                                             |
 | 15  | minor    | `verifyCredentials.test.ts`, `auth-errors.spec.ts` | A few tests have no comment of their own (CLAUDE.md asks for one on every part).                                                                            | Spec   | issue #13 (comment)                                             |
