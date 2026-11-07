@@ -12,7 +12,8 @@ metadata:
 The spec number: $ARGUMENTS
 
 This skill reports what it sees. It does not fix anything, and it does not change
-product code or tests. The only file it changes is the spec.
+product code or tests. The only files it changes are the evidence file and the
+short "Evidence and review" section of the spec.
 
 If no number was given, ask for one and wait.
 
@@ -26,9 +27,9 @@ If no number was given, ask for one and wait.
 
 ## Steps
 
-1. Read CLAUDE.md, the workflow file it links to, and the spec. If any of them is
-   missing, or CLAUDE.md lists no app URL, stop and tell the developer what you
-   could not find.
+1. Read CLAUDE.md, the workflow file it links to, the spec and its evidence file,
+   `docs/evidence/NNN-slug.md`. If any of them is missing, or CLAUDE.md lists no
+   app URL, stop and tell the developer what you could not find.
 2. Check that the browser tools are connected. If not, tell the developer how to
    connect them. **Stop and wait.**
 3. Check that the app answers at the app URL. If not, ask the developer to start
@@ -42,7 +43,8 @@ If no number was given, ask for one and wait.
 4. Open the app and check that the developer is logged in with their development
    test account. If a login page appears, **stop and wait.**
 5. List the criteria that describe UI behaviour, including any marked ui-test in
-   the spec's "## Evidence" section. If there are none, say so and stop.
+   the "## Evidence" part of the evidence file. If there are none, say so and
+   stop.
 6. For each of those criteria, walk the flow it describes:
    - Try the normal path, then the error states and empty states.
    - If the spec depends on a design spec, check that the screen matches its
@@ -57,12 +59,13 @@ If no number was given, ask for one and wait.
    - **FAIL:** you saw something else. Describe it, and name the screenshot if
      there is one.
    - **not run:** you could not reach this flow. Say why. This is not a pass.
-8. Update the "## Evidence" section of the spec, creating it if needed. Replace
-   each ui-test result with the new result, and add a short "Browser" note with
-   the date, and the screenshot folder if there is one. Record console errors and
-   failed requests, even if they look unrelated.
-9. Commit the spec. Show the results and the commit's hash. Say plainly whether
-   anything failed or was not run.
+8. Update the "## Evidence" part of the evidence file. Replace each ui-test
+   result with the new result, and add a short "Browser" note with the date, and
+   the screenshot folder if there is one. Record console errors and failed
+   requests, even if they look unrelated. Then update the "Evidence and review"
+   section of the spec: the limits line, and the count of criteria that pass.
+9. Commit the evidence file and the spec. Show the results and the commit's hash.
+   Say plainly whether anything failed or was not run.
 10. **Stop.** Do not fix anything here.
     - A criterion failed: it goes back to /build.
     - A criterion was not run: the developer decides whether to run it again or

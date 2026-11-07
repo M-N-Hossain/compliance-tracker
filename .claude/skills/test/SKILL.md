@@ -12,7 +12,8 @@ metadata:
 The spec number: $ARGUMENTS
 
 This skill reports what it sees. It does not fix anything, and it does not change
-product code or tests. The only file it changes is the spec.
+product code or tests. The only files it changes are the evidence file and the
+short "Evidence and review" section of the spec.
 
 If no number was given, ask for one and wait.
 
@@ -40,7 +41,10 @@ If no number was given, ask for one and wait.
 
 6. Do the same for the tests the spec's security checklist requires, and say whether
    each one ran and passed.
-7. Add or replace a "## Evidence" section at the end of the spec:
+7. Write the results to the evidence file, `docs/evidence/NNN-slug.md`, with the
+   same name as the spec. If it does not exist, copy
+   `docs/evidence/_template.md` to that path. Add or replace its "## Evidence"
+   part, and leave any "## Review" part as it is:
 
    ```markdown
    ## Evidence
@@ -61,16 +65,27 @@ If no number was given, ask for one and wait.
    Keep the Evidence column to the test name or a short quote. Put any
    explanation in the notes, not in the table.
 
-8. Commit the spec, so the next stage starts from a clean tree. Show the tables
-   and the commit's hash. Say plainly whether anything failed, was not run, or is
-   not proven. Say if a test service is still running, and how to stop it.
-   Anything else you noticed that is not a criterion is a finding: list it with a
-   recommendation, following the findings rule in the workflow file.
-9. **Stop.** Never say "done" unless every criterion passes or waits for /ui-test.
-   - Anything failed or not proven: the next stage is /build, once the developer
-     decides.
-   - Anything marked ui-test, or any UI change: the next stage is /ui-test.
-   - Otherwise: the next stage is /review-changes.
+8. Update the "## Evidence and review" section at the end of the spec. Add it if
+   it is missing, using the spec template's wording. Keep it to a few lines:
+   - the tests: date, commit, the check results and how many criteria pass
+   - the limits: each result that is not a plain pass, and any proof that is
+     weaker than it looks, such as a staged failure or a fake error
+   - a link to the evidence file
+
+   Leave the review line as it is. Do not copy the tables into the spec.
+
+9. Commit the evidence file and the spec, so the next stage starts from a clean
+   tree. Show the tables and the commit's hash. Say plainly whether anything
+   failed, was not run, or is not proven. Say if a test service is still running,
+   and how to stop it. Anything else you noticed that is not a criterion is a
+   finding: list it with a recommendation, following the findings rule in the
+   workflow file.
+10. **Stop.** Never say "done" unless every criterion passes or waits for /ui-test.
+
+- Anything failed or not proven: the next stage is /build, once the developer
+  decides.
+- Anything marked ui-test, or any UI change: the next stage is /ui-test.
+- Otherwise: the next stage is /review-changes.
 
 ## Limits
 
