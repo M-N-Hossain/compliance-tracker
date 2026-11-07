@@ -190,7 +190,7 @@ Criteria 8 and 9 (login and sign-up still work) are proven by the existing
 
 ## Evidence
 
-Date: 2026-11-07. Commit: e1bd601.
+Date: 2026-11-07. Commit: 8590fdd.
 
 | Check                                            | Result                    |
 | ------------------------------------------------ | ------------------------- |
@@ -200,26 +200,26 @@ Date: 2026-11-07. Commit: e1bd601.
 | `npm run test:e2e`                               | pass, 17 tests            |
 | `node test/hook-test/block-destructive.test.mjs` | pass, 64 of 64            |
 
-| Criterion | Result | Evidence                                                                                                                                                                                 |
-| --------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1         | pass   | `verifyCredentials.test.ts`: wrong password and unknown email return null, `console.error` not called                                                                                    |
-| 2         | pass   | `verifyCredentials.test.ts`: database error is rethrown, its name and code are logged                                                                                                    |
-| 3         | pass   | `authMessages.test.ts`: `CredentialsSignin` gives the bad-credentials message, others the server one                                                                                     |
-| 4         | pass   | `auth-errors.spec.ts`: server failure on login shows the server message and the button is enabled                                                                                        |
-| 5         | pass   | `register.test.ts`: database failure gives 500, JSON server message, name and code logged                                                                                                |
-| 6         | pass   | `auth-errors.spec.ts`: sign-up answer with no body shows the server message, button enabled                                                                                              |
-| 7         | pass   | `auth-errors.spec.ts`: failed automatic sign-in stays on `/register` with the "account created" text                                                                                     |
-| 8         | pass   | `smoke.spec.ts`: login after sign-out reaches the app (setup page, then dashboard)                                                                                                       |
-| 9         | pass   | `smoke.spec.ts`: sign-up reaches `/company/setup`                                                                                                                                        |
-| 10        | pass   | "keeps the email out of the log even when the error message quotes it" in `verifyCredentials.test.ts` and `register.test.ts`, plus the no-email, no-password checks in the failure tests |
+| Criterion | Result | Evidence                                                                                                                                                              |
+| --------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1         | pass   | `verifyCredentials.test.ts`: wrong password and unknown email return null, `console.error` not called                                                                 |
+| 2         | pass   | `verifyCredentials.test.ts`: "throws on a database error and logs its name and code", and the thrown error is not `CredentialsSignin`                                 |
+| 3         | pass   | `authMessages.test.ts`: `CredentialsSignin` gives the bad-credentials message, others the server one                                                                  |
+| 4         | pass   | `auth-errors.spec.ts`: server failure on login shows the server message and the button is enabled                                                                     |
+| 5         | pass   | `register.test.ts`: database failure gives 500, JSON server message, name and code logged                                                                             |
+| 6         | pass   | `auth-errors.spec.ts`: sign-up answer with no body shows the server message, button enabled                                                                           |
+| 7         | pass   | `auth-errors.spec.ts`: failed automatic sign-in stays on `/register` with the "account created" text                                                                  |
+| 8         | pass   | `smoke.spec.ts`: login after sign-out reaches the app (setup page, then dashboard)                                                                                    |
+| 9         | pass   | `smoke.spec.ts`: sign-up reaches `/company/setup`                                                                                                                     |
+| 10        | pass   | "keeps the email out of the log even when the error message quotes it" in `verifyCredentials.test.ts` (log, thrown message and stack) and in `register.test.ts` (log) |
 
 Security checklist tests: the spec requires none beyond criterion 10. The cross-tenant test is not applicable, because no company data is touched.
 
 Notes:
 
 - Criterion 8: the spec says `/dashboard`. A user with no company is sent on to `/company/setup`, and the smoke test reaches the dashboard after company setup. Login itself is proven.
-- Criteria 4, 6 and 7 stage the failure in the browser, and no real-browser walk (`/ui-test`) has run yet. The real error value for a database outage (`error=Configuration`) was seen once on a live app in Step 1, and is not rerun here.
-- Criterion 10: the leaky-error tests use a fake error that quotes the email. A real Prisma error was not produced in this run.
+- Criteria 4, 6 and 7 stage the failure in the browser, and no real-browser walk (`/ui-test`) has run yet. The real error value for a database outage (`error=Configuration`) was seen once on a live app in Step 1, before Step 6 changed what `authorize` throws. A plain `Error` is still not `CredentialsSignin`, so the same path applies, but it was not rerun live.
+- Criterion 10: the leaky-error tests use a fake error that quotes the email. A real Prisma error was not produced in this run, and what Auth.js itself prints was proven only through the thrown error's message and stack, not by reading the live log.
 
 ## Review
 
