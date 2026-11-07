@@ -91,6 +91,9 @@ If code changes after `tested` or `reviewed`, `/build` sets the status back to
 merge, because no skill edits a spec after it. To see whether a PR is merged, ask
 `gh`. A design spec only uses draft and approved.
 
+`/next NNN` reads the status, the steps, the evidence file and the PR, and says
+which stage comes next. It only reads and never starts the stage.
+
 ## Where evidence lives
 
 A spec holds the plan: problem, criteria, security checklist, steps. The proof
