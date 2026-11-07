@@ -160,6 +160,7 @@ it throws. Confirm this with a real run before relying on it.
   answered with a failure, the page stays on `/register` and shows the "account
   was created" message (criterion 7).
 - Commit: `fix: show messages on sign-up failures instead of hanging`
+- Done: yes
 
 Criteria 8 and 9 (login and sign-up still work) are proven by the existing
 `smoke.spec.ts`, which `/test` runs. No new test is needed.
