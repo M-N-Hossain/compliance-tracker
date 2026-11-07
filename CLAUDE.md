@@ -6,7 +6,7 @@ Learning project. I want to understand each step, not only get it working.
 
 - Do one small step at a time, then stop and wait for me to say "go".
 - Before writing code, explain the idea in simple words (a short story or diagram).
-- Put a short comment on every part of the code you write.
+- Comment only the why: a reason, a hidden constraint or a surprising choice. Do not comment code that explains itself.
 - When something fails, explain the root cause before you fix it.
 - Never apply a change I could not explain back to you.
 - No em dashes in anything you write.
