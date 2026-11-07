@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { loginErrorMessage } from "@/lib/authMessages";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -20,7 +21,8 @@ export default function LoginPage() {
     const result = await signIn("credentials", { email, password, redirect: false });
 
     if (result?.error) {
-      setError("Wrong email or password.");
+      // Wrong password and server failure are different errors, so each gets its own message.
+      setError(loginErrorMessage(result.error));
       setLoading(false);
       return;
     }

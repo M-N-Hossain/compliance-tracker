@@ -139,6 +139,7 @@ it throws. Confirm this with a real run before relying on it.
   failure in the browser, the server-failure message shows and the button is
   enabled again. It proves criterion 4, which only a browser can show.
 - Commit: `fix: show a server error on login instead of wrong password`
+- Done: yes
 
 ### Step 3: Register route answers a database failure with a clear error
 
