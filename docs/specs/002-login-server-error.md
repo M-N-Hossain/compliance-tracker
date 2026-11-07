@@ -164,3 +164,35 @@ it throws. Confirm this with a real run before relying on it.
 
 Criteria 8 and 9 (login and sign-up still work) are proven by the existing
 `smoke.spec.ts`, which `/test` runs. No new test is needed.
+
+## Evidence
+
+Date: 2026-11-07. Commit: e33365f.
+
+| Check                                            | Result                    |
+| ------------------------------------------------ | ------------------------- |
+| `npm run check` (lint, format, types)            | pass                      |
+| `npm run test:unit`                              | pass, 12 files, 106 tests |
+| `npm test` (all Vitest, with the test database)  | pass, 16 files, 155 tests |
+| `npm run test:e2e`                               | pass, 17 tests            |
+| `node test/hook-test/block-destructive.test.mjs` | pass, 64 of 64            |
+
+| Criterion | Result | Evidence                                                                                                            |
+| --------- | ------ | ------------------------------------------------------------------------------------------------------------------- |
+| 1         | pass   | `verifyCredentials.test.ts`: wrong password and unknown email return null, `console.error` not called               |
+| 2         | pass   | `verifyCredentials.test.ts`: database error is rethrown and logged                                                  |
+| 3         | pass   | `authMessages.test.ts`: `CredentialsSignin` gives the bad-credentials message, others the server one                |
+| 4         | pass   | `auth-errors.spec.ts`: server failure on login shows the server message and the button is enabled                   |
+| 5         | pass   | `register.test.ts`: database failure gives 500, JSON server message, error logged                                   |
+| 6         | pass   | `auth-errors.spec.ts`: sign-up answer with no body shows the server message, button enabled                         |
+| 7         | pass   | `auth-errors.spec.ts`: failed automatic sign-in stays on `/register` with the "account created" text                |
+| 8         | pass   | `smoke.spec.ts`: login after sign-out reaches the app (setup page, then dashboard)                                  |
+| 9         | pass   | `smoke.spec.ts`: sign-up reaches `/company/setup`                                                                   |
+| 10        | pass   | the error-logging tests in `verifyCredentials.test.ts` and `register.test.ts` check no email or password in the log |
+
+Security checklist tests: the spec requires none beyond criterion 10. The cross-tenant test is not applicable, because no company data is touched.
+
+Notes:
+
+- Criterion 8: the spec says `/dashboard`. A user with no company is sent on to `/company/setup`, and the smoke test reaches the dashboard after company setup. Login itself is proven.
+- Criteria 4, 6 and 7 stage the failure in the browser. The real error value for a database outage (`error=Configuration`) was seen once on a live app in Step 1, and is not rerun here.
