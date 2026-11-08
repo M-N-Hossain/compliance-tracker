@@ -26,6 +26,14 @@ async function promote(req: Request) {
     return NextResponse.json({ error: "Admins only" }, { status: 403 });
   }
 
+  // Review finding F1: a text/plain POST needs no preflight, and SameSite=Lax still sends the
+  // login cookie from another port or a sibling subdomain. Another origin can only send
+  // application/json after a preflight, which this app never allows.
+  const contentType = req.headers.get("content-type")?.split(";")[0].trim().toLowerCase();
+  if (contentType !== "application/json") {
+    return NextResponse.json({ error: "Expected application/json" }, { status: 415 });
+  }
+
   let body: { email?: unknown } | null;
   try {
     body = await req.json();

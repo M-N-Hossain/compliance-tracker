@@ -50,6 +50,7 @@ describe("POST /api/admin/promote when the database fails", () => {
       const response = await POST(
         new Request("http://localhost/api/admin/promote", {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: EMAIL }),
         }),
       );

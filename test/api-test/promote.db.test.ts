@@ -13,8 +13,15 @@ const TARGET_EMAIL = "promote-target@example.test";
 const OTHER_EMAIL = "promote-other@example.test";
 
 // Sends any body at all, for the tests about bodies the route must refuse.
-function sendRaw(body: string) {
-  return POST(new Request("http://localhost/api/admin/promote", { method: "POST", body }));
+// A string body defaults to text/plain, which the route refuses, so set the type a real client sends.
+function sendRaw(body: string, contentType = "application/json") {
+  return POST(
+    new Request("http://localhost/api/admin/promote", {
+      method: "POST",
+      headers: { "Content-Type": contentType },
+      body,
+    }),
+  );
 }
 
 function promote(email: string) {
@@ -104,6 +111,17 @@ describe("POST /api/admin/promote by an admin", () => {
     const response = await sendRaw(body);
 
     expect(response.status).toBe(400);
+    expect(await isAdminInDatabase(TARGET_EMAIL)).toBe(false);
+  });
+
+  // Review finding F1: a text/plain POST needs no preflight, so a same-site page could send it.
+  it("answers 415 for a JSON body sent as text/plain, and changes nobody", async () => {
+    logInAs(await createUserWithoutCompany(ADMIN_EMAIL, true));
+    await createUserWithoutCompany(TARGET_EMAIL);
+
+    const response = await sendRaw(JSON.stringify({ email: TARGET_EMAIL }), "text/plain");
+
+    expect(response.status).toBe(415);
     expect(await isAdminInDatabase(TARGET_EMAIL)).toBe(false);
   });
 });

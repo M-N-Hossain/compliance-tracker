@@ -1,6 +1,6 @@
 # 004: Route for an admin to make another user an admin
 
-**Status:** tested
+**Status:** building
 
 **Type:** slice
 
@@ -75,11 +75,13 @@ scope. Until then, it is undone by hand in the database.
 - **Personal data:** the request holds an email. The log holds user ids only
   (criterion 8), and error answers never echo the email. Tests use synthetic
   emails only.
-- **Cross-site requests:** the route reads JSON from a POST. A form on another
-  site could send such a POST, but the browser only adds the login cookie to a
-  cross-site POST if the cookie allows it. Auth.js sets the session cookie to
-  `SameSite=Lax` (its default, `@auth/core` `defaultCookies`, not overridden in
-  `auth.ts`), which blocks this.
+- **Cross-site requests:** Auth.js sets the session cookie to `SameSite=Lax`
+  (its default, `@auth/core` `defaultCookies`, not overridden in `auth.ts`), which
+  keeps it off POSTs from other sites. But the browser counts other ports on
+  localhost and sibling subdomains as the same site, and a `text/plain` POST
+  needs no preflight. So the route also answers 415 unless the body is sent as
+  `application/json`, which another origin can only send after a preflight that
+  this app never allows (review finding F1, Step 5).
 
 ## Out of scope
 
@@ -140,6 +142,19 @@ scope. Until then, it is undone by hand in the database.
     JSON error, and the log has the error's name and code, not its message
     (criterion 9)
 - Commit: `feat: log promotions and answer database failures on promote`
+- Done: yes
+
+### Step 5 (F1): Refuse a body that is not sent as JSON
+
+- Review finding F1: a `text/plain` POST needs no preflight, and `SameSite=Lax`
+  still sends the cookie from a same-site origin, so the route must check the
+  `Content-Type` itself.
+- Files: `app/api/admin/promote/route.ts`, `test/api-test/promote.db.test.ts`,
+  `test/api-test/promote.test.ts` (both send `application/json`, as a real
+  client does)
+- Tests: database level: a JSON body sent as `text/plain` gets 415, and the
+  target stays a non-admin.
+- Commit: `fix: refuse promote requests not sent as JSON`
 - Done: yes
 
 ## Evidence and review
