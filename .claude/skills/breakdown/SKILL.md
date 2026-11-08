@@ -22,8 +22,9 @@ If no number was given, ask for one and wait.
    number. If any of them is missing, stop and tell the developer what you could
    not find. If the spec already has a "## Steps" section, stop and ask whether
    to replace it. If its type is design, stop: a design spec has no steps.
-   If a slice in its `Depends on:` line is not merged into the main branch yet,
-   or a design in it is not approved yet, name it and stop.
+   If a slice in its `Depends on:` line is not merged into main on GitHub yet
+   (ask `gh`, because a local `main` can be behind), or a design in it is not
+   approved yet, name it and stop.
 2. If the spec contains any CHECK items, list them. **Stop and wait** until the
    developer has resolved them and the spec is updated.
 3. If the status is draft, ask whether the developer approves the spec. **Stop and

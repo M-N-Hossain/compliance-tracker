@@ -207,6 +207,9 @@ Never say "done" without evidence.
 
 - **Branches:** `feat/NNN-slug` for slices, `fix/slug` for fixes, `chore/slug`
   for maintenance, and `proto/NNN-slug` for prototypes, which are never merged.
+- **Base:** run `git fetch origin` first, then start new branches from
+  `origin/main` and compare against it. A local `main` only moves on a pull, so
+  it can be behind and add merged work to a diff.
 - **Commits:** conventional commits, such as `feat: add expiry reminders`. One
   commit per step.
 - **Messages and PR descriptions:** they only explain what the change is about.

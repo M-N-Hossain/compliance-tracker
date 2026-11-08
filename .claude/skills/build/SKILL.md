@@ -25,8 +25,10 @@ make the commits, and the developer pushes and merges.
    status can build: approved and building continue the steps, and tested or
    reviewed means a finding sent the work back here.
 3. Check the current branch. If it is not the feature branch named in the workflow
-   file, create or switch to it. The spec may still be uncommitted, and it moves to
-   the new branch with the switch. Check the branch again afterwards. If the spec
+   file, switch to it, or create it from `origin/main` after `git fetch origin`,
+   as the workflow file's "Base" rule says. The spec may still be uncommitted,
+   and it moves to the new branch with the switch. Check the branch again
+   afterwards. If the spec
    depends on a design spec that is not on the main branch yet, bring that file
    over from its prototype branch with `git checkout proto/NNN-slug -- <path>`,
    and include it in the first commit.
