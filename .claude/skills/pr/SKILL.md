@@ -33,16 +33,16 @@ This skill never merges. The developer reviews and merges.
 4. With a spec, read the "## Review" part of the evidence file, every round. If it
    has no "### Round N" heading, if any review shows as not run, or if any
    finding's decision is open or fix, name each one and **stop**. The developer
-   decides what happens next. The spec's "Evidence and review" section is only a summary, so check
-   that it agrees with the evidence file, and say if it does not.
+   decides what happens next. The spec's "Evidence and review" section is only a
+   summary, so check that it agrees with the evidence file, and say if it does
+   not.
 
 ## Prepare
 
 5. With a spec, check that its status is reviewed. If it is not, name the stage
    that comes first and **stop**. Then change the status to submitted and commit
-   the spec. This comes
-   before the push, so that CI does not have to run again afterwards. Then check
-   that the working tree is clean.
+   the spec. This comes before the push, so that CI does not have to run again
+   afterwards. Then check that the working tree is clean.
 6. Draft a conventional title and this description:
 
    ```markdown
@@ -73,8 +73,12 @@ This skill never merges. The developer reviews and merges.
 ## Send
 
 8. Push the branch to its remote. Expect a permission prompt, and never force.
-9. Open the PR against the main branch with `gh`, passing the description from a
-   temporary file outside the repository. Expect a permission prompt.
+9. If the branch already has an open PR (ask `gh pr view`), do not open a second
+   one: update its title and description with `gh pr edit`, passing the
+   description from a temporary file outside the repository. This happens after
+   a fix that /build added while the PR was open. Otherwise open the PR against
+   the main branch with `gh`, passing the description the same way. Expect a
+   permission prompt.
    - If `gh` is not available, give the developer the title, the description and
      the link to open the PR on GitHub. They then report the CI result.
 10. Wait for CI with `gh pr checks --watch`, and report each check's result.

@@ -118,11 +118,18 @@ next" without asking anyone. Each stage sets its own status:
 | submitted | `/pr`                                             | the PR is open                 |
 
 If code changes after `tested` or `reviewed`, `/build` sets the status back to
-`building`, and the later stages run again. `/ui-test` sets no status: it writes
-a `Browser:` line into the evidence file, which `/next` reads, and the next
-`/test` run replaces it, so a browser pass never carries over to changed code. Nothing in the repo records the
+`building`, and the later stages run again. Nothing in the repo records the
 merge, because no skill edits a spec after it. To see whether a PR is merged, ask
 `gh`. A design spec only uses draft and approved.
+
+`/ui-test` sets no status: it writes a `Browser:` line into the evidence file,
+which `/next` reads, and the next `/test` run replaces it, so a browser pass
+never carries over to changed code.
+
+A fix while the PR is open, such as a failed CI check or a PR review comment,
+goes back to `/build`, which adds a step that names it. Then `/test`,
+`/review-changes` and `/pr` run again, and `/pr` updates the open PR instead of
+opening a second one. After the merge, a change is a new spec or a `/quick-fix`.
 
 `/next NNN` reads the status, the steps, the evidence file and the PR, and says
 which stage comes next. It only reads and never starts the stage.
