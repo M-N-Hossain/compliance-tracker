@@ -1,6 +1,6 @@
 # 004: Route for an admin to make another user an admin
 
-**Status:** reviewed
+**Status:** submitted
 
 **Type:** slice
 
