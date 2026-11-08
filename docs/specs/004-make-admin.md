@@ -148,9 +148,9 @@ Full tables and findings:
 [docs/evidence/004-make-admin.md](../evidence/004-make-admin.md).
 
 - Tests (commit 37d7c5c, 2026-11-08): `npm run check`, 112 unit tests, 174
-  Vitest tests and the hook test (64 of 64) pass. All 9 criteria pass. The
-  browser tests did not run, because a dev server was already running.
+  Vitest tests, 18 browser tests and the hook test (64 of 64) pass. All 9
+  criteria pass.
 - Limits: no screen change, so `/ui-test` is skipped. Criterion 9 uses a fake
   database error. Criterion 2 cannot see a needless write, because `User` has no
-  updated-at column. The browser tests still have to pass before the PR.
+  updated-at column.
 - Review: not run yet.
