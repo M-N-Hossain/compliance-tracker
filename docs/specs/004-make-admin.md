@@ -116,6 +116,7 @@ scope. Until then, it is undone by hand in the database.
 - Tests: database level: a session that says admin for a user the database says
   is not an admin gets 403 (criterion 7).
 - Commit: `test: prove the promote route ignores a stale admin token`
+- Done: yes
 
 ### Step 3: Answer the edge cases
 
