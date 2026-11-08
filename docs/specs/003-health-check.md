@@ -1,6 +1,6 @@
 # 003: Health check route that reports whether the database is reachable
 
-**Status:** reviewed
+**Status:** submitted
 
 **Type:** slice
 
