@@ -1,6 +1,6 @@
 # 004: Route for an admin to make another user an admin
 
-**Status:** tested
+**Status:** reviewed
 
 **Type:** slice
 
@@ -187,3 +187,5 @@ Full tables and findings:
   went to issues #25, #26 and #27, and 2 nits were declined. Round 2: of 7
   findings, 1 is to fix (F10, criterion 4's wording), 2 went to issues #26 and
   #28, and 4 nits were declined. Issue #28 covers the same gap in other routes.
+  F10 was fixed in Step 6, and round 2 was closed after the developer read the
+  fix diff.

@@ -78,6 +78,8 @@ has the same `Content-Type` gap as F1, sent to issue #28.
 
 Date: 2026-11-08. Commit: d7086fb.
 
+Closed: 2026-11-08, commit a72b2d1. The developer read the fix diff.
+
 | Review   | Result                                                                     |
 | -------- | -------------------------------------------------------------------------- |
 | Spec     | ran                                                                        |
