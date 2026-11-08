@@ -12,8 +12,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Admins only" }, { status: 403 });
   }
 
-  const { email } = await req.json();
-  const target = await prisma.user.findUniqueOrThrow({ where: { email: email.trim() } });
+  let body: { email?: unknown } | null;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Expected JSON" }, { status: 400 });
+  }
+
+  const email = typeof body?.email === "string" ? body.email.trim() : "";
+  if (!email) {
+    return NextResponse.json({ error: "An email is required" }, { status: 400 });
+  }
+
+  const target = await prisma.user.findUnique({ where: { email } });
+  if (!target) {
+    // The email is not repeated, to keep personal data out of error answers.
+    return NextResponse.json({ error: "No user with that email" }, { status: 404 });
+  }
+  if (target.isAdmin) {
+    return NextResponse.json({ status: "already-admin" });
+  }
+
   await prisma.user.update({ where: { id: target.id }, data: { isAdmin: true } });
 
   return NextResponse.json({

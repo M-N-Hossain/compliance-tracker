@@ -127,6 +127,7 @@ scope. Until then, it is undone by hand in the database.
   - missing, empty or non-string email, or a body that is not JSON: 400, and
     nothing changes (criterion 4)
 - Commit: `feat: answer already-admin, unknown and invalid promote requests`
+- Done: yes
 
 ### Step 4: Log the promotion and handle a database failure
 
