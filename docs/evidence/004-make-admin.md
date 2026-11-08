@@ -72,3 +72,31 @@ Date: 2026-11-08. Commit: 6c5c0cf.
 
 Outside this branch's diff: the existing route `app/api/admin/pending/[id]/route.ts`
 has the same `Content-Type` gap as F1, sent to issue #28.
+
+### Round 2
+
+Date: 2026-11-08. Commit: d7086fb.
+
+| Review   | Result                                                                     |
+| -------- | -------------------------------------------------------------------------- |
+| Spec     | ran                                                                        |
+| Bug      | ran, one finding set aside (see below)                                     |
+| Security | ran, no findings at confidence 8 or higher; found no way around the F1 fix |
+
+| #   | Severity | File and line                               | Finding                                                                                                                                                                                              | Source    | Decision      |
+| --- | -------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------- |
+| F10 | minor    | `docs/specs/004-make-admin.md:38`           | Criterion 4 says a body that is not JSON gets 400, but a body not sent as `application/json` now gets 415, and no criterion states the 415, so criterion 4 read literally no longer matches the code | Spec      | fix           |
+| F11 | minor    | `app/api/admin/promote/route.ts:29`         | The F1 fix relies on the app never granting a CORS preflight, and nothing enforces that; an Origin or `Sec-Fetch-Site` check would not depend on it                                                  | Bug       | issue #28     |
+| F12 | minor    | `test/api-test/promote.db.test.ts:117`      | Only `text/plain` is tested for 415; form-encoded, multipart, a missing header, and an accepted `application/json; charset=utf-8` are not                                                            | Bug, Spec | issue #26     |
+| F13 | nit      | `app/api/admin/promote/route.ts:33`         | The exact match refuses `+json` media types, and the 415 answer has no `Accept-Post` header                                                                                                          | Bug       | declined: nit |
+| F14 | nit      | `app/api/admin/promote/route.ts:29`         | The comments cite "Review finding F1", a label that only means something inside this spec's evidence file                                                                                            | Bug       | declined: nit |
+| F15 | nit      | `test/api-test/promote-token.db.test.ts:31` | This test still sends `text/plain`, so its 403 depends on the role check running before the content-type check                                                                                       | Spec      | declined: nit |
+| F16 | nit      | `test/api-test/promote.db.test.ts:15`       | The helper comment "Sends any body at all" no longer fits, because it now sets a JSON type by default                                                                                                | Spec      | declined: nit |
+
+Repeats of round 1 findings dropped: 0.
+
+Set aside, outside this branch's diff: the bug review found the same same-site
+request gap in `app/api/company/route.ts`, `app/api/company/classify/route.ts`
+and `app/api/documents/route.ts`. The documents route takes multipart uploads, so
+a `Content-Type` check cannot protect it; one shared Origin check could. Issue
+#28 was widened to cover all of these routes.

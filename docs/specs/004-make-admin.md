@@ -168,7 +168,8 @@ Full tables and findings:
 - Limits: no screen change, so `/ui-test` is skipped. Criterion 9 uses a fake
   database error. Criterion 2 cannot see a needless write, because `User` has no
   updated-at column.
-- Review: round 1, one major (F1, a cross-site request gap) marked fix, no
-  blockers, no security finding at confidence 8. Of 9 findings, 1 is to fix, 6
-  went to issues #25, #26 and #27, and 2 nits were declined. The same gap in the
-  pending route went to issue #28.
+- Review: two rounds, no blockers, no security finding at confidence 8. Round 1:
+  of 9 findings, 1 major was fixed (F1, a cross-site request gap, in Step 5), 6
+  went to issues #25, #26 and #27, and 2 nits were declined. Round 2: of 7
+  findings, 1 is to fix (F10, criterion 4's wording), 2 went to issues #26 and
+  #28, and 4 nits were declined. Issue #28 covers the same gap in other routes.
