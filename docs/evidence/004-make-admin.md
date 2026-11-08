@@ -6,15 +6,15 @@ plan and a short result. This file keeps the proof.
 
 ## Evidence
 
-Date: 2026-11-08. Commit: 37d7c5c.
+Date: 2026-11-08. Commit: 1dd308b.
 
-| Check                                            | Result                                                                                     |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| `npm run check` (lint, format, types)            | pass, exit 0                                                                               |
-| `npm run test:unit`                              | pass, 112 of 112                                                                           |
-| `npm test` (all Vitest, test database)           | pass, 174 of 174                                                                           |
-| `npm run test:e2e`                               | pass, 18 of 18 (rerun after the developer stopped a dev server that blocked the first run) |
-| `node test/hook-test/block-destructive.test.mjs` | pass, 64 of 64                                                                             |
+| Check                                            | Result           |
+| ------------------------------------------------ | ---------------- |
+| `npm run check` (lint, format, types)            | pass, exit 0     |
+| `npm run test:unit`                              | pass, 112 of 112 |
+| `npm test` (all Vitest, test database)           | pass, 175 of 175 |
+| `npm run test:e2e`                               | pass, 18 of 18   |
+| `node test/hook-test/block-destructive.test.mjs` | pass, 64 of 64   |
 
 | Criterion | Result | Evidence                                                                                            |
 | --------- | ------ | --------------------------------------------------------------------------------------------------- |
@@ -37,14 +37,14 @@ Notes:
   not this one.
 - 9: the database error is a fake whose message quotes an email, not a real
   Prisma error.
-- `test:e2e`: the first run could not start, because a `next dev` server was
-  already running on port 3000 and Next.js allows only one per project folder.
-  The rerun passed. Its server log showed "The destination stream errored while
-  writing data." three times, with no test failing; the cause was not checked.
+- `test:e2e`: the server log showed "The destination stream errored while
+  writing data." three times, right after `auth-errors.spec.ts` test 3 (from spec
+  002), with no test failing. The cause was not checked.
 
 Security checklist: the mandatory tests are criteria 6 and 7, and both ran and
-pass. The cross-site POST item is a cookie setting (`SameSite=Lax`), checked in
-the code during /breakdown, not by a test.
+pass. The cross-site request item now has a test too: review finding F1 (Step 5)
+is proven by `promote.db.test.ts` > "answers 415 for a JSON body sent as
+text/plain, and changes nobody", which ran and passes.
 
 ## Review
 
