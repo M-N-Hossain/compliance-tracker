@@ -20,16 +20,24 @@ make the commits, and the developer pushes and merges.
 
 1. Read CLAUDE.md, the workflow file it links to, and the spec. If any of them is
    missing, stop and tell the developer what you could not find.
-2. If the status is draft or submitted, or the spec has no "## Steps" section,
-   stop and name the stage that comes first (/start or /breakdown). Any other
-   status can build: approved and building continue the steps, and tested or
-   reviewed means a finding sent the work back here.
+2. If the status is draft, or the spec has no "## Steps" section, stop and name
+   the stage that comes first (/start or /breakdown). If the status is
+   submitted, ask `gh` for the branch's PR:
+   - **Merged:** stop. A change after the merge is a new spec or a /quick-fix.
+   - **Open:** ask the developer what needs fixing, such as a failed CI check or
+     a PR review comment. Add a step at the end of "## Steps" that names it, such
+     as "Step 5 (PR #23: CI failed on lint)", so the spec records why the code
+     changed after submission. Then go on with that step.
+
+   Any other status can build: approved and building continue the steps, and
+   tested or reviewed means a finding sent the work back here.
 3. Check the current branch. If it is not the feature branch named in the workflow
-   file, create or switch to it. The spec may still be uncommitted, and it moves to
-   the new branch with the switch. Check the branch again afterwards. If the spec
-   depends on a design spec that is not on the main branch yet, bring that file
-   over from its prototype branch with `git checkout proto/NNN-slug -- <path>`,
-   and include it in the first commit.
+   file, switch to it, or create it from `origin/main` after `git fetch origin`,
+   as the workflow file's "Base" rule says. The spec may still be uncommitted,
+   and it moves to the new branch with the switch. Check the branch again
+   afterwards. If the spec depends on a design spec that is not on the main
+   branch yet, bring that file over from its prototype branch with
+   `git checkout proto/NNN-slug -- <path>`, and include it in the first commit.
 4. Find the first step without a "Done: yes" line. If every step is done, say so
    and name the next stage (/test).
 

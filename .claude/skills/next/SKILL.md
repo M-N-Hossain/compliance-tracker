@@ -28,14 +28,14 @@ stage. It answers in a few lines.
    `gh pr checks` for CI. If `gh` is not available, say so and ask the developer.
 4. Choose the next stage from the status:
 
-   | Status             | Next                                                                                                                                                                       |
-   | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-   | no spec            | `/start <idea>`                                                                                                                                                            |
-   | draft              | the developer reviews the draft and resolves any CHECK items, then `/breakdown NNN`. A design goes to the prototype instead.                                               |
-   | approved, building | `/build NNN`, naming the first step without "Done: yes". If every step is done, `/test NNN`.                                                                               |
-   | tested             | `/ui-test NNN` if a criterion waits for the browser or the slice changes a screen. If neither is true, `/review-changes NNN`, and the limits line says "no screen change". |
-   | reviewed           | `/pr NNN`. Only the developer starts it.                                                                                                                                   |
-   | submitted          | PR open: the developer reviews and merges, and CI's state is said. PR merged: `/record NNN`. Only the developer starts it.                                                 |
+   | Status             | Next                                                                                                                                                                                                                                                                                |
+   | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | no spec            | `/start <idea>`                                                                                                                                                                                                                                                                     |
+   | draft              | the developer reviews the draft and resolves any CHECK items, then `/breakdown NNN`. A design goes to the prototype instead.                                                                                                                                                        |
+   | approved, building | `/build NNN`, naming the first step without "Done: yes". If every step is done, `/test NNN`.                                                                                                                                                                                        |
+   | tested             | `/ui-test NNN` if a criterion waits for the browser or the slice changes a screen, unless the evidence file has a `Browser:` line and no criterion is ui-test, FAIL or not run. Otherwise `/review-changes NNN`, and with no screen change the limits line says "no screen change". |
+   | reviewed           | `/pr NNN`. Only the developer starts it.                                                                                                                                                                                                                                            |
+   | submitted          | PR open: the developer reviews and merges, and CI's state is said. If CI failed or the developer wants a change, `/build NNN`. PR merged: `/record NNN`. Only the developer starts it.                                                                                              |
 
 5. Check that the files agree, and say each problem in one line:
    - uncommitted changes, which the next stage will refuse to run with

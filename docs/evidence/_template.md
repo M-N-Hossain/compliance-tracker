@@ -29,16 +29,4 @@ Notes: one line for each result that is not a plain pass.
 
 ## Review
 
-Date: YYYY-MM-DD. Commit: short hash.
-
-| Review   | Result        |
-| -------- | ------------- |
-| Spec     | ran or reason |
-| Bug      | ran or reason |
-| Security | ran or reason |
-
-| Severity | File and line | Finding       | Source | Decision |
-| -------- | ------------- | ------------- | ------ | -------- |
-| blocker  | path:line     | what is wrong | Spec   | open     |
-
-For a later round, add a "### Round 2" heading with the same tables.
+Not run yet. /review-changes adds a "### Round N" heading here for each round.

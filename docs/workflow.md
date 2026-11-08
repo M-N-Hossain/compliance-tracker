@@ -122,6 +122,15 @@ If code changes after `tested` or `reviewed`, `/build` sets the status back to
 merge, because no skill edits a spec after it. To see whether a PR is merged, ask
 `gh`. A design spec only uses draft and approved.
 
+`/ui-test` sets no status: it writes a `Browser:` line into the evidence file,
+which `/next` reads, and the next `/test` run replaces it, so a browser pass
+never carries over to changed code.
+
+A fix while the PR is open, such as a failed CI check or a PR review comment,
+goes back to `/build`, which adds a step that names it. Then `/test`,
+`/review-changes` and `/pr` run again, and `/pr` updates the open PR instead of
+opening a second one. After the merge, a change is a new spec or a `/quick-fix`.
+
 `/next NNN` reads the status, the steps, the evidence file and the PR, and says
 which stage comes next. It only reads and never starts the stage.
 
@@ -159,7 +168,10 @@ small findings can share one issue, such as one test cleanup issue.
 whole branch. Round 2 looks only at what changed since round 1, which is the fixes,
 and never repeats an earlier finding. Blockers, majors and minors are decided one
 by one. Nits are listed and count as declined unless the developer names one. A
-third round runs only if the developer asks for it.
+third round runs only if the developer asks for it. A fix from round 2 goes
+through `/build` and `/test`, then `/review-changes` closes round 2: it runs no
+new reviews, shows the developer the fix's diff, and once they have read it,
+records that and sets the status to reviewed.
 
 ## Quick-fix path
 
@@ -207,6 +219,9 @@ Never say "done" without evidence.
 
 - **Branches:** `feat/NNN-slug` for slices, `fix/slug` for fixes, `chore/slug`
   for maintenance, and `proto/NNN-slug` for prototypes, which are never merged.
+- **Base:** run `git fetch origin` first, then start new branches from
+  `origin/main` and compare against it. A local `main` only moves on a pull, so
+  it can be behind and add merged work to a diff.
 - **Commits:** conventional commits, such as `feat: add expiry reminders`. One
   commit per step.
 - **Messages and PR descriptions:** they only explain what the change is about.

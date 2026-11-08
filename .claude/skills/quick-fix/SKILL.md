@@ -34,7 +34,8 @@ with a smaller version of the fix unless the developer asks for it.
 2. Find the root cause. Only read. Never open secret files.
 3. Explain the root cause and the fix in simple words, with what changes and what
    happens without it. **Stop and wait for "go".**
-4. Create the branch, named as the workflow file says, then check it.
+4. Create the branch, named as the workflow file says, from `origin/main` after
+   `git fetch origin`, as its "Base" rule says. Then check it.
 5. Write a failing test where it makes sense, then run it. Confirm that it fails
    for the expected reason. If a test does not make sense here, say so and say
    why.
