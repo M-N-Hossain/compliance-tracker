@@ -1,6 +1,6 @@
 # 003: Health check route that reports whether the database is reachable
 
-**Status:** tested
+**Status:** reviewed
 
 **Type:** slice
 
@@ -113,4 +113,7 @@ Full tables and findings:
   error, and criterion 4 a fake hang on fake timers, not a real hung database. The
   header in criterion 5 is not checked on the timeout answer. Criterion 6 is
   proven on `next dev`, not the production build.
-- Review: not run yet.
+- Review: one round, no blockers or majors, no security finding at confidence 8.
+  Of 9 findings, none were fixed, 6 went to issues #20 and #21, and 3 were
+  declined (F7 with a reason, two nits). Issue #22 holds 4 workflow findings from
+  outside this branch.

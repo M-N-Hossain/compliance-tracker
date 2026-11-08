@@ -43,4 +43,33 @@ answer and the log reveal are criteria 2 and 3, which pass.
 
 ## Review
 
-Not run yet.
+Date: 2026-11-08. Commit: 70bfc95. Round 1.
+
+| Review   | Result                                     |
+| -------- | ------------------------------------------ |
+| Spec     | ran                                        |
+| Bug      | ran                                        |
+| Security | ran, no findings at confidence 8 or higher |
+
+| Severity | File and line                       | Finding                                                                                                                                                                    | Source           | Decision                                                         |
+| -------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ---------------------------------------------------------------- |
+| minor    | `app/api/health/route.ts:21`        | F1: a timed-out check keeps its Pool connection, so probes during a hang can fill the Pool (pg default 10) and hold up other queries after the database recovers           | Bug, Spec, /test | issue #20                                                        |
+| minor    | `app/api/health/route.ts:7`         | F2: the root cause is that the shared Pool in `lib/prisma.ts` has no connection or query timeout, so every other route still hangs on a stalled database                   | Bug              | issue #20                                                        |
+| minor    | `app/api/health/route.ts:21`        | F3: the 3 seconds include waiting for a free Pool connection, so a busy but healthy database can be reported as down                                                       | Bug              | issue #20                                                        |
+| minor    | `test/api-test/health.test.ts:63`   | F4: the hang test only proves an upper limit; it would still pass with a timeout of 0                                                                                      | Bug, Spec        | issue #21                                                        |
+| minor    | `test/api-test/health.test.ts:66`   | F5: the timeout answer is not checked for `Cache-Control: no-store` or for its log line                                                                                    | Spec             | issue #21                                                        |
+| minor    | `test/e2e-test/health.spec.ts:1`    | F6: the comment says the request goes through `proxy.ts`, but the matcher leaves out `/api/health`, so the proxy never runs; the test guards against a wider matcher later | Spec, Bug        | issue #21                                                        |
+| minor    | `app/api/health/route.ts:25`        | F7: with the PrismaPg adapter a connection error is wrapped, so `code` may be missing from the log                                                                         | Bug              | declined: the adapter maps an unreachable database to code P1001 |
+| nit      | `test/api-test/health.db.test.ts:1` | F8: the comment says what the file does, not why                                                                                                                           | Spec             | declined: nit                                                    |
+| nit      | `app/api/health/route.ts:26`        | F9: on a timeout the log line ends in the word `undefined`, because the error has no code                                                                                  | Spec             | declined: nit                                                    |
+
+Outside this branch's diff: the bug review also reported 4 findings in
+`.claude/skills/` (`pr`, `next`, `build`, `review-changes`). Those files are not in
+`.review/003.diff`; the review most likely compared against a local `main` that
+was behind `origin/main`. They are kept out of this table and went to issue #22.
+
+Notes:
+
+- F7: `node_modules/@prisma/adapter-pg/dist/index.mjs:548-550` turns
+  `ECONNREFUSED` and `ENOTFOUND` into `DatabaseNotReachable`, which the Prisma
+  runtime maps to `P1001`. Checked in the source, not against a real outage.
