@@ -1,6 +1,6 @@
 # 004: Route for an admin to make another user an admin
 
-**Status:** building
+**Status:** tested
 
 **Type:** slice
 
@@ -144,5 +144,13 @@ scope. Until then, it is undone by hand in the database.
 
 ## Evidence and review
 
-Not run yet. Limits: no screen change, so `/ui-test` is skipped. Full tables and
-findings: docs/evidence/004-make-admin.md.
+Full tables and findings:
+[docs/evidence/004-make-admin.md](../evidence/004-make-admin.md).
+
+- Tests (commit 37d7c5c, 2026-11-08): `npm run check`, 112 unit tests, 174
+  Vitest tests and the hook test (64 of 64) pass. All 9 criteria pass. The
+  browser tests did not run, because a dev server was already running.
+- Limits: no screen change, so `/ui-test` is skipped. Criterion 9 uses a fake
+  database error. Criterion 2 cannot see a needless write, because `User` has no
+  updated-at column. The browser tests still have to pass before the PR.
+- Review: not run yet.
