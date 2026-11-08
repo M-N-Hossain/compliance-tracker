@@ -6,7 +6,7 @@ plan and a short result. This file keeps the proof.
 
 ## Evidence
 
-Date: 2026-11-08. Commit: 1dd308b.
+Date: 2026-11-08. Commit: 6054600.
 
 | Check                                            | Result           |
 | ------------------------------------------------ | ---------------- |
@@ -16,17 +16,18 @@ Date: 2026-11-08. Commit: 1dd308b.
 | `npm run test:e2e`                               | pass, 18 of 18   |
 | `node test/hook-test/block-destructive.test.mjs` | pass, 64 of 64   |
 
-| Criterion | Result | Evidence                                                                                            |
-| --------- | ------ | --------------------------------------------------------------------------------------------------- |
-| 1         | pass   | `promote.db.test.ts` > "makes the user an admin and says they must log in again"                    |
-| 2         | pass   | `promote.db.test.ts` > "answers already-admin for a user who is already an admin"                   |
-| 3         | pass   | `promote.db.test.ts` > "answers 404 for an unknown email, without repeating it, and changes nobody" |
-| 4         | pass   | `promote.db.test.ts` > "answers 400 for ..." (no email, empty email, not a string, not JSON)        |
-| 5         | pass   | `promote.db.test.ts` > "answers 401 with no login, and the target stays a non-admin"                |
-| 6         | pass   | `promote.db.test.ts` > "answers 403 to a non-admin, ..." and "... who tries to promote themselves"  |
-| 7         | pass   | `promote-token.db.test.ts` > "answers 403 when the token says admin but the database does not"      |
-| 8         | pass   | `promote.db.test.ts` > "logs one line with both user ids and no email"                              |
-| 9         | pass   | `promote.test.ts` > "answers 500 with JSON when the login check fails / the user lookup fails, ..." |
+| Criterion | Result | Evidence                                                                                                                     |
+| --------- | ------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| 1         | pass   | `promote.db.test.ts` > "makes the user an admin and says they must log in again"                                             |
+| 2         | pass   | `promote.db.test.ts` > "answers already-admin for a user who is already an admin"                                            |
+| 3         | pass   | `promote.db.test.ts` > "answers 404 for an unknown email, without repeating it, and changes nobody"                          |
+| 4         | pass   | `promote.db.test.ts` > "answers 400 for ..." (no email, empty email, not a string, not JSON), all sent as `application/json` |
+| 5         | pass   | `promote.db.test.ts` > "answers 401 with no login, and the target stays a non-admin"                                         |
+| 6         | pass   | `promote.db.test.ts` > "answers 403 to a non-admin, ..." and "... who tries to promote themselves"                           |
+| 7         | pass   | `promote-token.db.test.ts` > "answers 403 when the token says admin but the database does not"                               |
+| 8         | pass   | `promote.db.test.ts` > "logs one line with both user ids and no email"                                                       |
+| 9         | pass   | `promote.test.ts` > "answers 500 with JSON when the login check fails / the user lookup fails, ..."                          |
+| 10        | pass   | `promote.db.test.ts` > "answers 415 for a JSON body sent as text/plain, and changes nobody"                                  |
 
 Notes:
 
@@ -37,14 +38,14 @@ Notes:
   not this one.
 - 9: the database error is a fake whose message quotes an email, not a real
   Prisma error.
-- `test:e2e`: the server log showed "The destination stream errored while
-  writing data." three times, right after `auth-errors.spec.ts` test 3 (from spec
-  002), with no test failing. The cause was not checked.
+- 10: only `text/plain` is tested. Form-encoded, multipart and a missing header
+  are handled by the same check but not tested (issue #26).
+- `test:e2e`: earlier runs showed "The destination stream errored while writing
+  data." in the server log after `auth-errors.spec.ts` test 3 (from spec 002).
+  This run's output was not checked for it.
 
 Security checklist: the mandatory tests are criteria 6 and 7, and both ran and
-pass. The cross-site request item now has a test too: review finding F1 (Step 5)
-is proven by `promote.db.test.ts` > "answers 415 for a JSON body sent as
-text/plain, and changes nobody", which ran and passes.
+pass. The cross-site request item is now criterion 10, which ran and passes.
 
 ## Review
 
