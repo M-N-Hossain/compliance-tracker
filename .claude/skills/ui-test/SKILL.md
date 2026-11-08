@@ -60,10 +60,17 @@ If no number was given, ask for one and wait.
      there is one.
    - **not run:** you could not reach this flow. Say why. This is not a pass.
 8. Update the "## Evidence" part of the evidence file. Replace each ui-test
-   result with the new result, and add a short "Browser" note with the date, and
-   the screenshot folder if there is one. Record console errors and failed
-   requests, even if they look unrelated. Then update the "Evidence and review"
+   result with the new result, and add this line, which /next reads to see that
+   the browser test ran:
+
+   ```markdown
+   Browser: YYYY-MM-DD, commit short hash. N UI criteria pass, M fail, K not run.
+   ```
+
+   Add the screenshot folder to the line if there is one. Record console errors
+   and failed requests below it, even if they look unrelated. Then update the "Evidence and review"
    section of the spec: the limits line, and the count of criteria that pass.
+
 9. Commit the evidence file and the spec. Show the results and the commit's hash.
    Say plainly whether anything failed or was not run.
 10. **Stop.** Do not fix anything here.

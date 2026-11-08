@@ -118,7 +118,9 @@ next" without asking anyone. Each stage sets its own status:
 | submitted | `/pr`                                             | the PR is open                 |
 
 If code changes after `tested` or `reviewed`, `/build` sets the status back to
-`building`, and the later stages run again. Nothing in the repo records the
+`building`, and the later stages run again. `/ui-test` sets no status: it writes
+a `Browser:` line into the evidence file, which `/next` reads, and the next
+`/test` run replaces it, so a browser pass never carries over to changed code. Nothing in the repo records the
 merge, because no skill edits a spec after it. To see whether a PR is merged, ask
 `gh`. A design spec only uses draft and approved.
 
