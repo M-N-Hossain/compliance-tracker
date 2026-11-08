@@ -161,7 +161,10 @@ small findings can share one issue, such as one test cleanup issue.
 whole branch. Round 2 looks only at what changed since round 1, which is the fixes,
 and never repeats an earlier finding. Blockers, majors and minors are decided one
 by one. Nits are listed and count as declined unless the developer names one. A
-third round runs only if the developer asks for it.
+third round runs only if the developer asks for it. A fix from round 2 goes
+through `/build` and `/test`, then `/review-changes` closes round 2: it runs no
+new reviews, shows the developer the fix's diff, and once they have read it,
+records that and sets the status to reviewed.
 
 ## Quick-fix path
 

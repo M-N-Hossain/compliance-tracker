@@ -27,7 +27,8 @@ If no number was given, ask for one and wait.
    review round is kept. Work out the round: count the "### Round N" headings
    under "## Review", and add one. Text without a round heading, such as "Not run
    yet.", counts as zero. **A slice gets at most two rounds.** If two rounds
-   exist, say so and **stop**. A third runs only if the developer asks for it.
+   exist, follow "Close round 2" below instead of these steps. A third round
+   runs only if the developer asks for it.
 2. Check the branch and the working tree with read-only git commands. If this is
    the main branch, or anything is uncommitted, say so and **stop**. A branch diff
    leaves out uncommitted work, so the reviews would miss it.
@@ -104,10 +105,30 @@ If no number was given, ask for one and wait.
 10. **Stop.**
     - Anything marked fix in round 1: the next stage is /build, then /test, then
       this skill again for round 2, because the code has changed.
-    - Anything marked fix in round 2: the next stage is /build, then /test. There
-      is no third round unless the developer asks, so the developer reads the
-      fix's diff before /pr.
+    - Anything marked fix in round 2: the next stage is /build, then /test, then
+      this skill again to close round 2. There is no third round unless the
+      developer asks.
     - Otherwise: the next stage is /pr, and only the developer starts it.
+
+## Close round 2
+
+Use this only when two rounds exist. It runs no new reviews. It shows the
+developer the round 2 fixes and records that they read them, because only this
+skill sets the status to reviewed.
+
+1. If the status is not tested, or a round 2 finding's decision is still open or
+   fix instead of "fixed in Step N", name each one and **stop**.
+2. Check the branch and the working tree as in step 2 above.
+3. Save the diff since the commit named under "### Round 2" to
+   `.review/NNN-close.diff`. Show the developer the files it changes and the
+   diff, with the finding number each change fixes. **Stop and wait** until the
+   developer says they have read it. Only an explicit yes counts.
+4. Under "### Round 2", add the line
+   `Closed: YYYY-MM-DD, commit short hash. The developer read the fix diff.`
+   Set the spec's status to reviewed, and update the review line in its
+   "Evidence and review" section with the fixed count. Commit the evidence file
+   and the spec, and report the commit's hash and title.
+5. **Stop.** The next stage is /pr, and only the developer starts it.
 
 ## Limits
 

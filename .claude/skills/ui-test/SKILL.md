@@ -68,8 +68,9 @@ If no number was given, ask for one and wait.
    ```
 
    Add the screenshot folder to the line if there is one. Record console errors
-   and failed requests below it, even if they look unrelated. Then update the "Evidence and review"
-   section of the spec: the limits line, and the count of criteria that pass.
+   and failed requests below it, even if they look unrelated. Then update the
+   "Evidence and review" section of the spec: the limits line, and the count of
+   criteria that pass.
 
 9. Commit the evidence file and the spec. Show the results and the commit's hash.
    Say plainly whether anything failed or was not run.
