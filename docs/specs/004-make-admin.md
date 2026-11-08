@@ -1,6 +1,6 @@
 # 004: Route for an admin to make another user an admin
 
-**Status:** tested
+**Status:** building
 
 **Type:** slice
 
@@ -35,8 +35,9 @@ Route: `POST /api/admin/promote` with the body `{ "email": "<user email>" }`.
    `{ "status": "already-admin" }`, and nothing in the database changes.
 3. Given an email that matches no user, then it answers 404 with an error, and
    nothing in the database changes.
-4. Given a missing, empty or non-string email, or a body that is not JSON, then
-   it answers 400 with an error, and nothing in the database changes.
+4. Given a body sent as `application/json` with a missing, empty or non-string
+   email, or that is not valid JSON, then it answers 400 with an error, and
+   nothing in the database changes.
 5. Given no login, then it answers 401, and the target user stays a non-admin.
 6. Given a logged-in user who is not an admin, then it answers 403, and the
    target user stays a non-admin. This holds when the target is the caller
@@ -48,6 +49,8 @@ Route: `POST /api/admin/promote` with the body `{ "email": "<user email>" }`.
    promoted user's id, and no email.
 9. Given the database throws, then it answers 500 with a JSON error, and the log
    has the error's name and code, not its message.
+10. Given a body that is not sent as `application/json`, such as `text/plain`,
+    then it answers 415, and the target user stays a non-admin.
 
 ## Data changes
 
@@ -155,6 +158,17 @@ scope. Until then, it is undone by hand in the database.
 - Tests: database level: a JSON body sent as `text/plain` gets 415, and the
   target stays a non-admin.
 - Commit: `fix: refuse promote requests not sent as JSON`
+- Done: yes
+
+### Step 6 (F10): Make the criteria match the code
+
+- Review finding F10: after Step 5, criterion 4 read literally promised a 400 for
+  a body the route now answers with 415, and no criterion stated the 415.
+- Files: this spec only. Criterion 4 now says "sent as `application/json`", and
+  criterion 10 states the 415.
+- Tests: none new. Criterion 10 is proven by Step 5's test, "answers 415 for a
+  JSON body sent as text/plain, and changes nobody".
+- Commit: `docs: state the 415 answer as a criterion in spec 004`
 - Done: yes
 
 ## Evidence and review
