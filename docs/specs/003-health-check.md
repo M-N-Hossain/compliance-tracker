@@ -99,6 +99,7 @@ Postgres is up inside Docker, not that the app can reach it.
   answers JSON, not a redirect to `/login` (criterion 6). It only checks that the
   route is reachable; the body is already proven in Step 1.
 - Commit: `test: prove the health check needs no login`
+- Done: yes
 
 ## Evidence and review
 
