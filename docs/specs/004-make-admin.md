@@ -140,6 +140,7 @@ scope. Until then, it is undone by hand in the database.
     JSON error, and the log has the error's name and code, not its message
     (criterion 9)
 - Commit: `feat: log promotions and answer database failures on promote`
+- Done: yes
 
 ## Evidence and review
 

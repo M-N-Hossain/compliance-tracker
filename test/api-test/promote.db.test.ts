@@ -49,6 +49,26 @@ describe("POST /api/admin/promote by an admin", () => {
     expect(await isAdminInDatabase(TARGET_EMAIL)).toBe(true);
   });
 
+  it("logs one line with both user ids and no email", async () => {
+    const admin = await createUserWithoutCompany(ADMIN_EMAIL, true);
+    logInAs(admin);
+    const target = await createUserWithoutCompany(TARGET_EMAIL);
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+
+    try {
+      await promote(TARGET_EMAIL);
+
+      expect(infoSpy).toHaveBeenCalledTimes(1);
+      expect(infoSpy.mock.calls[0]).toContain(admin.id);
+      expect(infoSpy.mock.calls[0]).toContain(target.id);
+      const logged = JSON.stringify(infoSpy.mock.calls.flat().map(String));
+      expect(logged).not.toContain(ADMIN_EMAIL);
+      expect(logged).not.toContain(TARGET_EMAIL);
+    } finally {
+      infoSpy.mockRestore();
+    }
+  });
+
   it("answers already-admin for a user who is already an admin", async () => {
     logInAs(await createUserWithoutCompany(ADMIN_EMAIL, true));
     await createUserWithoutCompany(TARGET_EMAIL, true);

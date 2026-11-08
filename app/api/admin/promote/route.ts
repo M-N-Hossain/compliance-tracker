@@ -1,8 +1,22 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/currentUser";
 import { prisma } from "@/lib/prisma";
+import { SERVER_ERROR_MESSAGE } from "@/utils/authMessages";
 
+// The try wraps everything, because on an outage getCurrentUser is the first call to fail.
 export async function POST(req: Request) {
+  try {
+    // "return await", so a rejected promise is caught here and not passed on.
+    return await promote(req);
+  } catch (error) {
+    // Log only name and code: a Prisma error message can quote the query, and so the email.
+    const { name, code } = (error ?? {}) as { name?: string; code?: string };
+    console.error("Promote failed because of a server error:", name, code);
+    return NextResponse.json({ error: SERVER_ERROR_MESSAGE }, { status: 500 });
+  }
+}
+
+async function promote(req: Request) {
   // getCurrentUser reads isAdmin from the database, so a stale login token cannot pass.
   const user = await getCurrentUser();
   if (!user) {
@@ -34,6 +48,8 @@ export async function POST(req: Request) {
   }
 
   await prisma.user.update({ where: { id: target.id }, data: { isAdmin: true } });
+  // Ids, not emails: enough to trace who did it, without personal data in the log.
+  console.info("Admin", user.id, "promoted user", target.id, "to admin.");
 
   return NextResponse.json({
     status: "promoted",
