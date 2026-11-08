@@ -1,6 +1,6 @@
 # 003: Health check route that reports whether the database is reachable
 
-**Status:** building
+**Status:** tested
 
 **Type:** slice
 
@@ -103,5 +103,14 @@ Postgres is up inside Docker, not that the app can reach it.
 
 ## Evidence and review
 
-Not run yet. Limits: no screen change, so `/ui-test` is skipped. Full tables and
-findings: docs/evidence/003-health-check.md.
+Full tables and findings:
+[docs/evidence/003-health-check.md](../evidence/003-health-check.md).
+
+- Tests (commit ebbbfd3, 2026-11-08): `npm run check`, 110 unit tests, 160
+  Vitest tests, 18 browser tests and the hook test (64 of 64) pass. All 6 criteria
+  pass.
+- Limits: no screen change, so `/ui-test` is skipped. Criterion 3 uses a fake
+  error, and criterion 4 a fake hang on fake timers, not a real hung database. The
+  header in criterion 5 is not checked on the timeout answer. Criterion 6 is
+  proven on `next dev`, not the production build.
+- Review: not run yet.
