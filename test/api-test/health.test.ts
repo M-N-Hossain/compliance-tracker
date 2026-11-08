@@ -46,3 +46,24 @@ describe("GET /api/health when the database fails", () => {
     expect(logged).not.toContain(DB_PASSWORD);
   });
 });
+
+describe("GET /api/health when the database hangs", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("answers 503 with the down body after 3 seconds instead of waiting", async () => {
+    queryRaw.mockReturnValue(new Promise(() => {}));
+
+    const pending = GET();
+    await vi.advanceTimersByTimeAsync(3000);
+    const response = await pending;
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ status: "error", database: "down" });
+  });
+});

@@ -89,6 +89,7 @@ Postgres is up inside Docker, not that the app can reach it.
 - Tests: API, fake `prisma` whose query never answers, with fake timers moved 3
   seconds ahead: answers 503 with the "error" body (criterion 4).
 - Commit: `feat: stop the health check waiting on a hung database`
+- Done: yes
 
 ### Step 3: Prove it is public on the running app
 
