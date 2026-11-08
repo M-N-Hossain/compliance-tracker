@@ -24,10 +24,10 @@ If no number was given, ask for one and wait.
 1. Read CLAUDE.md, the workflow file it links to, and the spec. If any of them is
    missing, stop and tell the developer what you could not find. Also read the
    evidence file, `docs/evidence/NNN-slug.md`, if it exists, so that an earlier
-   review round is kept. Work out the round: 1 if the file has no "## Review"
-   part, otherwise one more than its last round. **A slice gets at most two
-   rounds.** If two rounds exist, say so and **stop**. A third runs only if the
-   developer asks for it.
+   review round is kept. Work out the round: count the "### Round N" headings
+   under "## Review", and add one. Text without a round heading, such as "Not run
+   yet.", counts as zero. **A slice gets at most two rounds.** If two rounds
+   exist, say so and **stop**. A third runs only if the developer asks for it.
 2. Check the branch and the working tree with read-only git commands. If this is
    the main branch, or anything is uncommitted, say so and **stop**. A branch diff
    leaves out uncommitted work, so the reviews would miss it.
@@ -35,7 +35,7 @@ If no number was given, ask for one and wait.
    - **Round 1:** the whole branch, saved to `.review/NNN.diff`, by comparing
      against the point where the branch left the main branch.
    - **Round 2:** only what changed since round 1, saved to `.review/NNN-r2.diff`,
-     by comparing against the commit named in the round 1 header. It holds the
+     by comparing against the commit named under "### Round 1". It holds the
      fixes, so the reviews look at the changed code and how it affects the spec.
 4. Run the three reviews. If one cannot run, record it as "not run" with the
    reason, and carry on with the others. A review that did not run never counts
@@ -52,15 +52,17 @@ If no number was given, ask for one and wait.
 6. Combine the findings into one list, most serious first, using the severities
    blocker, major, minor and nit. If two reviews report the same problem, list it
    once and name both. Drop a finding that repeats an earlier one, and mention the
-   count in one line. Keep finding numbers running across rounds.
+   count in one line. Number the findings F1, F2 and so on, starting after the
+   highest number in earlier rounds.
 7. Write the findings to the evidence file, `docs/evidence/NNN-slug.md`, with the
    same name as the spec. If it does not exist, copy
-   `docs/evidence/_template.md` to that path. Add or replace its "## Review"
-   part, and leave its "## Evidence" part as it is. For a later round, keep the
-   earlier rounds and add a "### Round N" heading with the same tables:
+   `docs/evidence/_template.md` to that path. Under its "## Review" heading,
+   remove any text that has no round heading, keep the earlier rounds, and add
+   this round below them. Leave the "## Evidence" part as it is. Always write the
+   round heading, also for round 1:
 
    ```markdown
-   ## Review
+   ### Round N
 
    Date: YYYY-MM-DD. Commit: short hash.
 
@@ -70,9 +72,9 @@ If no number was given, ask for one and wait.
    | Bug      | ran or reason |
    | Security | ran or reason |
 
-   | Severity | File and line | Finding       | Source | Decision |
-   | -------- | ------------- | ------------- | ------ | -------- |
-   | blocker  | path:line     | what is wrong | Spec   | open     |
+   | #   | Severity | File and line | Finding       | Source | Decision |
+   | --- | -------- | ------------- | ------------- | ------ | -------- |
+   | F1  | blocker  | path:line     | what is wrong | Spec   | open     |
    ```
 
    Nits stay in the table with the decision "declined: nit".

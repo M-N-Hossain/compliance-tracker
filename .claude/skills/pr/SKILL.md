@@ -31,9 +31,9 @@ This skill never merges. The developer reviews and merges.
    - **Quick fix:** use the evidence from this conversation. If it is gone, run
      the checks listed in CLAUDE.md again.
 4. With a spec, read the "## Review" part of the evidence file, every round. If it
-   is missing, if any review shows as not run, or if any finding's decision is
-   open or fix, name each one and **stop**. The developer decides what happens
-   next. The spec's "Evidence and review" section is only a summary, so check
+   has no "### Round N" heading, if any review shows as not run, or if any
+   finding's decision is open or fix, name each one and **stop**. The developer
+   decides what happens next. The spec's "Evidence and review" section is only a summary, so check
    that it agrees with the evidence file, and say if it does not.
 
 ## Prepare
