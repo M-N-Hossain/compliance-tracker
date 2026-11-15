@@ -90,6 +90,15 @@ COPY --from=builder --chown=node:node /app/public ./public
 # From here on, run as the unprivileged "node" user instead of root.
 USER node
 
+# Docker runs this command inside the container every 30 seconds.
+# Exit code 0 = healthy. Anything else = a failed check.
+# --start-period: failures during the first 20 seconds do not count while the app boots.
+# --retries=3: three failed checks in a row before Docker says "unhealthy".
+# The image has no curl, so we use node itself. Node 22 has fetch built in.
+# 127.0.0.1 = "this same container". AbortSignal.timeout stops a hung request after 4 seconds.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD ["node", "-e", "fetch('http://127.0.0.1:3000/api/health',{signal:AbortSignal.timeout(4000)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+
 # Documentation only: "this container listens on 3000". It does not open anything.
 EXPOSE 3000
 
