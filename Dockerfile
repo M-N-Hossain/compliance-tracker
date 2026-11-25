@@ -67,6 +67,11 @@ CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed"]
 # A brand new stage: it inherits NOTHING from the builder, not even the fake ENV values.
 FROM node:22-slim AS runner
 
+# The runner only runs "node server.js". Remove the package managers it never uses.
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+    /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
+
 # Work folder for this stage.
 WORKDIR /app
 
