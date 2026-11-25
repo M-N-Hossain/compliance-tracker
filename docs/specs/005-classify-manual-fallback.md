@@ -1,6 +1,6 @@
 # 005: Let the user pick a business type when the AI classification fails
 
-**Status:** tested
+**Status:** reviewed
 
 **Type:** slice
 
@@ -168,4 +168,5 @@ Full tables and findings: [docs/evidence/005-classify-manual-fallback.md](../evi
 - Limits: `/ui-test` is skipped by the developer's decision, so criteria 4 to 8 rest
   on browser tests that stage the classify answers, and layout and wording were not
   checked by eye. Criterion 1 uses a fake database list, and criterion 9 a fake SDK.
-- Review: not run yet.
+- Review: 1 round, no blockers, no security finding at confidence 8. Of 10 findings,
+  0 were fixed, 4 went to issues #33, #34 and #35, and 6 nits were declined.

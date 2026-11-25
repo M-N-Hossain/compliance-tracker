@@ -47,4 +47,30 @@ Notes:
 
 ## Review
 
-Not run yet. /review-changes adds a "### Round N" heading here for each round.
+### Round 1
+
+Date: 2026-11-25. Commit: 6d5738f.
+
+| Review   | Result                                  |
+| -------- | --------------------------------------- |
+| Spec     | ran                                     |
+| Bug      | ran (`code-review medium origin/main`)  |
+| Security | ran, no finding at confidence 8 or more |
+
+| #   | Severity | File and line                                      | Finding                                                                                                                                                | Source    | Decision      |
+| --- | -------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- | ------------- |
+| F1  | minor    | `CompanySetupForm.tsx:41`                          | A 502 with `categories: []` opens the fallback with an empty dropdown and Save disabled, so the user is stuck. Needs an empty templates table.         | Spec, Bug | issue #33     |
+| F2  | minor    | `classify.test.ts:52`                              | The test is named "throws a 429" but throws a plain `Error` with no status. The route treats all errors alike, so the name claims more than it checks. | Spec      | issue #34     |
+| F3  | minor    | `classify/route.ts:14,22`                          | Existing gap: `request.json()` and the categories `findMany` sit outside the `try`, so a database error or bad body gives an HTML 500 and no fallback. | Bug       | issue #35     |
+| F4  | minor    | `CompanySetupForm.tsx:66`                          | Existing gap: `handleConfirm` has no `try/catch/finally`, so a failed save leaves the button on "Creating...".                                         | Bug       | issue #35     |
+| F5  | nit      | `lib/gemini.ts:15`                                 | The lower retry default is shared, so document extraction also drops to 3 calls. Intended and written in the spec.                                     | Bug       | declined: nit |
+| F6  | nit      | `CompanySetupForm.tsx`                             | Old category and fallback flag survive a changed description. The next classify result overwrites both, so no state is shown or reused.                | Bug       | declined: nit |
+| F7  | nit      | `classify-fallback.spec.ts:119`                    | `afterEach` reads a shared blocked-network log. Same pattern as the other specs, and the log is cleared in setup.                                      | Bug       | declined: nit |
+| F8  | nit      | `CompanySetupForm.tsx:49`                          | A "NEW:" comment describes history. It was there before this branch and is not in the diff.                                                            | Bug       | declined: nit |
+| F9  | nit      | `gemini-retry.test.ts`                             | The spec says "a dummy key", the test sets none. `.env.test` already gives fake values.                                                                | Spec      | declined: nit |
+| F10 | nit      | `docs/evidence/005-classify-manual-fallback.md:11` | The evidence cites 8a7a59e, and the evidence commit came after it. The code under test is unchanged.                                                   | Spec      | declined: nit |
+
+Set aside: the spec review also said the status is `tested` and the review is not
+run yet. That is the normal state at this stage, and the `/ui-test` skip is already
+recorded in the spec, so it is not a finding. Both reviews' file names are all in the
+saved diff.
