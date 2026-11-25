@@ -1,6 +1,6 @@
 # 005: Let the user pick a business type when the AI classification fails
 
-**Status:** building
+**Status:** tested
 
 **Type:** slice
 
@@ -161,4 +161,11 @@ already starts with an empty form (line 26), so no issue is needed.
 
 ## Evidence and review
 
-Not run yet. Full tables and findings: docs/evidence/005-classify-manual-fallback.md.
+Full tables and findings: [docs/evidence/005-classify-manual-fallback.md](../evidence/005-classify-manual-fallback.md).
+
+- Tests (commit 8a7a59e, 2026-11-25): `npm run check`, 118 unit tests, 183 Vitest
+  tests, 23 browser tests and the hook test (64 of 64) pass. All 10 criteria pass.
+- Limits: `/ui-test` is skipped by the developer's decision, so criteria 4 to 8 rest
+  on browser tests that stage the classify answers, and layout and wording were not
+  checked by eye. Criterion 1 uses a fake database list, and criterion 9 a fake SDK.
+- Review: not run yet.
