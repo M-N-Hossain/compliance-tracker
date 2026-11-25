@@ -10,9 +10,11 @@ export const MODELS = {
   extract: "gemini-3.5-flash-lite", // 500/day: one call per upload
 } as const;
 
+// 2 retries means at most 3 calls per request. Every call counts against the free
+// per-minute quota, so more retries make the quota error more likely, not less.
 export async function generateWithRetry(
   params: Parameters<typeof ai.models.generateContent>[0],
-  maxRetries = 3,
+  maxRetries = 2,
 ) {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
@@ -35,7 +37,7 @@ export async function generateWithRetry(
 
       // Exponential backoff: wait longer each time so we don't
       // hammer a server that is already struggling.
-      const delayMs = 500 * 2 ** attempt; // 500ms, 1000ms, 2000ms
+      const delayMs = 500 * 2 ** attempt; // 500ms, 1000ms
       console.warn(`Gemini 503, retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxRetries})`);
       await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
