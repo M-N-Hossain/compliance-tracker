@@ -1,6 +1,6 @@
 # 005: Let the user pick a business type when the AI classification fails
 
-**Status:** reviewed
+**Status:** submitted
 
 **Type:** slice
 
