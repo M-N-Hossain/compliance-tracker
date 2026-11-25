@@ -157,7 +157,7 @@ already starts with an empty form (line 26), so no issue is needed.
   synthetic data. `POST /api/company` with category "general" gives 400, and with
   an unknown category gives 400, and no company is created in either case
   (criterion 10).
-- Commit: `test: check that company creation rejects bad categories`
+- Commit: `test: check that company creation rejects bad categories`. Done: yes.
 
 ## Evidence and review
 
