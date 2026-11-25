@@ -148,7 +148,7 @@ already starts with an empty form (line 26), so no issue is needed.
   then edit the description and ask again, once with a 200 and once with a 502:
   suggestion preselected, or fallback again with no leftover category
   (criterion 8).
-- Commit: `feat: let the user pick a business type when the AI fails`
+- Commit: `feat: let the user pick a business type when the AI fails`. Done: yes.
 
 ### Step 4: Prove the server still checks the category
 

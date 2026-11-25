@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatCategory } from "@/utils/category";
 
+const FALLBACK_MESSAGE =
+  "The AI suggestion is not available right now. Choose your business type yourself.";
+const NETWORK_MESSAGE = "Could not reach the server. Please try again.";
+
 export function CompanySetupForm() {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -11,6 +15,8 @@ export function CompanySetupForm() {
   const [phase, setPhase] = useState<"input" | "confirm">("input");
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
+  // True when the AI could not suggest a type and the user must choose one.
+  const [fallback, setFallback] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -20,22 +26,39 @@ export function CompanySetupForm() {
     setError("");
     setLoading(true);
 
-    const res = await fetch("/api/company/classify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ description }),
-    });
-    const data = await res.json();
-    setLoading(false);
+    try {
+      const res = await fetch("/api/company/classify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description }),
+      });
+      const data = await res.json();
 
-    if (!res.ok) {
-      setError(data.error ?? "Something went wrong.");
-      return;
+      if (!res.ok) {
+        // Only a 502 means the AI failed. A 400 or 401 is the user's to fix, so no fallback.
+        if (res.status === 502 && Array.isArray(data.categories)) {
+          // Empty on purpose: a guessed category would build the wrong checklist.
+          setCategory("");
+          setCategories(data.categories);
+          setFallback(true);
+          setPhase("confirm");
+          return;
+        }
+        setError(data.error ?? "Something went wrong.");
+        return;
+      }
+
+      setCategory(data.category);
+      setCategories(data.categories);
+      setFallback(false);
+      setPhase("confirm");
+    } catch {
+      // The request failed, or the answer was not JSON.
+      setError(NETWORK_MESSAGE);
+    } finally {
+      // Without this, a thrown error would leave the button on "Thinking..." forever.
+      setLoading(false);
     }
-
-    setCategory(data.category);
-    setCategories(data.categories);
-    setPhase("confirm");
   }
 
   // create the company.
@@ -119,7 +142,9 @@ export function CompanySetupForm() {
               Business type
             </label>
             <p className="text-muted text-sm">
-              Suggested by AI from your description. Change it if it is wrong.
+              {fallback
+                ? FALLBACK_MESSAGE
+                : "Suggested by AI from your description. Change it if it is wrong."}
             </p>
             <select
               id="category"
@@ -127,6 +152,11 @@ export function CompanySetupForm() {
               onChange={(e) => setCategory(e.target.value)}
               className="border-field min-h-11 rounded-lg border bg-white px-2.5"
             >
+              {fallback && (
+                <option value="" disabled>
+                  Choose a business type
+                </option>
+              )}
               {categories.map((c) => (
                 <option key={c} value={c}>
                   {formatCategory(c)}
@@ -137,7 +167,7 @@ export function CompanySetupForm() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !category}
             className="bg-brand hover:bg-brand-dark min-h-11 rounded-lg font-medium text-white disabled:opacity-50"
           >
             {loading ? "Creating..." : "Save and build my checklist"}
