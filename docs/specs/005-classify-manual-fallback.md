@@ -129,7 +129,7 @@ already starts with an empty form (line 26), so no issue is needed.
   not in the list: 502 with `categories` (criterion 2). A description under 10
   characters gives 400, and no session gives 401, both without `categories`
   (criterion 3).
-- Commit: `feat: return categories when the AI classification fails`
+- Commit: `feat: return categories when the AI classification fails`. Done: yes.
 
 ### Step 3: Manual business type on the setup form
 

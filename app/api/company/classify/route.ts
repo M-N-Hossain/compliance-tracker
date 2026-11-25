@@ -49,12 +49,13 @@ export async function POST(request: Request) {
     const category = result.category;
 
     if (!category || !categories.includes(category)) {
-      return NextResponse.json({ error: "Could not classify." }, { status: 502 });
+      return NextResponse.json({ error: "Could not classify.", categories }, { status: 502 });
     }
 
     return NextResponse.json({ category, categories });
   } catch (err) {
     console.error("Gemini call failed:", err);
-    return NextResponse.json({ error: "The AI service failed." }, { status: 502 });
+    // The list goes with the error so the user can still choose a type without the AI.
+    return NextResponse.json({ error: "The AI service failed.", categories }, { status: 502 });
   }
 }
